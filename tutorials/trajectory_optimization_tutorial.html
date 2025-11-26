@@ -1,0 +1,1485 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Trajectory Optimization Tutorial &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/trajectory_optimization_tutorial';</script>
+
+    <link rel="icon" href="../_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="C++ API" href="../api/cpp_api.html" />
+    <link rel="prev" title="Inverse Kinematics Tutorial" href="inverse_kinematics_tutorial.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Trajectory Optimization Tutorial</a></li>
+</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Trajectory Optimization Tutorial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="trajectory-optimization-tutorial">
+<h1>Trajectory Optimization Tutorial<a class="headerlink" href="#trajectory-optimization-tutorial" title="Link to this heading">#</a></h1>
+<section id="prerequisites">
+<span id="trajopt-prereqs"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>The following tutorials are recommended prior to starting this tutorial:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="robot_description_tutorial.html"><span class="doc">Robot Description Tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="kinematics_tutorial.html"><span class="doc">Kinematics Tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="world_tutorial.html"><span class="doc">World Tutorial</span></a></p></li>
+</ul>
+</section>
+<section id="objectives">
+<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p>Through this tutorial, you will learn how to:</p>
+<ol class="arabic simple">
+<li><p>Create a problem setup with a single robot and a world with obstacles</p></li>
+<li><p>Create a trajectory optimization config</p></li>
+<li><p>Set a parameter in the trajectory optimization config</p></li>
+<li><p>Create a trajectory optimization solver</p></li>
+<li><p>Solve for a trajectory to a target position</p></li>
+<li><p>Working with <code class="docutils literal notranslate"><span class="pre">Trajectory</span></code> objects</p></li>
+<li><p>Update the world</p></li>
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">RobotWorldInspector</span></code> to check for collisions</p></li>
+<li><p>Solve for a trajectory with path constraints</p></li>
+<li><p>Solve for a trajectory with a goalset</p></li>
+</ol>
+</section>
+<section id="what-is-trajectory-optimization">
+<h2>What is Trajectory Optimization?<a class="headerlink" href="#what-is-trajectory-optimization" title="Link to this heading">#</a></h2>
+<p>Trajectory optimization is a broad discipline whose history spans several decades and many
+industries.
+In the context of the cuMotion library, trajectory optimization involves finding feasible
+trajectories that go from an initial c-space position to a desired target (more details on what
+“target” means below).
+The goal is to find the fastest collision-free path. Due to limitations of actuators and the limited
+control bandwidth of the motion controllers used to execute the trajectories, the cuMotion algorithm
+balances minimum time with “smoothness,” which the current implementation achieves by minimizing
+c-space acceleration and jerk.</p>
+<p>cuMotion defines a feasible path to be one that satisfies all the constraints:</p>
+<ul class="simple">
+<li><p>Constraints on the terminal c-space position (either through task-space or c-space constraints)</p></li>
+<li><p>Constraints on the pose of the tool frame throughout the entire trajectory</p></li>
+<li><p>C-space position limits</p></li>
+<li><p>C-space velocity limits</p></li>
+<li><p>C-space acceleration limits</p></li>
+<li><p>C-space jerk limits</p></li>
+<li><p>Self-collision</p></li>
+<li><p>World-collision</p></li>
+</ul>
+<p>The trajectory optimization algorithm implemented by the cuMotion library makes the following
+assumptions:</p>
+<ul class="simple">
+<li><p>The initial and final c-space velocities, accelerations, and jerks are all zero.</p></li>
+<li><p>Purely kinematic trajectories are sufficient for most applications. (The current algorithm does not
+allow for any type of torque/force/energy minimization.)</p></li>
+<li><p>Only the best feasible trajectory needs to be provided to the user.</p></li>
+<li><p>All obstacles are stationary for the duration of the trajectory.</p></li>
+</ul>
+<p>In general, exactly solving trajectory optimization problems requires solving an
+infinite-dimensional nonlinear optimization problem. (The reader can correctly assume that this means
+they are very hard to solve.) There are many approaches to simplifying these problems to make them
+computationally feasible, but all will—at best—return merely approximations to the globally
+optimal solution. More typically, the true global optimal is completely unknown or intractable to
+find, and the algorithm will produce a “good enough” feasible solution.</p>
+<p>The current algorithm implemented by the cuMotion library starts with a particle-based optimization
+(PBO) method that helps identify coarse high-quality solutions. These coarse solutions are then
+optimized using a limited-memory quasi-Newton method (L-BFGS) that refines these coarse solutions
+to feasible trajectories that are time-optimized and smooth.</p>
+</section>
+<section id="setting-up-the-robot-and-environment">
+<h2>Setting up the Robot and Environment<a class="headerlink" href="#setting-up-the-robot-and-environment" title="Link to this heading">#</a></h2>
+<p>Here we load a UR10 robot, create a world, an empty world view, and add a cuboid obstacle near the
+initial position of the tool frame. See the tutorials listed in the <a class="reference internal" href="#trajopt-prereqs"><span class="std std-ref">Prerequisites</span></a> for more details
+on these steps.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load the UR10 robot description.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescription</span><span class="o">&gt;</span><span class="w"> </span><span class="n">robot_description</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">LoadRobotFromFile</span><span class="p">(</span><span class="n">xrdf_file</span><span class="p">,</span><span class="w"> </span><span class="n">urdf_file</span><span class="p">);</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">robot_description</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="c1">// Get the tool frame name and default c-space position.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">toolFrameNames</span><span class="p">().</span><span class="n">front</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">initial_cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">defaultCSpaceConfiguration</span><span class="p">();</span>
+
+<span class="c1">// Create a world and add a world view.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">&gt;</span><span class="w"> </span><span class="n">world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorld</span><span class="p">();</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">WorldViewHandle</span><span class="w"> </span><span class="n">world_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addWorldView</span><span class="p">();</span>
+
+<span class="c1">// Create a cuboid obstacle near the end effector.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kinematics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">kinematics</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">initial_tool_position</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">tool_frame_name</span><span class="p">));</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cuboid</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateObstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">CUBOID</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">obstacle_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">,</span><span class="w"> </span><span class="mf">0.1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+<span class="n">cuboid</span><span class="o">-&gt;</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Attribute</span><span class="o">::</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span><span class="w"> </span><span class="n">obstacle_size</span><span class="p">);</span>
+
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">obstacle_pose</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="o">::</span><span class="n">FromTranslation</span><span class="p">(</span><span class="n">initial_tool_position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">));</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">::</span><span class="n">ObstacleHandle</span><span class="w"> </span><span class="n">obstacle_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addObstacle</span><span class="p">(</span><span class="o">*</span><span class="n">cuboid</span><span class="p">,</span><span class="w"> </span><span class="n">obstacle_pose</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the UR10 robot description.</span>
+<span class="n">robot_description</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">RobotDescription</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">load_robot_from_file</span><span class="p">(</span>
+    <span class="n">xrdf_path</span><span class="p">,</span> <span class="n">urdf_path</span><span class="p">)</span>
+
+<span class="c1"># Get the tool frame name and default c-space position.</span>
+<span class="n">tool_frame_name</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">tool_frame_names</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">initial_cspace_position</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">default_cspace_configuration</span><span class="p">()</span>
+
+<span class="c1"># Create a world and add a world view.</span>
+<span class="n">world</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">World</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world</span><span class="p">()</span>
+<span class="n">world_view</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">WorldView</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+
+<span class="c1"># Create a cuboid obstacle near the end effector.</span>
+<span class="n">kinematics</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">kinematics</span><span class="p">()</span>
+<span class="n">initial_tool_position</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+
+<span class="n">cuboid</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_obstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">CUBOID</span><span class="p">)</span>
+<span class="n">obstacle_size</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="n">cuboid</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Attribute</span><span class="o">.</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span> <span class="n">obstacle_size</span><span class="p">)</span>
+
+<span class="n">obstacle_pose</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="o">.</span><span class="n">from_translation</span><span class="p">(</span>
+    <span class="n">initial_tool_position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]))</span>
+<span class="n">obstacle_handle</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">World</span><span class="o">.</span><span class="n">ObstacleHandle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_obstacle</span><span class="p">(</span><span class="n">cuboid</span><span class="p">,</span> <span class="n">obstacle_pose</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that we’re going to use the default c-space position specified by the robot description as the
+initial c-space position of the robot.</p>
+</section>
+<section id="creating-a-trajectory-optimization-config">
+<h2>Creating a Trajectory Optimization Config<a class="headerlink" href="#creating-a-trajectory-optimization-config" title="Link to this heading">#</a></h2>
+<p>After creating the robot and world, we can create a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig</span></code></a> object, which is used to specify the parameters
+for the trajectory optimization solver. The config object needs the robot description, the tool
+frame name, and a world view. We can create a new config using either of the following methods:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion39CreateTrajectoryOptimizerConfigFromFileERKNSt10filesystem4pathERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle" title="cumotion::CreateTrajectoryOptimizerConfigFromFile"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateTrajectoryOptimizerConfigFromFile()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion38CreateDefaultTrajectoryOptimizerConfigERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle" title="cumotion::CreateDefaultTrajectoryOptimizerConfig"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateDefaultTrajectoryOptimizerConfig()</span></code></a></p></li>
+</ul>
+<p>The first method is useful for when users have a set of tuned solver parameters they want to set
+each time a trajectory optimization config object is created.</p>
+<p>The second method is recommended for new users, and is what we use to create the config object
+below:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizerConfig</span><span class="o">&gt;</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateDefaultTrajectoryOptimizerConfig</span><span class="p">(</span>
+<span class="w">        </span><span class="o">*</span><span class="n">robot_description</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="p">,</span><span class="w"> </span><span class="n">world_view</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizerConfig</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">cumotion</span><span class="o">.</span><span class="n">create_default_trajectory_optimizer_config</span><span class="p">(</span>
+        <span class="n">robot_description</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">world_view</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setting-a-parameter">
+<h2>Setting a Parameter<a class="headerlink" href="#setting-a-parameter" title="Link to this heading">#</a></h2>
+<p>The trajectory optimization solver has many parameters that affect the performance of the solver and
+the quality of the solution returned. While most of these have been tuned so that they should be
+applicable for a broad variety of robots and environments, users may find improvements in
+computational efficiency or solution quality by tuning these parameters for their application.</p>
+<p>The documentation for <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::TrajectoryOptimizerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig::setParam()</span></code></a> contains the
+list of all the parameters, their default values, and an explanation of how they effect the
+solver. Here we increase the number of L-BFGS iterations used at the end of the algorithm, which
+increases computational cost but often produces higher quality smooth trajectories:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="o">-&gt;</span><span class="n">setParam</span><span class="p">(</span><span class="s">&quot;trajopt/lbfgs/retiming_iterations&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">500</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cerr</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Failed to set parameter &#39;trajopt/lbfgs/retiming_iterations&#39;</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">success</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="s2">&quot;trajopt/lbfgs/retiming_iterations&quot;</span><span class="p">,</span> <span class="mi">500</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">success</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91mFailed to set parameter &#39;trajopt/lbfgs/retiming_iterations&#39;</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As demonstrated above, it is recommended to capture the boolean output of <code class="docutils literal notranslate"><span class="pre">setParam()</span></code>
+and check that the parameter was successfully set. Non-fatal error messages will be logged
+if the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8LogLevel5ERRORE" title="cumotion::LogLevel::ERROR"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">cumotion::LogLevel::ERROR</span></code></a> log level is enabled.</p>
+<p>Currently, cuMotion does not provide an interface for querying the current value of a
+trajectory optimization solver parameter. This is likely to change in future versions.</p>
+</section>
+<section id="creating-the-solver">
+<h2>Creating the Solver<a class="headerlink" href="#creating-the-solver" title="Link to this heading">#</a></h2>
+<p>Once we have set the solver parameters using the configuration object, we can instantiate the
+solver using <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion25CreateTrajectoryOptimizerERK25TrajectoryOptimizerConfig" title="cumotion::CreateTrajectoryOptimizer"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateTrajectoryOptimizer()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateTrajectoryOptimizer</span><span class="p">(</span><span class="o">*</span><span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">optimizer</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_trajectory_optimizer</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solve-to-a-target-c-space-position">
+<h2>Solve to a Target C-Space Position<a class="headerlink" href="#solve-to-a-target-c-space-position" title="Link to this heading">#</a></h2>
+<p>Solving a trajectory optimization problem involves three steps:</p>
+<ol class="arabic simple">
+<li><p>Defining the task-space target, task-space goalset, or c-space target</p></li>
+<li><p>Defining the task-space path constraints</p></li>
+<li><dl class="simple">
+<dt>Calling <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer21planToTaskSpaceTargetERKN5Eigen8VectorXdERK15TaskSpaceTarget" title="cumotion::TrajectoryOptimizer::planToTaskSpaceTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::planToTaskSpaceTarget()</span></code></a>,</dt><dd><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer22planToTaskSpaceGoalsetERKN5Eigen8VectorXdERK22TaskSpaceTargetGoalset" title="cumotion::TrajectoryOptimizer::planToTaskSpaceGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::planToTaskSpaceGoalset()</span></code></a>, or
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer18planToCSpaceTargetERKN5Eigen8VectorXdERK12CSpaceTarget" title="cumotion::TrajectoryOptimizer::planToCSpaceTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::planToCSpaceTarget()</span></code></a>.</p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Here we start with one of the simplest options: planning to c-space target, with no constraints
+on the path taken to reach the target:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">target_cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_cspace_position</span><span class="p">;</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mf">0.8</span><span class="p">;</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mf">0.6</span><span class="p">;</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.6</span><span class="p">;</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">CSpaceTarget</span><span class="w"> </span><span class="nf">cspace_target</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">target_cspace_position</span> <span class="o">=</span> <span class="n">initial_cspace_position</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.8</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.6</span>
+<span class="n">target_cspace_position</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.6</span>
+<span class="n">cspace_target</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">CSpaceTarget</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>There are many different types of terminal and path constraints we can choose from. We will cover
+a few more during this tutorial, and provide an overview of all the available constraints at the
+end.</p>
+<p>After defining a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTargetE" title="cumotion::TrajectoryOptimizer::CSpaceTarget"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::CSpaceTarget</span></code></a>, we call
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer18planToCSpaceTargetERKN5Eigen8VectorXdERK12CSpaceTarget" title="cumotion::TrajectoryOptimizer::planToCSpaceTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::planToCSpaceTarget()</span></code></a>, which returns (a pointer to) a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7ResultsE" title="cumotion::TrajectoryOptimizer::Results"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results</span></code></a> object:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToCSpaceTarget</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">cspace_target</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">Results</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_cspace_target</span><span class="p">(</span>
+    <span class="n">initial_cspace_position</span><span class="p">,</span> <span class="n">cspace_target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="querying-the-optimized-trajectory">
+<h2>Querying the Optimized Trajectory<a class="headerlink" href="#querying-the-optimized-trajectory" title="Link to this heading">#</a></h2>
+<p>Once we have (a pointer to) a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7ResultsE" title="cumotion::TrajectoryOptimizer::Results"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results</span></code></a> we first need
+to check the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6StatusE" title="cumotion::TrajectoryOptimizer::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results::Status</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">print_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">Results</span><span class="w"> </span><span class="o">&amp;</span><span class="n">results</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">status</span><span class="p">();</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Trajectory optimization succeeded!&quot;</span>
+<span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Trajectory optimization failed!&quot;</span>
+<span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Trajectory time: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">results</span><span class="p">.</span><span class="n">trajectory</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">domain</span><span class="p">().</span><span class="n">span</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Initial solve (with no obstacles in the world view):</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">print_status</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">Results</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Print the status and trajectory time.&quot;&quot;&quot;</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92m  Trajectory optimization succeeded!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m  Trajectory optimization failed!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+
+    <span class="n">trajectory</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Trajectory time: </span><span class="si">{</span><span class="n">domain</span><span class="o">.</span><span class="n">upper</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">domain</span><span class="o">.</span><span class="n">lower</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Initial solve (with no obstacles in the world view):&quot;</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Initial solve (with no obstacles in the world view):
+  Trajectory optimization succeeded!
+  Trajectory time: 0.645759 seconds
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>As shown in the C++ example above, <code class="docutils literal notranslate"><span class="pre">cumotion/text_style.h</span></code> includes some useful constants
+for manipulating the style of text sent to the terminal.</p>
+</div>
+<p>Here we create a helper function that checks the status and prints a helpful message based on the
+result, which we’ll reuse later.</p>
+<p>As long as the status is
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6Status7SUCCESSE" title="cumotion::TrajectoryOptimizer::Results::Status::SUCCESS"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">SUCCESS</span></code></a>, we can get
+the optimized trajectory using <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer7Results10trajectoryEv" title="cumotion::TrajectoryOptimizer::Results::trajectory"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results::trajectory()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Trajectory</span><span class="o">&gt;</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">trajectory</span><span class="p">();</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Trajectory</span><span class="o">::</span><span class="n">Domain</span><span class="w"> </span><span class="n">domain</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">domain</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">initial_trajectory</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Trajectory</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+<span class="n">domain</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This function returns a new copy of the trajectory each time it is called, so it’s better
+to save the trajectory to a local variable to avoid unnecessary copies. Note we actually create a
+temporary copy of the trajectory in <cite>print_status</cite>.</p>
+<p>As shown above, we can use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Trajectory6domainEv" title="cumotion::Trajectory::domain"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Trajectory::domain()</span></code></a> to get a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion10Trajectory6DomainE" title="cumotion::Trajectory::Domain"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::Trajectory::Domain</span></code></a> object, which provides information about the time domain
+over which the trajectory is defined.</p>
+<p><strong>Querying the trajectory at a given time:</strong></p>
+<p>With a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion10TrajectoryE" title="cumotion::Trajectory"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::Trajectory</span></code></a> object, we can evaluate the position, velocity,
+acceleration, and jerk anywhere in the time domain of the trajectory:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-16">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">double</span><span class="w"> </span><span class="n">mid_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">domain</span><span class="p">.</span><span class="n">lower</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">domain</span><span class="p">.</span><span class="n">upper</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">num_coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">numCSpaceCoords</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">mid_position</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">mid_velocity</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">mid_acceleration</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">mid_jerk</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">eval</span><span class="p">(</span><span class="n">mid_time</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mid_position</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mid_velocity</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mid_acceleration</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">mid_jerk</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">  Mid-trajectory position: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">mid_position</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-17">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mid_time</span> <span class="o">=</span> <span class="p">(</span><span class="n">domain</span><span class="o">.</span><span class="n">lower</span> <span class="o">+</span> <span class="n">domain</span><span class="o">.</span><span class="n">upper</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+<span class="n">num_coords</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">num_cspace_coords</span><span class="p">()</span>
+<span class="n">mid_position</span><span class="p">,</span> <span class="n">mid_velocity</span><span class="p">,</span> <span class="n">mid_acceleration</span><span class="p">,</span> <span class="n">mid_jerk</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">eval_all</span><span class="p">(</span><span class="n">mid_time</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">  Mid-trajectory position: </span><span class="si">{</span><span class="n">mid_position</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mid</span><span class="o">-</span><span class="n">trajectory</span> <span class="n">position</span><span class="p">:</span> <span class="p">[</span>  <span class="o">-</span><span class="mf">1.96899</span>   <span class="o">-</span><span class="mf">1.88544</span>   <span class="o">-</span><span class="mf">1.26998</span>   <span class="o">-</span><span class="mf">1.55027</span>    <span class="mf">1.56002</span> <span class="mf">0.00981941</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We can also ask for the minimum and maximum c-space positions achieved (asynchronously) by each
+coordinate, as well as the maximum c-space velocities, accelerations, and jerks:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">min_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">minPosition</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">max_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">maxPosition</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">max_vel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">maxVelocityMagnitude</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">max_accel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">maxAccelerationMagnitude</span><span class="p">();</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">max_jerk</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">initial_trajectory</span><span class="o">-&gt;</span><span class="n">maxJerkMagnitude</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Max velocity magnitude: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">max_vel</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Max acceleration magnitude: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">max_accel</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Max jerk magnitude: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">max_jerk</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">min_pos</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">min_position</span><span class="p">()</span>
+<span class="n">max_pos</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">max_position</span><span class="p">()</span>
+<span class="n">max_vel</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">max_velocity_magnitude</span><span class="p">()</span>
+<span class="n">max_accel</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">max_acceleration_magnitude</span><span class="p">()</span>
+<span class="n">max_jerk</span> <span class="o">=</span> <span class="n">initial_trajectory</span><span class="o">.</span><span class="n">max_jerk_magnitude</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max velocity magnitude: </span><span class="si">{</span><span class="n">max_vel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max acceleration magnitude: </span><span class="si">{</span><span class="n">max_accel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max jerk magnitude: </span><span class="si">{</span><span class="n">max_jerk</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Max</span> <span class="n">velocity</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span>  <span class="mf">2.15784</span>   <span class="mf">1.57412</span>   <span class="mf">1.55129</span>  <span class="mf">0.108781</span> <span class="mf">0.0561832</span> <span class="mf">0.0549447</span><span class="p">]</span>
+<span class="n">Max</span> <span class="n">acceleration</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span> <span class="mf">10.6658</span>  <span class="mf">10.0294</span>  <span class="mf">9.09374</span>  <span class="mf">1.35142</span>  <span class="mf">0.67106</span> <span class="mf">0.631026</span><span class="p">]</span>
+<span class="n">Max</span> <span class="n">jerk</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span><span class="mf">287.342</span> <span class="mf">266.967</span> <span class="mf">244.902</span> <span class="mf">33.7659</span> <span class="mf">17.2246</span> <span class="mf">16.1836</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="using-the-robot-world-inspector">
+<h2>Using the Robot World Inspector<a class="headerlink" href="#using-the-robot-world-inspector" title="Link to this heading">#</a></h2>
+<p>The trajectory we got above looks great, but there’s one big problem: it’s passing straight through
+the obstacle! To see this, we’re going to create a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19RobotWorldInspectorE" title="cumotion::RobotWorldInspector"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::RobotWorldInspector</span></code></a>, and
+use it to check for collision along the trajectory:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">check_for_collisions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotWorldInspector</span><span class="w"> </span><span class="o">&amp;</span><span class="n">inspector</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Trajectory</span><span class="w"> </span><span class="o">&amp;</span><span class="n">trajectory</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="c1">// Check for collisions along the trajectory.</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">tf</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">domain</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">dt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span><span class="p">;</span><span class="w">  </span><span class="c1">// Sample every 10 ms</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_collision_time</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">last_collision_time</span><span class="p">;</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t0</span><span class="p">;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="n">tf</span><span class="p">;</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">dt</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">cspace_pos</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">eval</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">inspector</span><span class="p">.</span><span class="n">inCollisionWithObstacle</span><span class="p">(</span><span class="n">cspace_pos</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">first_collision_time</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">first_collision_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">      </span><span class="n">last_collision_time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">first_collision_time</span><span class="p">.</span><span class="n">has_value</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Trajectory is in collision!&quot;</span>
+<span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;    First collision at t = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">first_collision_time</span><span class="p">.</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;    Last collision at t = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">last_collision_time</span><span class="p">.</span><span class="n">value</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; seconds</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Trajectory is collision-free!&quot;</span>
+<span class="w">              </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// Create a robot world inspector to check for collisions.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">new_world_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addWorldView</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotWorldInspector</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inspector</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateRobotWorldInspector</span><span class="p">(</span><span class="o">*</span><span class="n">robot_description</span><span class="p">,</span><span class="w"> </span><span class="n">new_world_view</span><span class="p">);</span>
+
+<span class="c1">// Check for collisions.</span>
+<span class="n">check_for_collisions</span><span class="p">(</span><span class="o">*</span><span class="n">inspector</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">initial_trajectory</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_for_collisions</span><span class="p">(</span><span class="n">inspector</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">RobotWorldInspector</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check for collisions along the trajectory.&quot;&quot;&quot;</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span>
+    <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">domain</span><span class="o">.</span><span class="n">upper</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># Sample every 10 ms</span>
+    <span class="n">first_collision_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">last_collision_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">t</span> <span class="o">=</span> <span class="n">t0</span>
+    <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;=</span> <span class="n">tf</span><span class="p">:</span>
+        <span class="n">cspace_pos</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inspector</span><span class="o">.</span><span class="n">in_collision_with_obstacle</span><span class="p">(</span><span class="n">cspace_pos</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">first_collision_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">first_collision_time</span> <span class="o">=</span> <span class="n">t</span>
+            <span class="n">last_collision_time</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="n">t</span> <span class="o">+=</span> <span class="n">dt</span>
+
+    <span class="k">if</span> <span class="n">first_collision_time</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[91m  Trajectory is in collision!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   First collision at t = </span><span class="si">{</span><span class="n">first_collision_time</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;   Last collision at t = </span><span class="si">{</span><span class="n">last_collision_time</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[92m  Trajectory is collision-free!</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Create a robot world inspector to check for collisions.</span>
+<span class="n">new_world_view</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+<span class="n">inspector</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">RobotWorldInspector</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_robot_world_inspector</span><span class="p">(</span>
+    <span class="n">robot_description</span><span class="p">,</span> <span class="n">new_world_view</span><span class="p">)</span>
+
+<span class="c1"># Check for collisions.</span>
+<span class="n">check_for_collisions</span><span class="p">(</span><span class="n">inspector</span><span class="p">,</span> <span class="n">initial_trajectory</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trajectory is in collision!
+  First collision at t = 0.19 seconds
+  Last collision at t = 0.48 seconds
+</pre></div>
+</div>
+</section>
+<section id="updating-the-world-view">
+<h2>Updating the World View<a class="headerlink" href="#updating-the-world-view" title="Link to this heading">#</a></h2>
+<p>Since we added the obstacle to the world after creating the world view, the world view
+passed to the solver was completely unaware there was an obstacle in the environment. Let’s update
+the world view and resolve:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+<span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToCSpaceTarget</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">cspace_target</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">After updating world view:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_cspace_target</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span> <span class="n">cspace_target</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">After updating world view:&quot;</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>After updating world view:
+  Trajectory optimization succeeded!
+  Trajectory time: 0.745283 seconds
+</pre></div>
+</div>
+<p>Now lets sanity-check that our new trajectory isn’t in collision with the environment:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-24">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">trajectory_with_collision_enabled</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">trajectory</span><span class="p">();</span>
+<span class="n">check_for_collisions</span><span class="p">(</span><span class="o">*</span><span class="n">inspector</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">trajectory_with_collision_enabled</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-25">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trajectory_with_collision_enabled</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+<span class="n">check_for_collisions</span><span class="p">(</span><span class="n">inspector</span><span class="p">,</span> <span class="n">trajectory_with_collision_enabled</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Trajectory is collision-free!
+</pre></div>
+</div>
+</section>
+<section id="planning-to-a-task-space-target">
+<h2>Planning to a Task-Space Target<a class="headerlink" href="#planning-to-a-task-space-target" title="Link to this heading">#</a></h2>
+<p>Now that we have a trajectory to our new c-space position, let’s find a new trajectory to a point
+20 cm below:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-26">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Plan to a task-space target 20 cm below the target c-space position.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">target_tool_position</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">tool_frame_name</span><span class="p">));</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">new_target_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target_tool_position</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2</span><span class="p">);</span>
+
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TranslationConstraint</span><span class="w"> </span><span class="n">translation_constraint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TranslationConstraint</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">new_target_position</span><span class="p">);</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TaskSpaceTarget</span><span class="w"> </span><span class="nf">task_space_target</span><span class="p">(</span><span class="n">translation_constraint</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Task-space goal:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToTaskSpaceTarget</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">task_space_target</span><span class="p">);</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-27">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Plan to a task-space target 20 cm below the target c-space position.</span>
+<span class="n">target_tool_position</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="n">new_target_position</span> <span class="o">=</span> <span class="n">target_tool_position</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">])</span>
+
+<span class="n">translation_constraint</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TranslationConstraint</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">new_target_position</span><span class="p">)</span>
+<span class="n">task_space_target</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TaskSpaceTarget</span><span class="p">(</span><span class="n">translation_constraint</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Task-space goal:&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_task_space_target</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span> <span class="n">task_space_target</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goal:
+  Trajectory optimization succeeded!
+  Trajectory time: 0.65272 seconds
+</pre></div>
+</div>
+<p>For these types of short moves, we typically want the tool to translation along a linear path,
+without any change in orientation. Let’s calculate the orientation change to see if that’s what
+we’re getting:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-28">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">orientation_change</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="n">kinematics</span><span class="p">,</span>
+<span class="w">                           </span><span class="o">&amp;</span><span class="n">tool_frame_name</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Trajectory</span><span class="w"> </span><span class="o">&amp;</span><span class="n">trajectory</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">t0</span><span class="p">,</span><span class="w"> </span><span class="n">tf</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">domain</span><span class="p">();</span>
+<span class="w">  </span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">initial_cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">eval</span><span class="p">(</span><span class="n">t0</span><span class="p">);</span>
+<span class="w">  </span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">final_cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">trajectory</span><span class="p">.</span><span class="n">eval</span><span class="p">(</span><span class="n">tf</span><span class="p">);</span>
+
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">tool_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">tool_frame_name</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="w"> </span><span class="n">initial_orientation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientation</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="w">  </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="w"> </span><span class="n">final_orientation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">      </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientation</span><span class="p">(</span><span class="n">final_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="o">::</span><span class="n">Distance</span><span class="p">(</span><span class="n">initial_orientation</span><span class="p">,</span><span class="w"> </span><span class="n">final_orientation</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// Calculate the orientation change.</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">task_space_trajectory</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">trajectory</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Change in tool orientation: &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">orientation_change</span><span class="p">(</span><span class="o">*</span><span class="n">task_space_trajectory</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">180.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">M_PI</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; deg</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-29">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">orientation_change</span><span class="p">(</span><span class="n">trajectory</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the change in tool orientation along the trajectory.&quot;&quot;&quot;</span>
+    <span class="n">domain</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">domain</span><span class="p">()</span>
+    <span class="n">t0</span><span class="p">,</span> <span class="n">tf</span> <span class="o">=</span> <span class="n">domain</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">domain</span><span class="o">.</span><span class="n">upper</span>
+    <span class="n">initial_cspace_position</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">t0</span><span class="p">)</span>
+    <span class="n">final_cspace_position</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">eval</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+
+    <span class="n">initial_orientation</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation</span><span class="p">(</span><span class="n">initial_cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+    <span class="n">final_orientation</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation</span><span class="p">(</span><span class="n">final_cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Rotation3</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">initial_orientation</span><span class="p">,</span> <span class="n">final_orientation</span><span class="p">)</span>
+
+
+<span class="n">task_space_trajectory</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Change in tool orientation: </span><span class="si">{}</span><span class="s2"> deg&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">orientation_change</span><span class="p">(</span><span class="n">task_space_trajectory</span><span class="p">)</span> <span class="o">*</span> <span class="mf">180.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Change</span> <span class="ow">in</span> <span class="n">tool</span> <span class="n">orientation</span><span class="p">:</span> <span class="mf">71.8535</span> <span class="n">deg</span>
+</pre></div>
+</div>
+<p>Uh-oh! We’re seeing some significant orientation change. Since we’re allowing the orientation to be
+anything, the solver is finding a trajectory that moves to a different final orientation. In the
+next section, we’ll see how to explicitly ask the solver to maintain the same orientation throughout
+the entire trajectory.</p>
+</section>
+<section id="adding-path-constraints">
+<h2>Adding Path Constraints<a class="headerlink" href="#adding-path-constraints" title="Link to this heading">#</a></h2>
+<p>In the above example, we didn’t constraint the final orientation, so even though we
+wanted a simple linear move (in task space), the tool rotated. It also didn’t follow a straight line
+down to the new position. To keep the same orientation throughout the entire trajectory, we can use the
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint8ConstantEPKdPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::Constant"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Constant</span></code></a> orientation
+constraint. To have the tool move in a straight line between the initial and final positions, we
+can use a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21TranslationConstraint20LinearPathConstraintERKN5Eigen8Vector3dEPKdPKd" title="cumotion::TrajectoryOptimizer::TranslationConstraint::LinearPathConstraint"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">LinearPathConstraint</span></code></a>.</p>
+<p>After adding these two path constraints and solving, we get a trajectory that’s probably more what
+we expect from a simple translation in task-space:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-30" name="sd-tab-set-15" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-30">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Add path constraints for constant orientation and linear translation.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="w"> </span><span class="n">orientation_constraint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="o">::</span><span class="n">Constant</span><span class="p">();</span>
+<span class="n">translation_constraint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TranslationConstraint</span><span class="o">::</span><span class="n">LinearPathConstraint</span><span class="p">(</span>
+<span class="w">        </span><span class="n">new_target_position</span><span class="p">);</span>
+<span class="n">task_space_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TaskSpaceTarget</span><span class="p">(</span><span class="n">translation_constraint</span><span class="p">,</span>
+<span class="w">                                                                   </span><span class="n">orientation_constraint</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Task-space goal with path constraints:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToTaskSpaceTarget</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">task_space_target</span><span class="p">);</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">results</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">task_space_trajectory_with_path_constraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">trajectory</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Change in tool orientation: &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">orientation_change</span><span class="p">(</span><span class="o">*</span><span class="n">task_space_trajectory_with_path_constraints</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">180.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">M_PI</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; deg</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-31" name="sd-tab-set-15" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-31">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add path constraints for constant orientation and linear translation.</span>
+<span class="n">orientation_constraint</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">OrientationConstraint</span><span class="o">.</span><span class="n">constant</span><span class="p">()</span>
+<span class="n">translation_constraint</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TranslationConstraint</span><span class="o">.</span><span class="n">linear_path_constraint</span><span class="p">(</span>
+        <span class="n">new_target_position</span><span class="p">))</span>
+<span class="n">task_space_target</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TaskSpaceTarget</span><span class="p">(</span>
+    <span class="n">translation_constraint</span><span class="p">,</span> <span class="n">orientation_constraint</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Task-space goal with path constraints:&quot;</span><span class="p">)</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_task_space_target</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span> <span class="n">task_space_target</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="n">task_space_trajectory_with_path_constraints</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">trajectory</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Change in tool orientation: &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">orientation_change</span><span class="p">(</span><span class="n">task_space_trajectory_with_path_constraints</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">180.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="si">}</span><span class="s2"> deg&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goal with path constraints:
+  Trajectory optimization succeeded!
+  Trajectory time: 0.396552 seconds
+  Change in tool orientation: 0.0485696 deg
+</pre></div>
+</div>
+<p>So not only did we get almost zero orientation change, it also resulted in a shorter trajectory!</p>
+</section>
+<section id="planning-to-a-goalset">
+<h2>Planning to a Goalset<a class="headerlink" href="#planning-to-a-goalset" title="Link to this heading">#</a></h2>
+<p>Sometimes we don’t have a single desired task-space goal, but rather several goals that are all equally valid.
+For example, this arises when there are:</p>
+<ul class="simple">
+<li><p>Multiple valid grasps for the same object</p></li>
+<li><p>Multiple objects to be grasped, without preference for which is grasped first</p></li>
+</ul>
+<p>Here we demonstrate the following:</p>
+<ol class="arabic simple">
+<li><p>How to define a goalset</p></li>
+<li><p>How to solve for a trajectory to a goalset</p></li>
+<li><p>How to identify which goal / target in the goalset the trajectory “picked”</p></li>
+</ol>
+<p>It is important to note that cuMotion makes the following assumptions about goalsets:</p>
+<ul class="simple">
+<li><p>All goals / targets have identical constraint types. For example, they all must be full pose targets, or they all
+must specify only position, and leave orientation free.</p></li>
+<li><p>All goals / targets are equally valid. There can be no preference for which is selected (this can,
+of course, by done externally by the user, either by making individual calls for each target, or by filtering the
+returned solutions)</p></li>
+<li><p>Goalsets can only be in task-space. C-space goalsets are unsupported.</p></li>
+</ul>
+<section id="defining-a-goalset">
+<h3>Defining a Goalset<a class="headerlink" href="#defining-a-goalset" title="Link to this heading">#</a></h3>
+<p>Defining a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer22TaskSpaceTargetGoalsetE" title="cumotion::TrajectoryOptimizer::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">goalset</span> <span class="pre">task</span></code></a> is straightforward.
+Here we demonstrate specifying two goals, one on either side of the obstacle, this time allowing the orientation at the
+target to be unconstrained:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-32" name="sd-tab-set-16" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-32">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">goal1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target_tool_position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">-0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">goal2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target_tool_position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">translation_targets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">goal1</span><span class="p">,</span><span class="w"> </span><span class="n">goal2</span><span class="p">};</span>
+
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="w"> </span><span class="n">translation_goalset</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">translation_targets</span><span class="p">);</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">TrajectoryOptimizer</span><span class="o">::</span><span class="n">TaskSpaceTargetGoalset</span><span class="w"> </span><span class="nf">goalset</span><span class="p">(</span><span class="n">translation_goalset</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-33" name="sd-tab-set-16" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-33">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">goal1</span> <span class="o">=</span> <span class="n">target_tool_position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">goal2</span> <span class="o">=</span> <span class="n">target_tool_position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">translation_targets</span> <span class="o">=</span> <span class="p">[</span><span class="n">goal1</span><span class="p">,</span> <span class="n">goal2</span><span class="p">]</span>
+
+<span class="n">translation_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TranslationConstraintGoalset</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">translation_targets</span><span class="p">)</span>
+<span class="n">goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">TrajectoryOptimizer</span><span class="o">.</span><span class="n">TaskSpaceTargetGoalset</span><span class="p">(</span><span class="n">translation_goalset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we print the status, and use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer7Results11targetIndexEv" title="cumotion::TrajectoryOptimizer::Results::targetIndex"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results::targetIndex()</span></code></a>
+to identify which of the two goals the solver picked. Here we see the solver planned a trajectory
+to the 2nd goal (index 1 in 0-based indexing).</p>
+</section>
+<section id="solving-a-goalset">
+<h3>Solving a Goalset<a class="headerlink" href="#solving-a-goalset" title="Link to this heading">#</a></h3>
+<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer22TaskSpaceTargetGoalsetE" title="cumotion::TrajectoryOptimizer::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::TaskSpaceTargetGoalset</span></code></a> object, we can pass it to
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer22planToTaskSpaceGoalsetERKN5Eigen8VectorXdERK22TaskSpaceTargetGoalset" title="cumotion::TrajectoryOptimizer::planToTaskSpaceGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::planToTaskSpaceGoalset()</span></code></a> and save the results to a new variable:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-34" name="sd-tab-set-17" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-34">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Task-space goalset:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">goalset_results</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToTaskSpaceGoalset</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">goalset</span><span class="p">);</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">goalset_results</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Goal index: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">targetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-35" name="sd-tab-set-17" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-35">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Task-space goalset:&quot;</span><span class="p">)</span>
+<span class="n">goalset_results</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_task_space_goalset</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span> <span class="n">goalset</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">goalset_results</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Goal index: </span><span class="si">{</span><span class="n">goalset_results</span><span class="o">.</span><span class="n">target_index</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goalset:
+  Trajectory optimization succeeded!
+  Trajectory time: 1.01994 seconds
+</pre></div>
+</div>
+<p>We can query the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6StatusE" title="cumotion::TrajectoryOptimizer::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">status</span></code></a> and solutions the
+same way we did before. However, we often want to know which goal / target the trajectory ended up
+using. <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer7Results11targetIndexEv" title="cumotion::TrajectoryOptimizer::Results::targetIndex"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizer::Results::targetIndex()</span></code></a> returns the goal / target
+index used by the final trajectory:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-36" name="sd-tab-set-18" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-36">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Goal index: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">targetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-37" name="sd-tab-set-18" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-37">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Goal index: </span><span class="si">{</span><span class="n">goalset_results</span><span class="o">.</span><span class="n">target_index</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Goal</span> <span class="n">index</span><span class="p">:</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>As expected, it picked the goal that’s on the same side of the obstacle, since that’ll be faster
+than going around the obstacle. Let’s move the obstacle and see if it picks the closer target:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-38" name="sd-tab-set-19" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-38">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Move the obstacle and update the world view.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">new_obstacle_pose</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="o">::</span><span class="n">FromTranslation</span><span class="p">(</span><span class="n">target_tool_position</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.3</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">));</span>
+<span class="n">world</span><span class="o">-&gt;</span><span class="n">setPose</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">,</span><span class="w"> </span><span class="n">new_obstacle_pose</span><span class="p">);</span>
+<span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+
+<span class="c1">// Resolve.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Task-space goalset, after moving obstacle:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">goalset_results_after_move</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">-&gt;</span><span class="n">planToTaskSpaceGoalset</span><span class="p">(</span><span class="n">target_cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">goalset</span><span class="p">);</span>
+<span class="n">print_status</span><span class="p">(</span><span class="o">*</span><span class="n">goalset_results_after_move</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  Goal index: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">goalset_results_after_move</span><span class="o">-&gt;</span><span class="n">targetIndex</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-39" name="sd-tab-set-19" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-39">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move the obstacle and update the world view.</span>
+<span class="n">new_obstacle_pose</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="o">.</span><span class="n">from_translation</span><span class="p">(</span>
+    <span class="n">target_tool_position</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]))</span>
+<span class="n">world</span><span class="o">.</span><span class="n">set_pose</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">,</span> <span class="n">new_obstacle_pose</span><span class="p">)</span>
+<span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Re-solve.</span>
+<span class="n">goalset_results_after_move</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">plan_to_task_space_goalset</span><span class="p">(</span>
+    <span class="n">target_cspace_position</span><span class="p">,</span> <span class="n">goalset</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Task-space goalset, after moving obstacle:&quot;</span><span class="p">)</span>
+<span class="n">print_status</span><span class="p">(</span><span class="n">goalset_results_after_move</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Goal index: </span><span class="si">{</span><span class="n">goalset_results_after_move</span><span class="o">.</span><span class="n">target_index</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goalset, after moving obstacle:
+  Trajectory optimization succeeded!
+  Trajectory time: 0.729065 seconds
+  Goal index: 0
+</pre></div>
+</div>
+<p>We see that, after moving the obstacle, it’s now planning a trajectory to the other target, which is
+closer to the initial tool position.</p>
+</section>
+</section>
+<section id="summary-of-supported-tool-constraints">
+<h2>Summary of Supported Tool Constraints<a class="headerlink" href="#summary-of-supported-tool-constraints" title="Link to this heading">#</a></h2>
+<p>We’ve seen a few different types of tool constraints we can use to control both the final and
+intermediate tool poses. Here we summarize all the constraints currently supported by the solver.</p>
+<section id="tool-space-targets">
+<h3>Tool-Space Targets<a class="headerlink" href="#tool-space-targets" title="Link to this heading">#</a></h3>
+<p>Here are the supported constraints, which are identical for both
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer15TaskSpaceTargetE" title="cumotion::TrajectoryOptimizer::TaskSpaceTarget"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">TaskSpaceTarget</span></code></a> s  and
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer22TaskSpaceTargetGoalsetE" title="cumotion::TrajectoryOptimizer::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">TaskSpaceTargetGoalset</span></code></a> s.</p>
+<p>Translation Constraints:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21TranslationConstraint6TargetERKN5Eigen8Vector3dEPKd" title="cumotion::TrajectoryOptimizer::TranslationConstraint::Target"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Target</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21TranslationConstraint20LinearPathConstraintERKN5Eigen8Vector3dEPKdPKd" title="cumotion::TrajectoryOptimizer::TranslationConstraint::LinearPathConstraint"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">LinearPathConstraint</span></code></a></p></li>
+</ul>
+<p>Orientation Constraints:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint4NoneEv" title="cumotion::TrajectoryOptimizer::OrientationConstraint::None"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">None</span></code></a></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Constant</span></code></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTarget</span></code></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathTarget</span></code></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAxis</span></code></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathAxis</span></code></p></li>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTargetAndPathAxis</span></code></p></li>
+</ul>
+</section>
+<section id="c-space-targets">
+<h3>C-Space Targets<a class="headerlink" href="#c-space-targets" title="Link to this heading">#</a></h3>
+<p>C-space targets support the following path constraints:</p>
+<p>Translation path constraints:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTarget25TranslationPathConstraint4NoneEv" title="cumotion::TrajectoryOptimizer::CSpaceTarget::TranslationPathConstraint::None"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">None</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTarget25TranslationPathConstraint6LinearEPKd" title="cumotion::TrajectoryOptimizer::CSpaceTarget::TranslationPathConstraint::Linear"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Linear</span></code></a></p></li>
+</ul>
+<p>Orientation path constraints:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTarget25OrientationPathConstraint4NoneEv" title="cumotion::TrajectoryOptimizer::CSpaceTarget::OrientationPathConstraint::None"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">None</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTarget25OrientationPathConstraint8ConstantEPKdb" title="cumotion::TrajectoryOptimizer::CSpaceTarget::OrientationPathConstraint::Constant"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Constant</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer12CSpaceTarget25OrientationPathConstraint4AxisERKN5Eigen8Vector3dERKN5Eigen8Vector3dEPKd" title="cumotion::TrajectoryOptimizer::CSpaceTarget::OrientationPathConstraint::Axis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Axis</span></code></a></p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="inverse_kinematics_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Inverse Kinematics Tutorial</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../api/cpp_api.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">C++ API</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-trajectory-optimization">What is Trajectory Optimization?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-robot-and-environment">Setting up the Robot and Environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-trajectory-optimization-config">Creating a Trajectory Optimization Config</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-a-parameter">Setting a Parameter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-solver">Creating the Solver</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solve-to-a-target-c-space-position">Solve to a Target C-Space Position</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-the-optimized-trajectory">Querying the Optimized Trajectory</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-robot-world-inspector">Using the Robot World Inspector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-the-world-view">Updating the World View</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#planning-to-a-task-space-target">Planning to a Task-Space Target</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-path-constraints">Adding Path Constraints</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#planning-to-a-goalset">Planning to a Goalset</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-a-goalset">Defining a Goalset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-goalset">Solving a Goalset</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-of-supported-tool-constraints">Summary of Supported Tool Constraints</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-space-targets">Tool-Space Targets</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-space-targets">C-Space Targets</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

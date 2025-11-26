@@ -1,0 +1,1190 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Inverse Kinematics Tutorial &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"TeX": {"Macros": {"T": ["{\\textsf{T}}", 0], "abs": ["{\\left\\lvert#1\\right\\rvert}", 1], "norm": ["{\\left\\lVert#1\\right\\rVert}", 1], "det": ["{\\left\\lvert#1\\right\\rvert}", 1], "innerprod": ["{\\left\\langle#1,#2\\right\\rangle}", 2], "vector": ["{[#1_1,\\ldots,#1_{#2}]}", 2], "N": "{\\mathbb{N}}", "Z": "{\\mathbb{Z}}", "R": "{\\mathbb{R}}", "C": "{\\mathbb{C}}", "Im": ["{\\mathcal{R}(#1)}", 1], "Ker": ["{\\mathcal{N}(#1)}", 1], "Tr": "{\\text{Tr}}", "pd": ["{\\frac{\\partial{#1}}{\\partial{#2}}}", 2], "E": ["{\\mathbf{E}\\left[#1\\right]}", 1], "V": ["{\\mathbf{V}\\left[#1\\right]}", 1], "U": "{\\mathcal{U}}", "half": "{\\frac{1}{2}}", "ceil": ["{\\left \\lceil{#1}\\right \\rceil}", 1], "floor": ["{\\left \\lfloor{#1}\\right \\rfloor}", 1]}}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/inverse_kinematics_tutorial';</script>
+
+    <link rel="icon" href="../_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Trajectory Optimization Tutorial" href="trajectory_optimization_tutorial.html" />
+    <link rel="prev" title="World Tutorial" href="world_tutorial.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
+</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Inverse Kinematics Tutorial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="inverse-kinematics-tutorial">
+<h1>Inverse Kinematics Tutorial<a class="headerlink" href="#inverse-kinematics-tutorial" title="Link to this heading">#</a></h1>
+<section id="prerequisites">
+<span id="ik-prereqs"></span><h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>The following tutorials are recommended prior to starting this tutorial:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="robot_description_tutorial.html"><span class="doc">Robot Description Tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="kinematics_tutorial.html"><span class="doc">Kinematics Tutorial</span></a></p></li>
+<li><p><a class="reference internal" href="world_tutorial.html"><span class="doc">World Tutorial</span></a></p></li>
+</ul>
+</section>
+<section id="objectives">
+<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p>Through this tutorial, you will learn how to:</p>
+<ol class="arabic simple">
+<li><p>Create a problem setup with a single robot and a world with obstacles</p></li>
+<li><p>Create an IK config</p></li>
+<li><p>Sett a parameter in the IK config</p></li>
+<li><p>Create an IK solver</p></li>
+<li><p>Solve an inverse kinematics problem with a target pose</p></li>
+<li><p>Query the solution</p></li>
+<li><p>Solve an inverse kinematics problem with a goalset</p></li>
+</ol>
+</section>
+<section id="what-is-inverse-kinematics">
+<h2>What is Inverse Kinematics?<a class="headerlink" href="#what-is-inverse-kinematics" title="Link to this heading">#</a></h2>
+<p>Inverse kinematics (IK) is the process of calculating the necessary c-space positions to move a
+given frame to a desired position and orientation. Unlike forward kinematics, which map a single
+c-space position to a single frame pose, inverse kinematics has several possible solutions:</p>
+<ul class="simple">
+<li><p>A discrete set of c-space positions (e.g. for a 6 DOF serial-link manipulator)</p></li>
+<li><p>An infinite number of c-space positions (e.g. for a 7 DOF serial-link manipulator)</p></li>
+<li><p>No valid solutions, due to the target pose being:</p>
+<ul>
+<li><p>Outside the reachable workspace of the robot (too far away)</p></li>
+<li><p>Infeasible given the degrees of freedom of the robot (e.g. a 3D gantry robot has a fixed orientation)</p></li>
+<li><p>Infeasible given the limits on the c-space positions</p></li>
+<li><p>Infeasible due to world collisions (e.g. the target is inside an obstacle)</p></li>
+<li><p>Infeasible due to self collisions (e.g. the target is inside the base link of the robot)</p></li>
+</ul>
+</li>
+</ul>
+<p>At its core, inverse kinematics is a feasibility problem, where the goal is to find a solution
+that satisfies all the constraints:</p>
+<ul class="simple">
+<li><p>The pose of the desired frame meets the given criteria, which may include:</p>
+<ul>
+<li><p>Position is within a set distance from a target position in the world frame</p></li>
+<li><p>Orientation is within a set angle from a target orientation in the world frame</p></li>
+<li><p>An axis of the desired frame is within a set angle from an axis in the world frame</p></li>
+</ul>
+</li>
+<li><p>The c-space positions are within the position limits</p></li>
+<li><p>No self-collision</p></li>
+<li><p>No world-collision</p></li>
+</ul>
+<p>There are many approaches to solving these types of problems, which leads to many different IK
+algorithms. The accelerated algorithm implemented by the cuMotion library prioritizes robustness and runtime
+performance when there is not a good initial guess for the c-space position.</p>
+</section>
+<section id="setting-up-the-robot-and-environment">
+<h2>Setting up the Robot and Environment<a class="headerlink" href="#setting-up-the-robot-and-environment" title="Link to this heading">#</a></h2>
+<p>Here we load a UR10 robot, create a world, an empty world view, and add a cuboid obstacle near
+initial position of the tool frame. See the tutorials listed in the <a class="reference internal" href="#ik-prereqs"><span class="std std-ref">Prerequisites</span></a> for more details
+on these steps.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescription</span><span class="o">&gt;</span><span class="w"> </span><span class="n">robot_description</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">LoadRobotFromFile</span><span class="p">(</span><span class="n">xrdf_file</span><span class="p">,</span><span class="w"> </span><span class="n">urdf_file</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kinematics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">kinematics</span><span class="p">();</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">robot_description</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">kinematics</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
+
+<span class="c1">// Create a world.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">&gt;</span><span class="w"> </span><span class="n">world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorld</span><span class="p">();</span>
+
+<span class="c1">// Add a world view.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">WorldViewHandle</span><span class="w"> </span><span class="n">world_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addWorldView</span><span class="p">();</span>
+
+<span class="c1">// Get the tool frame name.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">toolFrameNames</span><span class="p">().</span><span class="n">front</span><span class="p">();</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">FrameHandle</span><span class="w"> </span><span class="n">tool_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">tool_frame_name</span><span class="p">);</span>
+
+<span class="c1">// Compute the tool frame pose at the default c-space configuration.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">default_cspace</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">defaultCSpaceConfiguration</span><span class="p">();</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">(</span><span class="n">default_cspace</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+
+<span class="c1">// Create a cuboid obstacle near the initial position of the tool frame.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cuboid</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateObstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">CUBOID</span><span class="p">);</span>
+<span class="n">cuboid</span><span class="o">-&gt;</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Attribute</span><span class="o">::</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span><span class="w"> </span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="mf">0.2</span><span class="p">));</span>
+
+<span class="c1">// Position the obstacle slightly offset from the default tool position.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">obstacle_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">obstacle_position</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span><span class="w">  </span><span class="c1">// Offset in the y-direction</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">obstacle_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="o">::</span><span class="n">FromTranslation</span><span class="p">(</span><span class="n">obstacle_position</span><span class="p">);</span>
+
+<span class="c1">// Add the obstacle to the world.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">::</span><span class="n">ObstacleHandle</span><span class="w"> </span><span class="n">obstacle_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addObstacle</span><span class="p">(</span><span class="o">*</span><span class="n">cuboid</span><span class="p">,</span><span class="w"> </span><span class="n">obstacle_pose</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">robot_description</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">RobotDescription</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">load_robot_from_file</span><span class="p">(</span><span class="n">xrdf_path</span><span class="p">,</span> <span class="n">urdf_path</span><span class="p">)</span>
+<span class="n">kinematics</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">kinematics</span><span class="p">()</span>
+
+<span class="c1"># Create a world.</span>
+<span class="n">world</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world</span><span class="p">()</span>
+
+<span class="c1"># Add a world view.</span>
+<span class="n">world_view</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+
+<span class="c1"># Get the tool frame name.</span>
+<span class="n">tool_frame_name</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">tool_frame_names</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Compute the tool frame pose at the default c-space configuration.</span>
+<span class="n">default_cspace</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">default_cspace_configuration</span><span class="p">()</span>
+<span class="n">default_tool_pose</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">pose</span><span class="p">(</span><span class="n">default_cspace</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+
+<span class="c1"># Create a cuboid obstacle near the initial position of the tool frame.</span>
+<span class="n">cuboid</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_obstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">CUBOID</span><span class="p">)</span>
+<span class="n">cuboid</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span><span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Attribute</span><span class="o">.</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]))</span>
+
+<span class="c1"># Position the obstacle slightly offset from the default tool position.</span>
+<span class="n">obstacle_position</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">obstacle_position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span>  <span class="c1"># Offset in the y-direction</span>
+<span class="n">obstacle_pose</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="o">.</span><span class="n">from_translation</span><span class="p">(</span><span class="n">obstacle_position</span><span class="p">)</span>
+
+<span class="c1"># Add the obstacle to the world.</span>
+<span class="n">obstacle_handle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_obstacle</span><span class="p">(</span><span class="n">cuboid</span><span class="p">,</span> <span class="n">obstacle_pose</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creating-an-ik-config">
+<h2>Creating an IK Config<a class="headerlink" href="#creating-an-ik-config" title="Link to this heading">#</a></h2>
+<p>After creating the robot and world, we can create a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion27CollisionFreeIkSolverConfigE" title="cumotion::CollisionFreeIkSolverConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolverConfig</span></code></a> object, which is used to specify the parameters
+for the IK solver. Here we need to specify the robot description, the tool frame, and provide a
+world view that will be used to avoid collisions with the environment (which is currently empty
+since we haven’t updated it after adding the obstacle).</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolverConfig</span><span class="o">&gt;</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateDefaultCollisionFreeIkSolverConfig</span><span class="p">(</span>
+<span class="w">        </span><span class="o">*</span><span class="n">robot_description</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="p">,</span><span class="w"> </span><span class="n">world_view</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_default_collision_free_ik_solver_config</span><span class="p">(</span>
+    <span class="n">robot_description</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">world_view</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setting-an-ik-parameter">
+<h2>Setting an IK Parameter<a class="headerlink" href="#setting-an-ik-parameter" title="Link to this heading">#</a></h2>
+<p>The IK solver has many parameters that can be set with
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion27CollisionFreeIkSolverConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::CollisionFreeIkSolverConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolverConfig::setParam()</span></code></a>, whose documentation describes the
+list of parameters. Here we set the number of seeds to be higher than the default, which increases
+computational cost, but increases the likelihood of finding a variety of different solutions:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">bool</span><span class="w"> </span><span class="n">did_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">config</span><span class="o">-&gt;</span><span class="n">setParam</span><span class="p">(</span><span class="s">&quot;num_seeds&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">);</span>
+<span class="n">assert</span><span class="p">(</span><span class="n">did_set</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">did_set</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">set_param</span><span class="p">(</span><span class="s2">&quot;num_seeds&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">did_set</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>As demonstrated above, it is recommended to capture the boolean output of <code class="docutils literal notranslate"><span class="pre">setParam()</span></code> and check
+that the parameter was successfully set. Non-fatal error messages will be logged if the
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8LogLevel5ERRORE" title="cumotion::LogLevel::ERROR"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">cumotion::LogLevel::ERROR</span></code></a> log level is enabled.</p>
+<p>Currently, cuMotion does not provide an interface for querying the current value of an
+IK solver parameter. This is likely to change in future versions.</p>
+</section>
+<section id="creating-the-ik-solver">
+<h2>Creating the IK Solver<a class="headerlink" href="#creating-the-ik-solver" title="Link to this heading">#</a></h2>
+<p>Once we have set the solver parameters using the configuration object, we can instantiate the
+solver using <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion27CreateCollisionFreeIkSolverERK27CollisionFreeIkSolverConfig" title="cumotion::CreateCollisionFreeIkSolver"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateCollisionFreeIkSolver()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ik_solver</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateCollisionFreeIkSolver</span><span class="p">(</span><span class="o">*</span><span class="n">config</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ik_solver</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_collision_free_ik_solver</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Instantiating a new IK solver requires allocating both host and device memory, and should be
+considered an expensive operation.</p>
+<p>Once the solver is instantiated, the parameters cannot be changed. If any parameter needs
+to be modified, a new solver will need to be instantiated.</p>
+</section>
+<section id="solving-for-a-target-pose">
+<h2>Solving for a Target Pose<a class="headerlink" href="#solving-for-a-target-pose" title="Link to this heading">#</a></h2>
+<p>Solving an IK problem involves two steps:</p>
+<ol class="arabic simple">
+<li><p>Defining the task-space constraint</p></li>
+<li><dl class="simple">
+<dt>Calling <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver5solveERK15TaskSpaceTargetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solve"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solve()</span></code></a> or</dt><dd><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveGoalset()</span></code></a></p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Here we start by defining a complete target pose constraint for the tool frame, which must be
+satisfied exactly:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a pose target by offsetting the default tool pose.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">target_translation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">target_translation</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span><span class="w">  </span><span class="c1">// Move 10cm in the x-direction</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="w"> </span><span class="n">target_rotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">;</span>
+
+<span class="c1">// Create the translation and orientation constraints.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraint</span><span class="w"> </span><span class="n">translation_constraint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraint</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">target_translation</span><span class="p">);</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="w"> </span><span class="n">orientation_constraint</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">target_rotation</span><span class="p">);</span>
+
+<span class="c1">// Create the task space target.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTarget</span><span class="w"> </span><span class="nf">task_space_target</span><span class="p">(</span><span class="n">translation_constraint</span><span class="p">,</span>
+<span class="w">                                                                    </span><span class="n">orientation_constraint</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a pose target by offsetting the default tool pose.</span>
+<span class="n">target_translation</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">target_translation</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.1</span>  <span class="c1"># Move 10cm in the x-direction</span>
+<span class="n">target_rotation</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">rotation</span>
+
+<span class="c1"># Create the translation and orientation constraints.</span>
+<span class="n">translation_constraint</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TranslationConstraint</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">target_translation</span>
+<span class="p">)</span>
+<span class="n">orientation_constraint</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">OrientationConstraint</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">target_rotation</span>
+<span class="p">)</span>
+
+<span class="c1"># Create the task space target.</span>
+<span class="n">task_space_target</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTarget</span><span class="p">(</span>
+    <span class="n">translation_constraint</span><span class="p">,</span> <span class="n">orientation_constraint</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>There are several types of task-space constraints supported by the solver. See
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver21TranslationConstraintE" title="cumotion::CollisionFreeIkSolver::TranslationConstraint"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TranslationConstraint</span></code></a> and
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver21OrientationConstraintE" title="cumotion::CollisionFreeIkSolver::OrientationConstraint"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::OrientationConstraint</span></code></a> for all the options.</p>
+<p>Once we have created a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver15TaskSpaceTargetE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTarget"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTarget</span></code></a> object, we
+can pass it to <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver5solveERK15TaskSpaceTargetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solve"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solve()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solve</span><span class="p">(</span><span class="n">task_space_target</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">task_space_target</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The output of  <code class="docutils literal notranslate"><span class="pre">solve</span></code> is (a pointer to) a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7ResultsE" title="cumotion::CollisionFreeIkSolver::Results"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results</span></code></a>
+object, which we use to query the solution to the IK problem.</p>
+</section>
+<section id="querying-the-results">
+<h2>Querying the Results<a class="headerlink" href="#querying-the-results" title="Link to this heading">#</a></h2>
+<p>Once we have (a pointer to) a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7ResultsE" title="cumotion::CollisionFreeIkSolver::Results"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results</span></code></a> we first need
+to check the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7Results6StatusE" title="cumotion::CollisionFreeIkSolver::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results::Status</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">status</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IK solve succeeded!&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;IK solve failed.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>IK solve succeeded!
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>As shown in the C++ example above, <code class="docutils literal notranslate"><span class="pre">cumotion/text_style.h</span></code> includes some useful constants
+for manipulating the style of text sent to the terminal.</p>
+</div>
+<p>All feasible c-space positions found by the solver can be retrieved using
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver7Results15cSpacePositionsEv" title="cumotion::CollisionFreeIkSolver::Results::cSpacePositions"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results::cSpacePositions()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cspace_positions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">cSpacePositions</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of solutions found: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cspace_positions</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cspace_positions</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">cspace_positions</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of solutions found: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cspace_positions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">solutions</span> <span class="n">found</span><span class="p">:</span> <span class="mi">43</span>
+</pre></div>
+</div>
+<p>The solutions are sorted from lowest-to-highest cost, so the “best” solutions are at the beginning
+of the list. To avoid returning solutions with different c-space positions that result in identical
+physical configurations of the robot (which is only possible with revolute joints that have a range
+greater than <span class="math notranslate nohighlight">\(2 \pi\)</span>), the solutions are “wrapped” to the c-space position that is closest to the
+default configuration specified by the robot description, and only unique solutions are returned.</p>
+</section>
+<section id="updating-the-world">
+<h2>Updating the World<a class="headerlink" href="#updating-the-world" title="Link to this heading">#</a></h2>
+<p>Note that our solver currently thinks there are no obstacles in the world, even though we added one.
+Here we show how to update the world, call solve again, and see how some of the previous solutions are no longer
+returned since they would be in collision with the obstacle.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-16">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Update the world view to include the obstacle we added.</span>
+<span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+
+<span class="c1">// Solve again with the updated world view.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results_with_obstacle</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solve</span><span class="p">(</span><span class="n">task_space_target</span><span class="p">);</span>
+
+<span class="c1">// Check the status after updating the world.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">status_with_obstacle</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">results_with_obstacle</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status_with_obstacle</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">IK solve with obstacle succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">IK solve with obstacle failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
+
+<span class="c1">// Get the c-space positions with obstacle.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cspace_positions_with_obstacle</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">results_with_obstacle</span><span class="o">-&gt;</span><span class="n">cSpacePositions</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of solutions found with obstacle: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cspace_positions_with_obstacle</span><span class="p">.</span><span class="n">size</span><span class="p">()</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-17">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Update the world view to include the obstacle we added.</span>
+<span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Solve again with the updated world view.</span>
+<span class="n">results_with_obstacle</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">task_space_target</span><span class="p">)</span>
+
+<span class="c1"># Check the status after updating the world.</span>
+<span class="n">status_with_obstacle</span> <span class="o">=</span> <span class="n">results_with_obstacle</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">status_with_obstacle</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IK solve with obstacle succeeded!&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">IK solve with obstacle failed.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get the c-space positions with obstacle.</span>
+<span class="n">cspace_positions_with_obstacle</span> <span class="o">=</span> <span class="n">results_with_obstacle</span><span class="o">.</span><span class="n">cspace_positions</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of solutions found with obstacle: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cspace_positions_with_obstacle</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>IK solve with obstacle succeeded!
+Number of solutions found with obstacle: 23
+</pre></div>
+</div>
+</section>
+<section id="solving-for-a-target-goalset">
+<h2>Solving for a Target Goalset<a class="headerlink" href="#solving-for-a-target-goalset" title="Link to this heading">#</a></h2>
+<p>Sometimes we don’t have a single desired task-space goal, but rather several goals that are all equally valid.
+For example, this arises when there are:</p>
+<ul class="simple">
+<li><p>Multiple valid grasps for the same object</p></li>
+<li><p>Multiple objects to be grasped, without preference for which is grasped first</p></li>
+</ul>
+<p>Here we demonstrate the following:</p>
+<ol class="arabic simple">
+<li><p>How to define a goalset</p></li>
+<li><p>How to solve IK for a goalset</p></li>
+<li><p>How to identify which goal / target in the goalset a solution “picked”</p></li>
+</ol>
+<p>It is important to note that cuMotion makes the following assumptions about goalsets:</p>
+<ul class="simple">
+<li><p>All goals / targets have identical constraint types. For example, they all must be full pose targets, or they all
+must specify only position, and leave orientation free.</p></li>
+<li><p>All goals / targets are equally valid. There can be no preference for which is selected (this can,
+of course, by done externally by the user, either by making individual calls for each target, or by filtering the
+returned solutions)</p></li>
+</ul>
+<section id="defining-a-goalset">
+<h3>Defining a Goalset<a class="headerlink" href="#defining-a-goalset" title="Link to this heading">#</a></h3>
+<p>Defining a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver22TaskSpaceTargetGoalsetE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">goalset</span> <span class="pre">task</span></code></a> is straightforward.
+Here we demonstrate specifying two goals, one on either side of the obstacle, this time allowing the orientation at the
+target to be unconstrained:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a goalset with translation-only constraints on either side of the obstacle.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">translation_targets</span><span class="p">;</span>
+
+<span class="c1">// Target on the left side of the obstacle.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">left_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">left_target</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span>
+<span class="n">left_target</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+<span class="n">translation_targets</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">left_target</span><span class="p">);</span>
+
+<span class="c1">// Target on the right side of the obstacle.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">right_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">right_target</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span>
+<span class="n">right_target</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+<span class="n">translation_targets</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">right_target</span><span class="p">);</span>
+
+<span class="c1">// Create translation constraint goalset (position-only, no orientation constraint).</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="w"> </span><span class="n">translation_goalset</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">translation_targets</span><span class="p">);</span>
+
+<span class="c1">// Create an empty orientation constraint goalset.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintGoalset</span><span class="w"> </span><span class="n">orientation_goalset</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintGoalset</span><span class="o">::</span><span class="n">None</span><span class="p">();</span>
+
+<span class="c1">// Create the task space target goalset.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTargetGoalset</span><span class="w"> </span><span class="nf">task_space_target_goalset</span><span class="p">(</span>
+<span class="w">    </span><span class="n">translation_goalset</span><span class="p">,</span><span class="w"> </span><span class="n">orientation_goalset</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a goalset with translation-only constraints on either side of the obstacle.</span>
+<span class="n">translation_targets</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c1"># Target on the left side of the obstacle.</span>
+<span class="n">left_target</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">left_target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span>
+<span class="n">left_target</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.1</span>
+<span class="n">translation_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">left_target</span><span class="p">)</span>
+
+<span class="c1"># Target on the right side of the obstacle.</span>
+<span class="n">right_target</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">right_target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span>
+<span class="n">right_target</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.1</span>
+<span class="n">translation_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right_target</span><span class="p">)</span>
+
+<span class="c1"># Create translation constraint goalset (position-only, no orientation constraint).</span>
+<span class="n">translation_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TranslationConstraintGoalset</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">translation_targets</span>
+<span class="p">)</span>
+
+<span class="c1"># Create an empty orientation constraint goalset.</span>
+<span class="n">orientation_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">OrientationConstraintGoalset</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+
+<span class="c1"># Create the task space target goalset.</span>
+<span class="n">task_space_target_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTargetGoalset</span><span class="p">(</span>
+    <span class="n">translation_goalset</span><span class="p">,</span> <span class="n">orientation_goalset</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-a-goalset">
+<h3>Solving a Goalset<a class="headerlink" href="#solving-a-goalset" title="Link to this heading">#</a></h3>
+<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver22TaskSpaceTargetGoalsetE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset</span></code></a> object, we can pass it to
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveGoalset()</span></code></a> and save the results to a new variable:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goalset_results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solveGoalset</span><span class="p">(</span><span class="n">task_space_target_goalset</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">goalset_results</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve_goalset</span><span class="p">(</span><span class="n">task_space_target_goalset</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Goalset IK solve succeeded!
+Number of valid solutions: 49
+</pre></div>
+</div>
+<p>We can query the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7Results6StatusE" title="cumotion::CollisionFreeIkSolver::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">status</span></code></a> and solutions the
+same way we did before. However, we often want to know which goal / target each IK solution corresponds to.
+We can use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver7Results13targetIndicesEv" title="cumotion::CollisionFreeIkSolver::Results::targetIndices"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results::targetIndices()</span></code></a> to get a list of indices. This list
+has the same length as the output of <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver7Results15cSpacePositionsEv" title="cumotion::CollisionFreeIkSolver::Results::cSpacePositions"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results::cSpacePositions()</span></code></a>, and
+provides the goal index of each solution, which in our example will be either 0 or 1 since we have two goals:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load the robot.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">goalset_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">goalset_status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Goalset IK solve succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Goalset IK solve failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
+
+<span class="c1">// Get the c-space positions and target indices from the goalset results.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goalset_cspace_positions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">cSpacePositions</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of valid solutions: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">goalset_cspace_positions</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="c1">// Print the goal assignment for each solution and verify using forward kinematics.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">target_indices</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">targetIndices</span><span class="p">();</span>
+
+<span class="c1">// Print table header</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">left</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setw</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Solution Index&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setw</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Target Index&quot;</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Position Error (um)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">(</span><span class="mi">54</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">goalset_cspace_positions</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">target_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">target_indices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+
+<span class="w">    </span><span class="c1">// Compute the forward kinematics for this solution.</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">solution_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">(</span><span class="n">goalset_cspace_positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Compute the distance to the indicated target.</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">distance_to_target</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="p">(</span><span class="n">solution_pose</span><span class="p">.</span><span class="n">translation</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">translation_targets</span><span class="p">[</span><span class="n">target_idx</span><span class="p">]).</span><span class="n">norm</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Convert to micrometers and print row</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">error_um</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">distance_to_target</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1e6</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">left</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setw</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setw</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">target_idx</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">fixed</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">setprecision</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">error_um</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the robot.</span>
+<span class="n">goalset_status</span> <span class="o">=</span> <span class="n">goalset_results</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">goalset_status</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Goalset IK solve succeeded!&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Goalset IK solve failed.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get the c-space positions and target indices from the goalset results.</span>
+<span class="n">goalset_cspace_positions</span> <span class="o">=</span> <span class="n">goalset_results</span><span class="o">.</span><span class="n">cspace_positions</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of valid solutions: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">goalset_cspace_positions</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Print the goal assignment for each solution and verify using forward kinematics.</span>
+<span class="n">target_indices</span> <span class="o">=</span> <span class="n">goalset_results</span><span class="o">.</span><span class="n">target_indices</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="si">{</span><span class="s1">&#39;Solution Index&#39;</span><span class="si">:</span><span class="s2">&lt;18</span><span class="si">}{</span><span class="s1">&#39;Target Index&#39;</span><span class="si">:</span><span class="s2">&lt;18</span><span class="si">}</span><span class="s2">Position Error (um)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">54</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">goalset_cspace_positions</span><span class="p">)):</span>
+    <span class="n">target_idx</span> <span class="o">=</span> <span class="n">target_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="c1"># Compute the forward kinematics for this solution.</span>
+    <span class="n">solution_pose</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">pose</span><span class="p">(</span><span class="n">goalset_cspace_positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+
+    <span class="c1"># Compute the distance to the indicated target.</span>
+    <span class="n">distance_to_target</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">solution_pose</span><span class="o">.</span><span class="n">translation</span> <span class="o">-</span> <span class="n">translation_targets</span><span class="p">[</span><span class="n">target_idx</span><span class="p">])</span>
+
+    <span class="c1"># Convert to micrometers and print row</span>
+    <span class="n">error_um</span> <span class="o">=</span> <span class="n">distance_to_target</span> <span class="o">*</span> <span class="mf">1e6</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s2">&lt;18</span><span class="si">}{</span><span class="n">target_idx</span><span class="si">:</span><span class="s2">&lt;18</span><span class="si">}{</span><span class="n">error_um</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Solution</span> <span class="n">Index</span>    <span class="n">Target</span> <span class="n">Index</span>      <span class="n">Position</span> <span class="n">Error</span> <span class="p">(</span><span class="n">um</span><span class="p">)</span>
+<span class="o">------------------------------------------------------</span>
+<span class="mi">0</span>                 <span class="mi">1</span>                 <span class="mf">0.47</span>
+<span class="mi">1</span>                 <span class="mi">1</span>                 <span class="mf">0.39</span>
+<span class="mi">2</span>                 <span class="mi">0</span>                 <span class="mf">0.20</span>
+<span class="mi">3</span>                 <span class="mi">0</span>                 <span class="mf">0.34</span>
+<span class="mi">4</span>                 <span class="mi">1</span>                 <span class="mf">0.32</span>
+<span class="mi">5</span>                 <span class="mi">1</span>                 <span class="mf">0.71</span>
+<span class="mi">6</span>                 <span class="mi">0</span>                 <span class="mf">0.24</span>
+<span class="mi">7</span>                 <span class="mi">1</span>                 <span class="mf">0.44</span>
+<span class="mi">8</span>                 <span class="mi">0</span>                 <span class="mf">0.24</span>
+<span class="mi">9</span>                 <span class="mi">1</span>                 <span class="mf">0.41</span>
+<span class="mi">10</span>                <span class="mi">0</span>                 <span class="mf">0.24</span>
+<span class="mi">11</span>                <span class="mi">0</span>                 <span class="mf">0.25</span>
+<span class="mi">12</span>                <span class="mi">0</span>                 <span class="mf">0.11</span>
+<span class="mi">13</span>                <span class="mi">1</span>                 <span class="mf">0.41</span>
+<span class="mi">14</span>                <span class="mi">1</span>                 <span class="mf">0.16</span>
+<span class="mi">15</span>                <span class="mi">1</span>                 <span class="mf">0.51</span>
+<span class="mi">16</span>                <span class="mi">1</span>                 <span class="mf">0.25</span>
+<span class="mi">17</span>                <span class="mi">0</span>                 <span class="mf">0.27</span>
+<span class="mi">18</span>                <span class="mi">0</span>                 <span class="mf">0.32</span>
+<span class="mi">19</span>                <span class="mi">1</span>                 <span class="mf">0.27</span>
+<span class="mi">20</span>                <span class="mi">1</span>                 <span class="mf">0.18</span>
+<span class="mi">21</span>                <span class="mi">0</span>                 <span class="mf">0.19</span>
+<span class="mi">22</span>                <span class="mi">0</span>                 <span class="mf">0.12</span>
+<span class="mi">23</span>                <span class="mi">0</span>                 <span class="mf">0.25</span>
+<span class="mi">24</span>                <span class="mi">0</span>                 <span class="mf">0.17</span>
+<span class="mi">25</span>                <span class="mi">0</span>                 <span class="mf">0.26</span>
+<span class="mi">26</span>                <span class="mi">0</span>                 <span class="mf">0.35</span>
+<span class="mi">27</span>                <span class="mi">1</span>                 <span class="mf">0.29</span>
+<span class="mi">28</span>                <span class="mi">1</span>                 <span class="mf">0.28</span>
+<span class="mi">29</span>                <span class="mi">0</span>                 <span class="mf">0.31</span>
+<span class="mi">30</span>                <span class="mi">1</span>                 <span class="mf">0.36</span>
+<span class="mi">31</span>                <span class="mi">0</span>                 <span class="mf">0.47</span>
+<span class="mi">32</span>                <span class="mi">1</span>                 <span class="mf">0.34</span>
+<span class="mi">33</span>                <span class="mi">1</span>                 <span class="mf">0.26</span>
+<span class="mi">34</span>                <span class="mi">0</span>                 <span class="mf">0.20</span>
+<span class="mi">35</span>                <span class="mi">0</span>                 <span class="mf">0.15</span>
+<span class="mi">36</span>                <span class="mi">0</span>                 <span class="mf">0.32</span>
+<span class="mi">37</span>                <span class="mi">1</span>                 <span class="mf">0.35</span>
+<span class="mi">38</span>                <span class="mi">0</span>                 <span class="mf">0.27</span>
+<span class="mi">39</span>                <span class="mi">0</span>                 <span class="mf">0.16</span>
+<span class="mi">40</span>                <span class="mi">1</span>                 <span class="mf">0.34</span>
+<span class="mi">41</span>                <span class="mi">0</span>                 <span class="mf">0.29</span>
+<span class="mi">42</span>                <span class="mi">0</span>                 <span class="mf">0.12</span>
+<span class="mi">43</span>                <span class="mi">1</span>                 <span class="mf">0.42</span>
+<span class="mi">44</span>                <span class="mi">0</span>                 <span class="mf">0.19</span>
+<span class="mi">45</span>                <span class="mi">1</span>                 <span class="mf">0.19</span>
+<span class="mi">46</span>                <span class="mi">0</span>                 <span class="mf">0.24</span>
+<span class="mi">47</span>                <span class="mi">0</span>                 <span class="mf">0.15</span>
+<span class="mi">48</span>                <span class="mi">0</span>                 <span class="mf">0.30</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="world_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">World Tutorial</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="trajectory_optimization_tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Trajectory Optimization Tutorial</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-inverse-kinematics">What is Inverse Kinematics?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-robot-and-environment">Setting up the Robot and Environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-an-ik-config">Creating an IK Config</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-an-ik-parameter">Setting an IK Parameter</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-the-ik-solver">Creating the IK Solver</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-for-a-target-pose">Solving for a Target Pose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-the-results">Querying the Results</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-the-world">Updating the World</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-for-a-target-goalset">Solving for a Target Goalset</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-a-goalset">Defining a Goalset</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-goalset">Solving a Goalset</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

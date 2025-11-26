@@ -1,0 +1,884 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>World Tutorial &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"TeX": {"Macros": {"T": ["{\\textsf{T}}", 0], "abs": ["{\\left\\lvert#1\\right\\rvert}", 1], "norm": ["{\\left\\lVert#1\\right\\rVert}", 1], "det": ["{\\left\\lvert#1\\right\\rvert}", 1], "innerprod": ["{\\left\\langle#1,#2\\right\\rangle}", 2], "vector": ["{[#1_1,\\ldots,#1_{#2}]}", 2], "N": "{\\mathbb{N}}", "Z": "{\\mathbb{Z}}", "R": "{\\mathbb{R}}", "C": "{\\mathbb{C}}", "Im": ["{\\mathcal{R}(#1)}", 1], "Ker": ["{\\mathcal{N}(#1)}", 1], "Tr": "{\\text{Tr}}", "pd": ["{\\frac{\\partial{#1}}{\\partial{#2}}}", 2], "E": ["{\\mathbf{E}\\left[#1\\right]}", 1], "V": ["{\\mathbf{V}\\left[#1\\right]}", 1], "U": "{\\mathcal{U}}", "half": "{\\frac{1}{2}}", "ceil": ["{\\left \\lceil{#1}\\right \\rceil}", 1], "floor": ["{\\left \\lfloor{#1}\\right \\rfloor}", 1]}}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/world_tutorial';</script>
+
+    <link rel="icon" href="../_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Inverse Kinematics Tutorial" href="inverse_kinematics_tutorial.html" />
+    <link rel="prev" title="Kinematics Tutorial" href="kinematics_tutorial.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">World Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
+</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">World Tutorial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="world-tutorial">
+<h1>World Tutorial<a class="headerlink" href="#world-tutorial" title="Link to this heading">#</a></h1>
+<section id="objectives">
+<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p>Through this tutorial, you will learn how to:</p>
+<ol class="arabic simple">
+<li><p>Create a world</p></li>
+<li><p>Create a world view</p></li>
+<li><p>Add obstacles to the world</p></li>
+<li><p>Create a world inspector</p></li>
+<li><p>Update a world view</p></li>
+<li><p>Update an obstacle after it has been added to the world</p></li>
+</ol>
+</section>
+<section id="what-are-a-world-and-world-view">
+<h2>What are a World and World View?<a class="headerlink" href="#what-are-a-world-and-world-view" title="Link to this heading">#</a></h2>
+<p>When a robot must avoid collision with or interact with its environment, we need a way
+to represent that environment. This helps us answer questions like:</p>
+<ul class="simple">
+<li><p>Is the robot in collision with the environment?</p></li>
+<li><p>How far is the tool frame from a given obstacle?</p></li>
+</ul>
+<p>A <strong>World</strong> is the current “true” representation of the environment, which includes the
+most up-to-date location and description of all the obstacles in their environment.</p>
+<p>A <strong>World View</strong> is a snapshot of the world. It is intended to be a lightweight object
+that can be cheaply copied and passed between algorithms, and guarantees the world seen
+through that world view will only be updated when it is specifically requested, and will
+simultaneously update all usages of that view. This is critical when the world representation
+is being constantly updated by external processes, such as a vision system running
+<a class="reference external" href="https://github.com/nvidia-isaac/nvblox">NVIDIA’s nvblox</a>.</p>
+</section>
+<section id="creating-a-world">
+<h2>Creating a World<a class="headerlink" href="#creating-a-world" title="Link to this heading">#</a></h2>
+<p>A world is easily created using <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion11CreateWorldEv" title="cumotion::CreateWorld"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateWorld()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">&gt;</span><span class="w"> </span><span class="n">world</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorld</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">World</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>which creates an empty world with no obstacles.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>It is recommended that <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion11CreateWorldEv" title="cumotion::CreateWorld"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateWorld()</span></code></a> only be called a single time for each
+application. Most use-cases for creating another world should be solvable by using
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion15WorldViewHandleE" title="cumotion::WorldViewHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::WorldViewHandle</span></code></a>.</p>
+</div>
+</section>
+<section id="creating-a-world-view">
+<h2>Creating a World View<a class="headerlink" href="#creating-a-world-view" title="Link to this heading">#</a></h2>
+<p>To create a world view, we simply call <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World12addWorldViewEv" title="cumotion::World::addWorldView"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::addWorldView()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">WorldViewHandle</span><span class="w"> </span><span class="n">world_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addWorldView</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world_view</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">WorldViewHandle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creating-a-world-inspector">
+<h2>Creating a World Inspector<a class="headerlink" href="#creating-a-world-inspector" title="Link to this heading">#</a></h2>
+<p>The <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion15WorldViewHandleE" title="cumotion::WorldViewHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::WorldViewHandle</span></code></a> does not provide any capabilities for getting information
+about the world, such as the number of obstacles, distances to obstacles, etc. To do that we need
+to create a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion14WorldInspectorE" title="cumotion::WorldInspector"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::WorldInspector</span></code></a>, which provides an interface for querying
+information about the current state of the world:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">WorldInspector</span><span class="o">&gt;</span><span class="w"> </span><span class="n">world_inspector</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorldInspector</span><span class="p">(</span><span class="n">world_view</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world_inspector</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world_inspector</span><span class="p">(</span><span class="n">world_view</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can use this to, for example, query the number of active obstacles in the environment:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (before update): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_enabled_obstacles</span> <span class="o">=</span> <span class="n">world_inspector</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (before update): </span><span class="si">{</span><span class="n">num_enabled_obstacles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">before</span> <span class="n">update</span><span class="p">):</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</section>
+<section id="creating-an-obstacle">
+<h2>Creating an Obstacle<a class="headerlink" href="#creating-an-obstacle" title="Link to this heading">#</a></h2>
+<p>In cuMotion, an obstacle is specified by a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8Obstacle4TypeE" title="cumotion::Obstacle::Type"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">Type</span></code></a> and
+a set of <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8Obstacle9AttributeE" title="cumotion::Obstacle::Attribute"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">attributes</span></code></a> specifications for the given type,
+such as height, radius, side lengths, etc.</p>
+<p>Here we add a single cuboid obstacle to the world, with dimensions <span class="math notranslate nohighlight">\([1, 2, 3]\)</span>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cuboid</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateObstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Type</span><span class="o">::</span><span class="n">CUBOID</span><span class="p">);</span>
+<span class="n">cuboid</span><span class="o">-&gt;</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Obstacle</span><span class="o">::</span><span class="n">Attribute</span><span class="o">::</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="mf">3.0</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cuboid</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_obstacle</span><span class="p">(</span><span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Type</span><span class="o">.</span><span class="n">CUBOID</span><span class="p">)</span>
+<span class="n">cuboid</span><span class="o">.</span><span class="n">set_attribute</span><span class="p">(</span>
+    <span class="n">cumotion</span><span class="o">.</span><span class="n">Obstacle</span><span class="o">.</span><span class="n">Attribute</span><span class="o">.</span><span class="n">SIDE_LENGTHS</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="adding-an-obstacle-to-the-world">
+<h2>Adding an Obstacle to the World<a class="headerlink" href="#adding-an-obstacle-to-the-world" title="Link to this heading">#</a></h2>
+<p>After we’ve created an <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8ObstacleE" title="cumotion::Obstacle"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">Obstacle</span></code></a>, we add it to the world using
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World11addObstacleERK8ObstacleNSt8optionalI5Pose3EE" title="cumotion::World::addObstacle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::addObstacle()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">World</span><span class="o">::</span><span class="n">ObstacleHandle</span><span class="w"> </span><span class="n">obstacle_handle</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addObstacle</span><span class="p">(</span><span class="o">*</span><span class="n">cuboid</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">obstacle_handle</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">World</span><span class="o">.</span><span class="n">ObstacleHandle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_obstacle</span><span class="p">(</span><span class="n">cuboid</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The return type is an <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World14ObstacleHandleE" title="cumotion::World::ObstacleHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::World::ObstacleHandle</span></code></a>, which is an opaque handle to the
+copy of the obstacle in the world. The cuMotion library currently does not provide any way to query
+data about an obstacle given its <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World14ObstacleHandleE" title="cumotion::World::ObstacleHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::World::ObstacleHandle</span></code></a>, so it is the
+responsibility of the user the keep track of its type, attributes, enabled state, and pose.
+We will see how to set these values <a class="reference internal" href="#modify-obstacle"><span class="std std-ref">below</span></a>.</p>
+<p>Note that currently this obstacle is <strong>NOT</strong> seen by the world view we created earlier. If we query
+the number of enabled obstacles using <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector19numEnabledObstaclesEv" title="cumotion::WorldInspector::numEnabledObstacles"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::WorldInspector::numEnabledObstacles()</span></code></a>,
+we see it returns zero:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (before update): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_enabled_obstacles</span> <span class="o">=</span> <span class="n">world_inspector</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (before update): </span><span class="si">{</span><span class="n">num_enabled_obstacles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">before</span> <span class="n">update</span><span class="p">):</span> <span class="mi">0</span>
+</pre></div>
+</div>
+<p>Whereas if we create a new world view, the new world view shows that we have indeed added an
+obstacle:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">WorldViewHandle</span><span class="w"> </span><span class="n">world_view2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world</span><span class="o">-&gt;</span><span class="n">addWorldView</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">world_inspector2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorldInspector</span><span class="p">(</span><span class="n">world_view2</span><span class="p">);</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">num_enabled_obstacles2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector2</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (new world view): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles2</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">world_view2</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">WorldViewHandle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+<span class="n">world_inspector2</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world_inspector</span><span class="p">(</span><span class="n">world_view2</span><span class="p">)</span>
+<span class="n">num_enabled_obstacles2</span> <span class="o">=</span> <span class="n">world_inspector2</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (new world view): </span><span class="si">{</span><span class="n">num_enabled_obstacles2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">new</span> <span class="n">world</span> <span class="n">view</span><span class="p">):</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+<section id="updating-a-world-view">
+<h2>Updating a World View<a class="headerlink" href="#updating-a-world-view" title="Link to this heading">#</a></h2>
+<p>Like we mentioned above, a world view is a snapshot of the world, and must be explicitly
+updated. All copies of a world view will be updated at the same time. We demonstrate this below:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-16">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a copy of the original world view.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">WorldViewHandle</span><span class="w"> </span><span class="n">world_view_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_view</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">world_inspector_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateWorldInspector</span><span class="p">(</span><span class="n">world_view_copy</span><span class="p">);</span>
+
+<span class="c1">// Check the number of enabled obstacles in the copy.</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">num_enabled_obstacles_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector_copy</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (copy, before update): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles_copy</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="c1">// Update the original world view.</span>
+<span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+
+<span class="c1">// Check the number of enabled obstacles after update.</span>
+<span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (after update): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="c1">// Check the copy - it should also be updated.</span>
+<span class="n">num_enabled_obstacles_copy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector_copy</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (copy, after update): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles_copy</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-17">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a copy of the original world view.</span>
+<span class="n">world_view_copy</span> <span class="o">=</span> <span class="n">world_view</span>
+<span class="n">world_inspector_copy</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world_inspector</span><span class="p">(</span><span class="n">world_view_copy</span><span class="p">)</span>
+
+<span class="c1"># Check the number of enabled obstacles in the copy.</span>
+<span class="n">num_enabled_obstacles_copy</span> <span class="o">=</span> <span class="n">world_inspector_copy</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (copy, before update): </span><span class="si">{</span><span class="n">num_enabled_obstacles_copy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Update the original world view.</span>
+<span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+<span class="c1"># Check the number of enabled obstacles after update.</span>
+<span class="n">num_enabled_obstacles</span> <span class="o">=</span> <span class="n">world_inspector</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (after update): </span><span class="si">{</span><span class="n">num_enabled_obstacles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check the copy - it should also be updated.</span>
+<span class="n">num_enabled_obstacles_copy</span> <span class="o">=</span> <span class="n">world_inspector_copy</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (copy, after update): </span><span class="si">{</span><span class="n">num_enabled_obstacles_copy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">before</span> <span class="n">update</span><span class="p">):</span> <span class="mi">0</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">after</span> <span class="n">update</span><span class="p">):</span> <span class="mi">1</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">copy</span><span class="p">,</span> <span class="n">after</span> <span class="n">update</span><span class="p">):</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>A world view behaves nearly identically to that of a <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code> in C++. Copies are
+cheap, and all “point” to the same data. Updating the underlying data will affect all
+copies of the pointer.</p>
+</div>
+</section>
+<section id="modifying-an-obstacle">
+<span id="modify-obstacle"></span><h2>Modifying an Obstacle<a class="headerlink" href="#modifying-an-obstacle" title="Link to this heading">#</a></h2>
+<p>After adding an obstacle to the world, we are only allowed to do the following:</p>
+<ul class="simple">
+<li><p>Modify the pose of the obstacle in the world</p></li>
+<li><p>Set whether the obstacle is enabled or disabled</p></li>
+<li><p>Remove the obstacle from the world</p></li>
+</ul>
+<p>To do any of these operations, we must use the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World14ObstacleHandleE" title="cumotion::World::ObstacleHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::World::ObstacleHandle</span></code></a>
+returned by <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World11addObstacleERK8ObstacleNSt8optionalI5Pose3EE" title="cumotion::World::addObstacle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::addObstacle()</span></code></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Calling <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8Obstacle12setAttributeE9AttributeRK14AttributeValue" title="cumotion::Obstacle::setAttribute"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Obstacle::setAttribute()</span></code></a> on an
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8ObstacleE" title="cumotion::Obstacle"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::Obstacle</span></code></a> after adding it to the world will <strong>NOT</strong> update the
+copy of the obstacle in the world.</p>
+</div>
+<p>To change the pose of an obstacle, use <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World7setPoseERK14ObstacleHandleRK5Pose3" title="cumotion::World::setPose"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::setPose()</span></code></a>. Here we move the cuboid
+so that it is centered on <span class="math notranslate nohighlight">\([0.5, 0.5, 0.7]\)</span>, and rotated 30 degrees about the x-axis:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Move the cuboid to [0.5, 0.5, 0.7] and rotate 30 degrees about the x-axis.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="w"> </span><span class="n">rotation</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="o">::</span><span class="n">FromAxisAngle</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">UnitX</span><span class="p">(),</span><span class="w"> </span><span class="mf">30.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">M_PI</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mf">180.0</span><span class="p">);</span>
+<span class="n">world</span><span class="o">-&gt;</span><span class="n">setPose</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="n">rotation</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.7</span><span class="p">}});</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move the cuboid to [0.5, 0.5, 0.7] and rotate 30 degrees about the x-axis.</span>
+<span class="n">rotation</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Rotation3</span><span class="o">.</span><span class="n">from_axis_angle</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+<span class="n">world</span><span class="o">.</span><span class="n">set_pose</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">,</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can enable and disable the obstacle using <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World14enableObstacleERK14ObstacleHandle" title="cumotion::World::enableObstacle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::enableObstacle()</span></code></a> and
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion5World15disableObstacleERK14ObstacleHandle" title="cumotion::World::disableObstacle"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::World::disableObstacle()</span></code></a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">world</span><span class="o">-&gt;</span><span class="n">disableObstacle</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">);</span>
+
+<span class="c1">// Update the world view and check the number of enabled obstacles.</span>
+<span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+<span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (after disabling): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+<span class="c1">// Re-enable the obstacle.</span>
+<span class="n">world</span><span class="o">-&gt;</span><span class="n">enableObstacle</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">);</span>
+
+<span class="c1">// Update the world view and check the number of enabled obstacles.</span>
+<span class="n">world_view</span><span class="p">.</span><span class="n">update</span><span class="p">();</span>
+<span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">world_inspector</span><span class="o">-&gt;</span><span class="n">numEnabledObstacles</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of enabled obstacles (after re-enabling): &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_enabled_obstacles</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Move the cuboid to [0.5, 0.5, 0.7] and rotate 30 degrees about the x-axis.</span>
+<span class="n">rotation</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Rotation3</span><span class="o">.</span><span class="n">from_axis_angle</span><span class="p">(</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
+<span class="n">world</span><span class="o">.</span><span class="n">set_pose</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">,</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])))</span>
+<span class="c1"># *snippet-end* #</span>
+
+<span class="c1"># Disable the obstacle.</span>
+<span class="c1"># *snippet-begin* #</span>
+<span class="n">world</span><span class="o">.</span><span class="n">disable_obstacle</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">)</span>
+
+<span class="c1"># Update the world view and check the number of enabled obstacles.</span>
+<span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">num_enabled_obstacles</span> <span class="o">=</span> <span class="n">world_inspector</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (after disabling): </span><span class="si">{</span><span class="n">num_enabled_obstacles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Re-enable the obstacle.</span>
+<span class="n">world</span><span class="o">.</span><span class="n">enable_obstacle</span><span class="p">(</span><span class="n">obstacle_handle</span><span class="p">)</span>
+
+<span class="c1"># Update the world view and check the number of enabled obstacles.</span>
+<span class="n">world_view</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+<span class="n">num_enabled_obstacles</span> <span class="o">=</span> <span class="n">world_inspector</span><span class="o">.</span><span class="n">num_enabled_obstacles</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of enabled obstacles (after re-enabling): </span><span class="si">{</span><span class="n">num_enabled_obstacles</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">after</span> <span class="n">disabling</span><span class="p">):</span> <span class="mi">0</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">enabled</span> <span class="n">obstacles</span> <span class="p">(</span><span class="n">after</span> <span class="n">re</span><span class="o">-</span><span class="n">enabling</span><span class="p">):</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="kinematics_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Kinematics Tutorial</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="inverse_kinematics_tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Inverse Kinematics Tutorial</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-a-world-and-world-view">What are a World and World View?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-world">Creating a World</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-world-view">Creating a World View</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-world-inspector">Creating a World Inspector</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-an-obstacle">Creating an Obstacle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-an-obstacle-to-the-world">Adding an Obstacle to the World</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-a-world-view">Updating a World View</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modifying-an-obstacle">Modifying an Obstacle</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

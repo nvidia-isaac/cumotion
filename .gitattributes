@@ -1,0 +1,12 @@
+# Image files
+# .gif - image file stored in the Graphics Interchange Format (GIF)
+*.[gG][iI][fF] filter=lfs diff=lfs merge=lfs -text
+# .jpeg, .jpg - lossy graphics file
+*.[jJ][pP][eE][gG] filter=lfs diff=lfs merge=lfs -text
+*.[jJ][pP][gG] filter=lfs diff=lfs merge=lfs -text
+# .pfm - image file stored in the Portable FloatMap Image (PFM) format
+*.[pP][fF][mM] filter=lfs diff=lfs merge=lfs -text
+# .png - image file stored in the Portable Network Graphic (PNG) format
+*.[pP][nN][gG] filter=lfs diff=lfs merge=lfs -text
+# .pdf - Portable Document Format (PDF) file
+*.[pP][dD][fF] filter=lfs diff=lfs merge=lfs -text

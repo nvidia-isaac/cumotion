@@ -1,0 +1,1059 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Kinematics Tutorial &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=888ff710"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/kinematics_tutorial';</script>
+
+    <link rel="icon" href="../_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="World Tutorial" href="world_tutorial.html" />
+    <link rel="prev" title="Robot Description Tutorial" href="robot_description_tutorial.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
+</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../tutorials.html" class="nav-link">Tutorials</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Kinematics Tutorial</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="kinematics-tutorial">
+<h1>Kinematics Tutorial<a class="headerlink" href="#kinematics-tutorial" title="Link to this heading">#</a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading">#</a></h2>
+<p>The following tutorials are recommended prior to starting this tutorial:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="robot_description_tutorial.html"><span class="doc">Robot Description Tutorial</span></a></p></li>
+</ul>
+</section>
+<section id="objectives">
+<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p>Through this tutorial, you will learn how to:</p>
+<ol class="arabic simple">
+<li><p>Check for frames defined in the kinematics,</p></li>
+<li><p>Query the position and orientation of a frame given the c-space coordinates (i.e. forward kinematics)</p></li>
+</ol>
+</section>
+<section id="what-are-kinematics">
+<h2>What are Kinematics?<a class="headerlink" href="#what-are-kinematics" title="Link to this heading">#</a></h2>
+<section id="robot-kinematics">
+<h3>Robot Kinematics<a class="headerlink" href="#robot-kinematics" title="Link to this heading">#</a></h3>
+<p>Here’s a useful definition:</p>
+<blockquote>
+<div><p>The branch of mechanics concerned with the motion of objects without reference to the forces which cause the motion.</p>
+</div></blockquote>
+<p>For a robot, this is the mathematical relationship between the c-space positions (which correspond to the joint angles
+for a traditional serial-link manipulator with revolute joints) and the position and orientation (pose) of each link of
+the robot. Typically we care about the pose of a frame attached to the last link, or the “tool” of the robot. We refer
+to this frame as the <em>tool frame</em>.</p>
+<p><strong>Forward kinematics</strong> refers to the well-defined mapping from c-space coordinates to the tool frame pose. For a given
+set of c-space positions, there is always a single tool frame pose.</p>
+<p><strong>Inverse kinematics</strong> is the mapping from tool frame pose to the c-space positions. This is a much harder problem,
+since there are generally many (often infinite) c-space positions that may generate the same tool frame pose.
+Alternatively, there may not be any valid c-space positions that produce a given tool frame pose, such as when:</p>
+<ul class="simple">
+<li><p>The pose is outside the workspace of the robot, due to being too far away</p></li>
+<li><p>The pose cannot be reached due to joint limits</p></li>
+<li><p>The robot does not have enough degrees of freedom (e.g. a 3D gantry robot has a fixed orientation, and therefore
+cannot achieve an arbitrary tool frame orientation)</p></li>
+<li><p>The tool frame would result in self-collision (e.g. the desired tool frame is in the middle of the base of the
+robot).</p></li>
+</ul>
+<p>This tutorial is focused on the utilities provided by cuMotion for <strong>forward kinematics</strong>.
+See <a class="reference internal" href="inverse_kinematics_tutorial.html"><span class="doc">Inverse Kinematics Tutorial</span></a> to learn more about using cuMotion for solving the inverse kinematics.</p>
+</section>
+<section id="kinematics-in-cumotion">
+<h3>Kinematics in cuMotion<a class="headerlink" href="#kinematics-in-cumotion" title="Link to this heading">#</a></h3>
+<p>For computational and representational efficiency, cuMotion assumes the kinematics of a robot can be represented
+by a directional tree graph structure. This means:</p>
+<ul class="simple">
+<li><p>There is a single “base” link</p></li>
+<li><p>Each link has a single parent</p></li>
+<li><p>A parent can have any number of children</p></li>
+</ul>
+</section>
+</section>
+<section id="c-space-coordinates">
+<h2>C-space Coordinates<a class="headerlink" href="#c-space-coordinates" title="Link to this heading">#</a></h2>
+<p>Configuration space (or c-space) is the mathematical space defined by the span of the minimal set of coordinates
+required to describe the forward kinematics of the robot. They are a generalization of “joint positions,” since
+the motion of physical joints may not, in general, be completely independent. This may be a result of physical linkages,
+or a choice by the manufacturer that is implemented in software (such as when both sides of a gripper are controlled
+using a single position command, even when they are in fact driven by independent motors).</p>
+<p>We start by loading a robot description and using it to create the kinematics for the robot. See
+<a class="reference internal" href="robot_description_tutorial.html"><span class="doc">Robot Description Tutorial</span></a> for more details.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescription</span><span class="o">&gt;</span><span class="w"> </span><span class="n">robot_description</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">LoadRobotFromFile</span><span class="p">(</span><span class="n">xrdf_file</span><span class="p">,</span><span class="w"> </span><span class="n">urdf_file</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kinematics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">kinematics</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">robot_description</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">RobotDescription</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">load_robot_from_file</span><span class="p">(</span><span class="n">xrdf_path</span><span class="p">,</span> <span class="n">urdf_path</span><span class="p">)</span>
+<span class="n">kinematics</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">kinematics</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>These functions create a new instance of the robot kinematics each time it is
+called. It is <strong>highly</strong> recommended that the user call this function once and save the
+result.</p>
+<section id="c-space-coordinate-names">
+<h3>C-space Coordinate Names<a class="headerlink" href="#c-space-coordinate-names" title="Link to this heading">#</a></h3>
+<p>Each c-space coordinate is given a descriptive name, which is useful for debugging and analysis. Just like the robot
+description, the name for a given coordinate can be queried from the kinematics:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-2">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">numCSpaceCoords</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">coord_names</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">coord_names</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">cSpaceCoordName</span><span class="p">(</span><span class="n">coord_index</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Number of c-space coordinates: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Coordinate &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; name: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_names</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_coords</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">num_cspace_coords</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Number of c-space coordinates:&quot;</span><span class="p">,</span> <span class="n">num_coords</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
+    <span class="n">coord_name</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_name</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> name: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">coord_name</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Number</span> <span class="n">of</span> <span class="n">c</span><span class="o">-</span><span class="n">space</span> <span class="n">coordinates</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Coordinate</span> <span class="mi">0</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint1</span>
+<span class="n">Coordinate</span> <span class="mi">1</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint2</span>
+<span class="n">Coordinate</span> <span class="mi">2</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint3</span>
+<span class="n">Coordinate</span> <span class="mi">3</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint4</span>
+<span class="n">Coordinate</span> <span class="mi">4</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint5</span>
+<span class="n">Coordinate</span> <span class="mi">5</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint6</span>
+<span class="n">Coordinate</span> <span class="mi">6</span> <span class="n">name</span><span class="p">:</span> <span class="n">panda_joint7</span>
+</pre></div>
+</div>
+</section>
+<section id="c-space-limits">
+<h3>C-space Limits<a class="headerlink" href="#c-space-limits" title="Link to this heading">#</a></h3>
+<p>Once we have the robot kinematics, we can query the limits on the c-space positions, velocities, accelerations, and
+jerks:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">position_lower_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">position_upper_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">lower</span><span class="p">,</span><span class="w"> </span><span class="n">upper</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">cSpaceCoordLimits</span><span class="p">(</span><span class="n">coord_index</span><span class="p">);</span>
+<span class="w">  </span><span class="n">position_lower_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lower</span><span class="p">;</span>
+<span class="w">  </span><span class="n">position_upper_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">upper</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">C-space limits:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Coordinate &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; limits: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">position_lower_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span>
+<span class="w">            </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">position_upper_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">C-space limits:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
+    <span class="n">limits</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_limits</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> limits: [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">limits</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">limits</span><span class="o">.</span><span class="n">upper</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="o">-</span><span class="n">space</span> <span class="n">limits</span><span class="p">:</span>
+<span class="n">Coordinate</span> <span class="mi">0</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">1</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.7628</span><span class="p">,</span> <span class="mf">1.7628</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">2</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">3</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">3.0718</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0698</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">4</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">5</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.0175</span><span class="p">,</span> <span class="mf">3.7525</span><span class="p">]</span>
+<span class="n">Coordinate</span> <span class="mi">6</span> <span class="n">limits</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>It’s often useful to know whether a given c-space position is within the limits, which can be done with:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-5">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">test_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_upper_limits</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.1</span><span class="p">;</span>
+<span class="kt">bool</span><span class="w"> </span><span class="n">within_limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">withinCSpaceLimits</span><span class="p">(</span><span class="n">test_position</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Test position within limits: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">within_limits</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="s">&quot;true&quot;</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;false&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-6">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_coords</span><span class="p">)</span>
+<span class="n">within_limits</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">within_cspace_limits</span><span class="p">(</span><span class="n">test_position</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[0mTest position within limits:&quot;</span><span class="p">,</span> <span class="n">within_limits</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>which will produce output like the following if <code class="docutils literal notranslate"><span class="pre">log_warnings</span></code> is <code class="docutils literal notranslate"><span class="pre">true</span></code> and the c-space position violates any limits:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">C</span><span class="o">-</span><span class="n">space</span> <span class="n">position</span> <span class="p">[</span><span class="mf">3.18703</span><span class="p">,</span> <span class="mf">1.93908</span><span class="p">,</span> <span class="mf">3.18703</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.07678</span><span class="p">,</span> <span class="mf">3.18703</span><span class="p">,</span> <span class="mf">4.12775</span><span class="p">,</span> <span class="mf">3.18703</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint1&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">3.18703</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint2&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1.93908</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.7628</span><span class="p">,</span> <span class="mf">1.7628</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint3&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">3.18703</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint5&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">3.18703</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint6&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">4.12775</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.0175</span><span class="p">,</span> <span class="mf">3.7525</span><span class="p">)</span><span class="o">.</span>
+  <span class="o">-</span> <span class="n">Coordinate</span> <span class="s2">&quot;panda_joint7&quot;</span> <span class="p">[</span><span class="n">index</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="mf">3.18703</span><span class="p">]</span> <span class="n">exceeds</span> <span class="n">limits</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mf">2.8973</span><span class="p">,</span> <span class="mf">2.8973</span><span class="p">)</span><span class="o">.</span>
+</pre></div>
+</div>
+</section>
+<section id="velocity-acceleration-and-jerk-limits">
+<h3>Velocity, Acceleration, and Jerk Limits<a class="headerlink" href="#velocity-acceleration-and-jerk-limits" title="Link to this heading">#</a></h3>
+<p>In addition to position limits, we can also query the velocity, acceleration, and jerk limits for each c-space coordinate:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-7">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">velocity_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">acceleration_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">jerk_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">velocity_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">cSpaceCoordVelocityLimit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">);</span>
+<span class="w">  </span><span class="n">acceleration_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">cSpaceCoordAccelerationLimit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">);</span>
+<span class="w">  </span><span class="n">jerk_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">cSpaceCoordJerkLimit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Velocity limits:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Coordinate &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">velocity_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Acceleration limits:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Coordinate &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">acceleration_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Jerk limits:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Coordinate &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">jerk_limits</span><span class="p">[</span><span class="n">coord_index</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-8">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Velocity limits:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
+    <span class="n">vel_limit</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_velocity_limit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> velocity limit: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">vel_limit</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Acceleration limits:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
+    <span class="n">acc_limit</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_acceleration_limit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> acceleration limit: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">acc_limit</span><span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Jerk limits:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
+    <span class="n">jerk_limit</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_jerk_limit</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> jerk limit: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">jerk_limit</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Velocity</span> <span class="n">limits</span><span class="p">:</span>
+<span class="n">Coordinate</span> <span class="mi">0</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.175</span>
+<span class="n">Coordinate</span> <span class="mi">1</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.175</span>
+<span class="n">Coordinate</span> <span class="mi">2</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.175</span>
+<span class="n">Coordinate</span> <span class="mi">3</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.175</span>
+<span class="n">Coordinate</span> <span class="mi">4</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.61</span>
+<span class="n">Coordinate</span> <span class="mi">5</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.61</span>
+<span class="n">Coordinate</span> <span class="mi">6</span> <span class="n">velocity</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">2.61</span>
+
+<span class="n">Acceleration</span> <span class="n">limits</span><span class="p">:</span>
+<span class="n">Coordinate</span> <span class="mi">0</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">15.0</span>
+<span class="n">Coordinate</span> <span class="mi">1</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">7.5</span>
+<span class="n">Coordinate</span> <span class="mi">2</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">10.0</span>
+<span class="n">Coordinate</span> <span class="mi">3</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">12.5</span>
+<span class="n">Coordinate</span> <span class="mi">4</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">15.0</span>
+<span class="n">Coordinate</span> <span class="mi">5</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">20.0</span>
+<span class="n">Coordinate</span> <span class="mi">6</span> <span class="n">acceleration</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">20.0</span>
+
+<span class="n">Jerk</span> <span class="n">limits</span><span class="p">:</span>
+<span class="n">Coordinate</span> <span class="mi">0</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">7500.0</span>
+<span class="n">Coordinate</span> <span class="mi">1</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">3750.0</span>
+<span class="n">Coordinate</span> <span class="mi">2</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">5000.0</span>
+<span class="n">Coordinate</span> <span class="mi">3</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">6250.0</span>
+<span class="n">Coordinate</span> <span class="mi">4</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">7500.0</span>
+<span class="n">Coordinate</span> <span class="mi">5</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">10000.0</span>
+<span class="n">Coordinate</span> <span class="mi">6</span> <span class="n">jerk</span> <span class="n">limit</span><span class="p">:</span> <span class="mf">10000.0</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="coordinate-frames">
+<h2>Coordinate Frames<a class="headerlink" href="#coordinate-frames" title="Link to this heading">#</a></h2>
+<p>The kinematics define multiple coordinate frames, which are all rigidly attached to a particular link of the robot.
+The kinematics (both forward and inverse) are defined between two frames, which are typically the base frame (a frame
+rigidly attached to the environment) and the tool frame.</p>
+<p>To get a list of all the frame names in the robot, use <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::frameNames()</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-9">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frame_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frameNames</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Frame names:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="o">&amp;</span><span class="n">frame_name</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">frame_names</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">frame_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-10">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frame_names</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">frame_names</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frame names:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">frame_name</span> <span class="ow">in</span> <span class="n">frame_names</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">frame_name</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Frame</span> <span class="n">names</span><span class="p">:</span>
+  <span class="n">base_link</span>
+  <span class="n">panda_link0</span>
+  <span class="n">panda_link1</span>
+  <span class="n">panda_link2</span>
+  <span class="n">panda_link3</span>
+  <span class="n">panda_link4</span>
+  <span class="n">panda_forearm_end_pt</span>
+  <span class="n">panda_forearm_mid_pt</span>
+  <span class="n">panda_link5</span>
+  <span class="n">panda_forearm_distal</span>
+  <span class="n">panda_forearm_mid_pt_shifted</span>
+  <span class="n">panda_link6</span>
+  <span class="n">panda_link7</span>
+  <span class="n">panda_link8</span>
+  <span class="n">panda_hand</span>
+  <span class="n">camera_bottom_screw_frame</span>
+  <span class="n">camera_link</span>
+  <span class="n">camera_depth_frame</span>
+  <span class="n">camera_color_frame</span>
+  <span class="n">camera_color_optical_frame</span>
+  <span class="n">camera_depth_optical_frame</span>
+  <span class="n">camera_left_ir_frame</span>
+  <span class="n">camera_left_ir_optical_frame</span>
+  <span class="n">camera_right_ir_frame</span>
+  <span class="n">camera_right_ir_optical_frame</span>
+  <span class="n">panda_face_back_left</span>
+  <span class="n">panda_face_back_right</span>
+  <span class="n">panda_face_left</span>
+  <span class="n">panda_face_right</span>
+  <span class="n">panda_leftfinger</span>
+  <span class="n">panda_leftfingertip</span>
+  <span class="n">panda_rightfinger</span>
+  <span class="n">panda_rightfingertip</span>
+  <span class="n">right_gripper</span>
+  <span class="n">panda_wrist_end_pt</span>
+</pre></div>
+</div>
+<p>The base frame (the root of the kinematic tree structure), is given by <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::baseFrame()</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-11">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">base_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frameName</span><span class="p">(</span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">baseFrame</span><span class="p">());</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Base frame: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">base_frame_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-12">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base_frame_name</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">base_frame_name</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Base frame: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_frame_name</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Base</span> <span class="n">frame</span><span class="p">:</span> <span class="n">base_link</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>What is a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion10Kinematics11FrameHandleE" title="cumotion::Kinematics::FrameHandle"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">FrameHandle</span></code></a>? In the C++ API, most kinematics
+functions require a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code>, instead of a <code class="docutils literal notranslate"><span class="pre">std::string</span></code>. To avoid the overhead of string processing
+and lookup, the user is expected to create the <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> for the frame of interest once, and then re-use
+it.</p>
+<p>Do <strong>NOT</strong> attempt to use a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> created from a difference instance of the kinematics. This will
+result in silent errors. For this reason, it is strongly recommended that the user create a single instance
+of the kinematics (which can be moved to a <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>, if needed) and create a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> only when
+it can be guaranteed that the handle will always be used with the kinematics from which it was created.</p>
+</div>
+</section>
+<section id="forward-kinematics">
+<h2>Forward Kinematics<a class="headerlink" href="#forward-kinematics" title="Link to this heading">#</a></h2>
+<p>Once we know the name of the frame we want to work with, we can use <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::position()</span></code>,
+<code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::orientation()</span></code>, and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::pose()</span></code> to compute the forward kinematics
+of the given frame, with respect to the <cite>baseFrame()</cite>.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-13">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">defaultCSpaceConfiguration</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">toolFrameNames</span><span class="p">().</span><span class="n">front</span><span class="p">();</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">FrameHandle</span><span class="w"> </span><span class="n">tool_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">tool_frame_name</span><span class="p">);</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">FrameHandle</span><span class="w"> </span><span class="n">base_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">baseFrame</span><span class="p">();</span>
+
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">tool_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">Rotation3</span><span class="w"> </span><span class="n">tool_orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientation</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">tool_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Tool frame pose (position): [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tool frame pose (orientation quaternion): [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">w</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">z</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-14">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cspace_position</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">default_cspace_configuration</span><span class="p">()</span>
+<span class="n">tool_frame_name</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">tool_frame_names</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">tool_pose</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="n">tool_position</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="n">tool_orientation</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Rotation3</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Tool frame pose (position): </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tool frame pose (orientation quaternion): [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">tool_pose</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tool_pose</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">tool_pose</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">tool_pose</span><span class="o">.</span><span class="n">rotation</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tool</span> <span class="n">frame</span> <span class="n">pose</span> <span class="p">(</span><span class="n">position</span><span class="p">):</span> <span class="p">[</span>  <span class="mf">0.270021</span> <span class="o">-</span><span class="mf">0.0249843</span>   <span class="mf">0.425636</span><span class="p">]</span>
+<span class="n">Tool</span> <span class="n">frame</span> <span class="n">pose</span> <span class="p">(</span><span class="n">orientation</span> <span class="n">quaternion</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.213314</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0172907</span><span class="p">,</span> <span class="mf">0.976823</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00377586</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Alternatively, if we want to compute the forward kinematics with respect to a different frame, we can pass in
+the reference frame as the last argument:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-15">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">FrameHandle</span><span class="w"> </span><span class="n">link1_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">frame_names</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
+<span class="n">tool_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">,</span><span class="w"> </span><span class="n">link1_frame</span><span class="p">);</span>
+<span class="n">tool_orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientation</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">,</span><span class="w"> </span><span class="n">link1_frame</span><span class="p">);</span>
+<span class="n">tool_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">position</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">,</span><span class="w"> </span><span class="n">link1_frame</span><span class="p">);</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Tool frame pose (position): [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tool frame pose (orientation quaternion): [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">w</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">tool_pose</span><span class="p">.</span><span class="n">rotation</span><span class="p">.</span><span class="n">z</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-16">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">link1_name</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">frame_names</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">tool_pose</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">link1_name</span><span class="p">)</span>
+<span class="n">tool_position</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">link1_name</span><span class="p">)</span>
+<span class="n">tool_orientation</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">link1_name</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Tool position: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tool_position</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tool orientation (quaternion): [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+    <span class="n">tool_orientation</span><span class="o">.</span><span class="n">w</span><span class="p">,</span> <span class="n">tool_orientation</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">tool_orientation</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">tool_orientation</span><span class="o">.</span><span class="n">z</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Tool</span> <span class="n">frame</span> <span class="n">pose</span> <span class="p">(</span><span class="n">position</span><span class="p">):</span> <span class="p">[</span>  <span class="mf">0.270021</span> <span class="o">-</span><span class="mf">0.0249843</span>   <span class="mf">0.092636</span><span class="p">]</span>
+<span class="n">Tool</span> <span class="n">frame</span> <span class="n">pose</span> <span class="p">(</span><span class="n">orientation</span> <span class="n">quaternion</span><span class="p">):</span> <span class="p">[</span><span class="mf">0.213314</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.0172907</span><span class="p">,</span> <span class="mf">0.976823</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00377586</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="kinematic-jacobians">
+<h2>Kinematic Jacobians<a class="headerlink" href="#kinematic-jacobians" title="Link to this heading">#</a></h2>
+<p>The kinematic Jacobian is the derivative of a frame’s position and orientation, with respect to the c-space positions.
+In other words, it tells us how much the frame will move in each direction when we move a given joint. There are many
+use-cases for these Jacobians; however, here we will simply demonstrate how to compute them.</p>
+<p>The <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics16positionJacobianERKN5Eigen8VectorXdERK11FrameHandle" title="cumotion::Kinematics::positionJacobian"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">position</span> <span class="pre">Jacobian</span></code></a> returns a <cite>3 x N</cite> Eigen matrix, where
+<cite>N</cite> is the number of c-space coordinates (<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics15numCSpaceCoordsEv" title="cumotion::Kinematics::numCSpaceCoords"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Kinematics::numCSpaceCoords()</span></code></a>), where column <cite>i</cite> of the
+Jacobian tells us how much the frame will translate in the world frame when we change coordinate <cite>i</cite>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-17">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">position_jacobian</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">positionJacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Position Jacobian shape: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">position_jacobian</span><span class="p">.</span><span class="n">rows</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; x &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">position_jacobian</span><span class="p">.</span><span class="n">cols</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-18">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">position_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position_jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Position Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                <span class="n">position_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Position</span> <span class="n">Jacobian</span> <span class="n">shape</span><span class="p">:</span> <span class="mi">3</span> <span class="n">x</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics19orientationJacobianERKN5Eigen8VectorXdERK11FrameHandle" title="cumotion::Kinematics::orientationJacobian"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">orientation</span> <span class="pre">Jacobian</span></code></a> also returns a <cite>3 x N</cite> Eigen matrix
+Here column <cite>i</cite> of the Jacobian tells us how much the frame will rotate about the given axis in the world frame when we
+change coordinate <cite>i</cite>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-19">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orientation_jacobian</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientationJacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Orientation Jacobian shape: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">orientation_jacobian</span><span class="p">.</span><span class="n">rows</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; x &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">orientation_jacobian</span><span class="p">.</span><span class="n">cols</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-20">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">orientation_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation_jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Orientation Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orientation_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                   <span class="n">orientation_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Orientation</span> <span class="n">Jacobian</span> <span class="n">shape</span><span class="p">:</span> <span class="mi">3</span> <span class="n">x</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>To compute both at the same time, use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics8jacobianERKN5Eigen8VectorXdERK11FrameHandle" title="cumotion::Kinematics::jacobian"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Kinematics::jacobian()</span></code></a>, which stacks the position
+Jacobian on top of the orientation Jacobian:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-21">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">full_jacobian</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Full Jacobian shape: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">full_jacobian</span><span class="p">.</span><span class="n">rows</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; x &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">full_jacobian</span><span class="p">.</span><span class="n">cols</span><span class="p">()</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-22">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">full_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Full Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">full_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Full</span> <span class="n">Jacobian</span> <span class="n">shape</span><span class="p">:</span> <span class="mi">6</span> <span class="n">x</span> <span class="mi">7</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="robot_description_tutorial.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Robot Description Tutorial</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="world_tutorial.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">World Tutorial</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-are-kinematics">What are Kinematics?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#robot-kinematics">Robot Kinematics</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematics-in-cumotion">Kinematics in cuMotion</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-space-coordinates">C-space Coordinates</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-space-coordinate-names">C-space Coordinate Names</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#c-space-limits">C-space Limits</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#velocity-acceleration-and-jerk-limits">Velocity, Acceleration, and Jerk Limits</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#coordinate-frames">Coordinate Frames</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forward-kinematics">Forward Kinematics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#kinematic-jacobians">Kinematic Jacobians</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>
