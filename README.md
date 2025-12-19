@@ -15,7 +15,7 @@
 NVIDIA cuMotion is a high-performance motion generation library for robotics, focused mainly on manipulation.
 GPU acceleration is leveraged throughout where beneficial for performance.
 
-In this **Developer Preview**, capabilities include:
+Capabilities include:
 
 * Kinematics and inverse kinematics (IK)
 * Collision-aware IK
@@ -25,6 +25,7 @@ In this **Developer Preview**, capabilities include:
 * Time-optimal (collision-unaware) trajectory generation for paths given by any number of moves in configuration
   space (joint space) and/or task space
 * Collision sphere generation, for approximating a closed mesh by a set of spheres
+* Robot segmentation, for removing the contribution of a robot arm from one or more depth image streams
 
 Robots with any number of degrees of freedom are supported.
 
@@ -49,15 +50,15 @@ See the [documentation](https://nvidia-isaac.github.io/cumotion/) for a full ove
 
 # System Requirements
 
-This Developer Preview of the cuMotion library is provided as a set of shared object files and Python wheel files
+The current release of the cuMotion library is provided as a set of shared object files and Python wheel files
 for the following platform configurations.
 
 | Platform                              | Python | CUDA | Tested OS     | Download |
 |---------------------------------------|--------|------|---------------|----------|
-| Jetson Orin                           | 3.10   | 12.6 | JetPack 6.2.1 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v0.26.0-dp1/cumotion-dp1-python3.10-cuda12.6-aarch64.tar.gz) |
-| Jetson Thor                           | 3.12   | 13.0 | JetPack 7.0   | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v0.26.0-dp1/cumotion-dp1-python3.12-cuda13.0-aarch64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 3.10   | 12.6 | Ubuntu 22.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v0.26.0-dp1/cumotion-dp1-python3.10-cuda12.6-x86_64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 3.12   | 13.0 | Ubuntu 24.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v0.26.0-dp1/cumotion-dp1-python3.12-cuda13.0-x86_64.tar.gz) |
+| Jetson Orin                           | 3.10   | 12.6 | JetPack 6.2.1 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.10-cuda12.6-aarch64.tar.gz) |
+| Jetson Thor                           | 3.12   | 13.0 | JetPack 7.0   | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.12-cuda13.0-aarch64.tar.gz) |
+| x86_64 + NVIDIA GPU (Turing or later) | 3.10   | 12.6 | Ubuntu 22.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.10-cuda12.6-x86_64.tar.gz) |
+| x86_64 + NVIDIA GPU (Turing or later) | 3.12   | 13.0 | Ubuntu 24.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.12-cuda13.0-x86_64.tar.gz) |
 
 Only Linux-based operating systems are supported in the current release.
 
@@ -73,7 +74,7 @@ for details on the minimum GPU driver version required for a given CUDA version.
 # Installation
 
 Download the cuMotion package for your desired platform from
-[Releases](https://github.com/nvidia-isaac/cumotion/releases/tag/v0.26.0-dp1) and extract the contents:
+[Releases](https://github.com/nvidia-isaac/cumotion/releases) and extract the contents:
 
 ```
 tar xzvf cumotion-<version>-<python_version>-<cuda_version>-<arch>.tar.gz && \
