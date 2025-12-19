@@ -6326,6 +6326,391 @@ Attributes:
 </dd></dl>
 
 </section>
+<section id="camera-definition-and-depth-images">
+<h2>Camera Definition and Depth Images<a class="headerlink" href="#camera-definition-and-depth-images" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cumotion/vision.h&gt;</span>
+</pre></div>
+</div>
+<p>Public interface for handling depth camera data. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This interface is experimental and may evolve in a future release. It also lacks a corresponding Python API. </p>
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion16CameraIntrinsicsE">
+<span id="_CPPv3N8cumotion16CameraIntrinsicsE"></span><span id="_CPPv2N8cumotion16CameraIntrinsicsE"></span><span id="cumotion::CameraIntrinsics"></span><span class="target" id="classcumotion_1_1CameraIntrinsics"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CameraIntrinsics</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion16CameraIntrinsicsE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Camera intrinsic parameters.</p>
+<p>The intrinsics define the mapping from 3D camera coordinates to 2D image coordinates. The standard pinhole camera model uses four parameters (<code class="docutils literal notranslate"><span class="pre">fx</span></code>, <code class="docutils literal notranslate"><span class="pre">fy</span></code>, <code class="docutils literal notranslate"><span class="pre">cx</span></code>, <code class="docutils literal notranslate"><span class="pre">cy</span></code>) that form the intrinsic matrix:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">fx</span>   <span class="mi">0</span>  <span class="n">cx</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>  <span class="n">fy</span>  <span class="n">cy</span><span class="p">]</span>
+<span class="p">[</span> <span class="mi">0</span>   <span class="mi">0</span>   <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">fx</span></code> and <code class="docutils literal notranslate"><span class="pre">fy</span></code> are the focal lengths in pixels, and <code class="docutils literal notranslate"><span class="pre">cx</span></code> and <code class="docutils literal notranslate"><span class="pre">cy</span></code> are the principal point coordinates (optical center) in pixels. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsEdddd">
+<span id="_CPPv3N8cumotion16CameraIntrinsics16CameraIntrinsicsEdddd"></span><span id="_CPPv2N8cumotion16CameraIntrinsics16CameraIntrinsicsEdddd"></span><span id="cumotion::CameraIntrinsics::CameraIntrinsics__double.double.double.double"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a14d366a2c21f2d9d39e5d4d2ac932fb5"></span><span class="sig-name descname"><span class="n"><span class="pre">CameraIntrinsics</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fx</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fy</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cx</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsEdddd" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct from the four standard pinhole camera parameters.</p>
+<p>The parameters <code class="docutils literal notranslate"><span class="pre">fx</span></code> and <code class="docutils literal notranslate"><span class="pre">fy</span></code> represent the focal lengths in the x and y directions (in pixels), while <code class="docutils literal notranslate"><span class="pre">cx</span></code> and <code class="docutils literal notranslate"><span class="pre">cy</span></code> represent the principal point (optical center) coordinates. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsERKN5Eigen8Matrix3dE">
+<span id="_CPPv3N8cumotion16CameraIntrinsics16CameraIntrinsicsERKN5Eigen8Matrix3dE"></span><span id="_CPPv2N8cumotion16CameraIntrinsics16CameraIntrinsicsERKN5Eigen8Matrix3dE"></span><span id="cumotion::CameraIntrinsics::CameraIntrinsics__Eigen::Matrix3dCR"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a1f777b35f6e38ffb15919b73dc0f3490"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CameraIntrinsics</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Eigen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Matrix3d</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">matrix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsERKN5Eigen8Matrix3dE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct from a full 3x3 intrinsic matrix. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics2fxEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics2fxEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics2fxEv"></span><span id="cumotion::CameraIntrinsics::fxC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a3176dbdab686baebd6f94c014fc79ad8"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics2fxEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the focal length in the x direction (in pixels). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics2fyEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics2fyEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics2fyEv"></span><span id="cumotion::CameraIntrinsics::fyC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1abfa939a5207f6a5da9292e2595384c90"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics2fyEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the focal length in the y direction (in pixels). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics2cxEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics2cxEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics2cxEv"></span><span id="cumotion::CameraIntrinsics::cxC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a92d2df926d6828bce33f1b651c3b2c62"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cx</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics2cxEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the x coordinate of the principal point (optical center) in pixels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics2cyEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics2cyEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics2cyEv"></span><span id="cumotion::CameraIntrinsics::cyC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a9f92c8b48db8f10ff65adf9331312b9d"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cy</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics2cyEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the y coordinate of the principal point (optical center) in pixels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics6matrixEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics6matrixEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics6matrixEv"></span><span id="cumotion::CameraIntrinsics::matrixC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1ab945f7f945f74b0321aae92458d9f3b1"></span><span class="n"><span class="pre">Eigen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Matrix3d</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">matrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics6matrixEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the full 3x3 intrinsic matrix. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion16CameraIntrinsics9isPinholeEv">
+<span id="_CPPv3NK8cumotion16CameraIntrinsics9isPinholeEv"></span><span id="_CPPv2NK8cumotion16CameraIntrinsics9isPinholeEv"></span><span id="cumotion::CameraIntrinsics::isPinholeC"></span><span class="target" id="classcumotion_1_1CameraIntrinsics_1a16e1e2483bfcb6b3b0d9319eef51f0cf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isPinhole</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion16CameraIntrinsics9isPinholeEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return whether the intrinsic matrix has the standard pinhole camera structure.</p>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">true</span></code> if the matrix follows the canonical pinhole format with zero skew, zeros in the lower triangular entries, and 1 in the bottom-right corner. This allows for optimized operations that only use the four key parameters (<code class="docutils literal notranslate"><span class="pre">fx</span></code>, <code class="docutils literal notranslate"><span class="pre">fy</span></code>, <code class="docutils literal notranslate"><span class="pre">cx</span></code>, <code class="docutils literal notranslate"><span class="pre">cy</span></code>). </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion15BufferResidencyE">
+<span id="_CPPv3N8cumotion15BufferResidencyE"></span><span id="_CPPv2N8cumotion15BufferResidencyE"></span><span class="target" id="namespacecumotion_1a95e3d82e6a76248b8e5b39de5b82c315"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">cumotion</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">BufferResidency</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion15BufferResidencyE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Memory residency for buffer data. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion15BufferResidency4HOSTE">
+<span id="_CPPv3N8cumotion15BufferResidency4HOSTE"></span><span id="_CPPv2N8cumotion15BufferResidency4HOSTE"></span><span class="target" id="namespacecumotion_1a95e3d82e6a76248b8e5b39de5b82c315ab9361011891280a44d85b967739cc6a5"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HOST</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion15BufferResidency4HOSTE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Host memory allocated via <code class="docutils literal notranslate"><span class="pre">malloc()</span></code>, <code class="docutils literal notranslate"><span class="pre">new</span></code>, <code class="docutils literal notranslate"><span class="pre">cudaMallocHost()</span></code>, etc. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion15BufferResidency6DEVICEE">
+<span id="_CPPv3N8cumotion15BufferResidency6DEVICEE"></span><span id="_CPPv2N8cumotion15BufferResidency6DEVICEE"></span><span class="target" id="namespacecumotion_1a95e3d82e6a76248b8e5b39de5b82c315ae10b6ab6a278644ce40631f62f360b6d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DEVICE</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion15BufferResidency6DEVICEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Device memory allocated via <code class="docutils literal notranslate"><span class="pre">cudaMalloc()</span></code> or similar CUDA device allocators. </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion15BufferResidency7MANAGEDE">
+<span id="_CPPv3N8cumotion15BufferResidency7MANAGEDE"></span><span id="_CPPv2N8cumotion15BufferResidency7MANAGEDE"></span><span class="target" id="namespacecumotion_1a95e3d82e6a76248b8e5b39de5b82c315af59a25f2594f469f0bfccad7f8f13744"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MANAGED</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion15BufferResidency7MANAGEDE" title="Link to this definition">#</a><br /></dt>
+<dd><p>CUDA unified/managed memory allocated via <code class="docutils literal notranslate"><span class="pre">cudaMallocManaged()</span></code>.</p>
+<p>This memory is accessible from both host and device, with migration handled as needed by the CUDA runtime. </p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14DepthImageBaseE">
+<span id="_CPPv3N8cumotion14DepthImageBaseE"></span><span id="_CPPv2N8cumotion14DepthImageBaseE"></span><span id="cumotion::DepthImageBase"></span><span class="target" id="classcumotion_1_1DepthImageBase"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DepthImageBase</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion14DepthImageBaseE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Type-agnostic base class for depth images and (non-owning) views of depth images.</p>
+<p>See <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> for member function documentation. </p>
+<p>Subclassed by <a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref">cumotion::DepthImage&lt; T &gt;</span></a></p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14DepthImageBase10ScalarTypeE">
+<span id="_CPPv3N8cumotion14DepthImageBase10ScalarTypeE"></span><span id="_CPPv2N8cumotion14DepthImageBase10ScalarTypeE"></span><span class="target" id="classcumotion_1_1DepthImageBase_1acad66f74ee40bca1423f9cb5945aafb4"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ScalarType</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion14DepthImageBase10ScalarTypeE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Scalar type used to represent the depth values. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14DepthImageBase10ScalarType5FLOATE">
+<span id="_CPPv3N8cumotion14DepthImageBase10ScalarType5FLOATE"></span><span id="_CPPv2N8cumotion14DepthImageBase10ScalarType5FLOATE"></span><span class="target" id="classcumotion_1_1DepthImageBase_1acad66f74ee40bca1423f9cb5945aafb4ae738c26bf4ce1037fa81b039a915cbf6"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FLOAT</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion14DepthImageBase10ScalarType5FLOATE" title="Link to this definition">#</a><br /></dt>
+<dd><p>32-bit floating point (corresponds to <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a><span class="pre">&lt;float&gt;</span></code>) </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14DepthImageBase10ScalarType6UINT16E">
+<span id="_CPPv3N8cumotion14DepthImageBase10ScalarType6UINT16E"></span><span id="_CPPv2N8cumotion14DepthImageBase10ScalarType6UINT16E"></span><span class="target" id="classcumotion_1_1DepthImageBase_1acad66f74ee40bca1423f9cb5945aafb4a48d8f1a723d44ff4a87db1bb6c551c62"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UINT16</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion14DepthImageBase10ScalarType6UINT16E" title="Link to this definition">#</a><br /></dt>
+<dd><p>16-bit unsigned integer (corresponds to <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a><span class="pre">&lt;uint16_t&gt;</span></code>) </p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8cumotion10DepthImageE">
+<span id="_CPPv3I0EN8cumotion10DepthImageE"></span><span id="_CPPv2I0EN8cumotion10DepthImageE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">T</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classcumotion_1_1DepthImage"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DepthImage</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">cumotion</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8cumotion14DepthImageBaseE" title="cumotion::DepthImageBase"><span class="n"><span class="pre">DepthImageBase</span></span></a><a class="headerlink" href="#_CPPv4I0EN8cumotion10DepthImageE" title="Link to this definition">#</a><br /></dt>
+<dd><p>A depth image or non-owning view of a depth image buffer.</p>
+<p>The data buffer is assumed to be contiguous with pixels in the conventional row-major order (with the x coordinate varying fastest) and with the origin at the top-left corner.</p>
+<p>Supported types are <code class="docutils literal notranslate"><span class="pre">float</span></code> and <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>. The latter is often used for raw depth data where distance is measured in millimeters. Const-qualified variants are also supported.</p>
+<p>The <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage_1a37443a3ba48acbc61814d22a2ba98747"><span class="std std-ref"><span class="pre">stride()</span></span></a></code> will always be equal to or greater than <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage_1a1116a7dad74fd4e2bd130e1e0a699c58"><span class="std std-ref"><span class="pre">width()</span></span></a></code>. The pixel at coordinates (x, y) is located at index <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">*</span> <a class="reference internal" href="#classcumotion_1_1DepthImage_1a37443a3ba48acbc61814d22a2ba98747"><span class="std std-ref"><span class="pre">stride()</span></span></a> <span class="pre">+</span> <span class="pre">x</span></code> in the buffer, where <code class="docutils literal notranslate"><span class="pre">x</span></code> is the column index and <code class="docutils literal notranslate"><span class="pre">y</span></code> is the row index. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd">
+<span id="_CPPv3I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd"></span><span id="_CPPv2I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">U</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_if_t</span></span><span class="p"><span class="pre">&lt;</span></span><span class="o"><span class="pre">!</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">is_const_v</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd" title="cumotion::DepthImage::DepthImage::U"><span class="n"><span class="pre">U</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classcumotion_1_1DepthImage_1a501c3cb850a040dcd75984635c459176"></span><span class="sig-name descname"><span class="n"><span class="pre">DepthImage</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullopt</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidencyE" title="cumotion::BufferResidency"><span class="n"><span class="pre">BufferResidency</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">residency</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidencyE" title="cumotion::BufferResidency"><span class="n"><span class="pre">BufferResidency</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidency4HOSTE" title="cumotion::BufferResidency::HOST"><span class="n"><span class="pre">HOST</span></span></a></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">meters_per_unit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion10DepthImage20DefaultMetersPerUnitEv" title="cumotion::DepthImage::DefaultMetersPerUnit"><span class="n"><span class="pre">DefaultMetersPerUnit</span></span></a><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd" title="Link to this definition">#</a><br /></dt>
+<dd><p>Construct a <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> that owns its own buffer.</p>
+<p>This constructor is only available for non-const scalar types (<code class="docutils literal notranslate"><span class="pre">float</span></code> or <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>).</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">stride</span></code> parameter specifies the number of elements between consecutive rows. If not provided, the stride defaults to <code class="docutils literal notranslate"><span class="pre">width</span></code> (tightly-packed layout). The <code class="docutils literal notranslate"><span class="pre">residency</span></code> parameter indicates where to allocate the buffer, and the <code class="docutils literal notranslate"><span class="pre">meters_per_unit</span></code> parameter specifies the scaling factor to convert depth values to meters.</p>
+<p>A fatal error will be logged if:</p>
+<p><ol class="lowerroman simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code> or <code class="docutils literal notranslate"><span class="pre">height</span></code> is zero or negative, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stride</span></code> is smaller than <code class="docutils literal notranslate"><span class="pre">width</span></code>. </p></li>
+</ol>
+</p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion10DepthImage4dataEv">
+<span id="_CPPv3N8cumotion10DepthImage4dataEv"></span><span id="_CPPv2N8cumotion10DepthImage4dataEv"></span><span id="cumotion::DepthImage::data"></span><span class="target" id="classcumotion_1_1DepthImage_1ab5dc19e676908530bd83f53f14ce69ab"></span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion10DepthImage4dataEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return pointer to the underlying depth data buffer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage4dataEv">
+<span id="_CPPv3NK8cumotion10DepthImage4dataEv"></span><span id="_CPPv2NK8cumotion10DepthImage4dataEv"></span><span id="cumotion::DepthImage::dataC"></span><span class="target" id="classcumotion_1_1DepthImage_1acad5df467d4342b026fcc753b632158e"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage4dataEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return const pointer to the underlying depth data buffer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage5widthEv">
+<span id="_CPPv3NK8cumotion10DepthImage5widthEv"></span><span id="_CPPv2NK8cumotion10DepthImage5widthEv"></span><span id="cumotion::DepthImage::widthC"></span><span class="target" id="classcumotion_1_1DepthImage_1a1116a7dad74fd4e2bd130e1e0a699c58"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">width</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage5widthEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the width of the depth image in pixels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage6heightEv">
+<span id="_CPPv3NK8cumotion10DepthImage6heightEv"></span><span id="_CPPv2NK8cumotion10DepthImage6heightEv"></span><span id="cumotion::DepthImage::heightC"></span><span class="target" id="classcumotion_1_1DepthImage_1a9af352d41604d2981678b02c01a5b455"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">height</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage6heightEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the height of the depth image in pixels. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage6strideEv">
+<span id="_CPPv3NK8cumotion10DepthImage6strideEv"></span><span id="_CPPv2NK8cumotion10DepthImage6strideEv"></span><span id="cumotion::DepthImage::strideC"></span><span class="target" id="classcumotion_1_1DepthImage_1a37443a3ba48acbc61814d22a2ba98747"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">stride</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage6strideEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the stride of the depth image in elements.</p>
+<p>The stride represents the number of elements between consecutive rows in the buffer. For tightly-packed images, stride equals width. For padded or aligned images, stride may be larger than width. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage9residencyEv">
+<span id="_CPPv3NK8cumotion10DepthImage9residencyEv"></span><span id="_CPPv2NK8cumotion10DepthImage9residencyEv"></span><span id="cumotion::DepthImage::residencyC"></span><span class="target" id="classcumotion_1_1DepthImage_1a26ff27d09e50edc918acf8c0ab4f0650"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidencyE" title="cumotion::BufferResidency"><span class="n"><span class="pre">BufferResidency</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">residency</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage9residencyEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the memory residency of the depth image buffer. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage13metersPerUnitEv">
+<span id="_CPPv3NK8cumotion10DepthImage13metersPerUnitEv"></span><span id="_CPPv2NK8cumotion10DepthImage13metersPerUnitEv"></span><span id="cumotion::DepthImage::metersPerUnitC"></span><span class="target" id="classcumotion_1_1DepthImage_1a6c74814882b5e1813154601736905499"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">metersPerUnit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage13metersPerUnitEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the scaling factor to convert depth values to meters.</p>
+<p>This value represents the number of meters per depth unit. Common values include 1.0 for depth already in meters, 0.001 for millimeters, and 0.0001 for tenths of millimeters. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage6isViewEv">
+<span id="_CPPv3NK8cumotion10DepthImage6isViewEv"></span><span id="_CPPv2NK8cumotion10DepthImage6isViewEv"></span><span id="cumotion::DepthImage::isViewC"></span><span class="target" id="classcumotion_1_1DepthImage_1a5580936dea86284622520121c0220d85"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isView</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage6isViewEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return whether this is a (non-owning) view or a <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> that owns its memory.</p>
+<p>Views do not manage the lifetime of the underlying buffer. Owning instances allocate and deallocate the buffer automatically. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage10scalarTypeEv">
+<span id="_CPPv3NK8cumotion10DepthImage10scalarTypeEv"></span><span id="_CPPv2NK8cumotion10DepthImage10scalarTypeEv"></span><span id="cumotion::DepthImage::scalarTypeC"></span><span class="target" id="classcumotion_1_1DepthImage_1a9db50e1abbe29c5bc884eca1794fb19f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">ScalarType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">scalarType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage10scalarTypeEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the scalar type of the depth image data (needed for <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImageBase"><span class="std std-ref"><span class="pre">DepthImageBase</span></span></a></code> interface). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage7isConstEv">
+<span id="_CPPv3NK8cumotion10DepthImage7isConstEv"></span><span id="_CPPv2NK8cumotion10DepthImage7isConstEv"></span><span id="cumotion::DepthImage::isConstC"></span><span class="target" id="classcumotion_1_1DepthImage_1abbd20d3e8cd824e3b0db553ee05c0654"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">isConst</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage7isConstEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return whether the depth image data is const-qualified (needed for <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImageBase"><span class="std std-ref"><span class="pre">DepthImageBase</span></span></a></code> interface). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage2atEii">
+<span id="_CPPv3NK8cumotion10DepthImage2atEii"></span><span id="_CPPv2NK8cumotion10DepthImage2atEii"></span><span id="cumotion::DepthImage::at__i.iC"></span><span class="target" id="classcumotion_1_1DepthImage_1a34347244b5afbe9fb6bd504aedf21fd9"></span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">at</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span></em><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage2atEii" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the depth value at pixel coordinates (x, y).</p>
+<p>The returned value is the raw depth measurement without unit conversion. The <code class="docutils literal notranslate"><span class="pre">x</span></code> coordinate corresponds to the column index, and <code class="docutils literal notranslate"><span class="pre">y</span></code> corresponds to the row index, with the origin at the top-left corner.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This accessor does not perform bounds checking and does not check that the data is resident on the host. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion10DepthImage2atEii">
+<span id="_CPPv3N8cumotion10DepthImage2atEii"></span><span id="_CPPv2N8cumotion10DepthImage2atEii"></span><span id="cumotion::DepthImage::at__i.i"></span><span class="target" id="classcumotion_1_1DepthImage_1aca75ea9f048dd15b4afab65cbcb5eca7"></span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">at</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion10DepthImage2atEii" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return a reference to the depth value at pixel coordinates (x, y).</p>
+<p>This function allows modification of the depth value and is only available for non-const template instantiations. The <code class="docutils literal notranslate"><span class="pre">x</span></code> coordinate corresponds to the column index, and <code class="docutils literal notranslate"><span class="pre">y</span></code> corresponds to the row index, with the origin at the top-left corner.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This accessor does not perform bounds checking and does not check that the data is resident on the host. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK8cumotion10DepthImage13depthInMetersEii">
+<span id="_CPPv3NK8cumotion10DepthImage13depthInMetersEii"></span><span id="_CPPv2NK8cumotion10DepthImage13depthInMetersEii"></span><span id="cumotion::DepthImage::depthInMeters__i.iC"></span><span class="target" id="classcumotion_1_1DepthImage_1a945348765c7a86397bec4b21db5b1d13"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">depthInMeters</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">y</span></span></em><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK8cumotion10DepthImage13depthInMetersEii" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the depth value at pixel coordinates (<code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>) converted to meters.</p>
+<p>This method returns the depth value scaled by <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage_1a6c74814882b5e1813154601736905499"><span class="std std-ref"><span class="pre">metersPerUnit()</span></span></a></code>. The <code class="docutils literal notranslate"><span class="pre">x</span></code> coordinate corresponds to the column index, and <code class="docutils literal notranslate"><span class="pre">y</span></code> corresponds to the row index, with the origin at the top-left corner.</p>
+<p>A fatal error will be logged if the data is not resident on the host or if either <code class="docutils literal notranslate"><span class="pre">x</span></code> or <code class="docutils literal notranslate"><span class="pre">y</span></code> is out of bounds. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion10DepthImage10DepthImageENSt10shared_ptrI4ImplEE">
+<span id="_CPPv3N8cumotion10DepthImage10DepthImageENSt10shared_ptrI4ImplEE"></span><span id="_CPPv2N8cumotion10DepthImage10DepthImageENSt10shared_ptrI4ImplEE"></span><span id="cumotion::DepthImage::DepthImage__std::shared_ptr:Impl:"></span><span class="target" id="classcumotion_1_1DepthImage_1a894dccf5f65fa132bec6d86bc9eda669"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DepthImage</span></span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">Impl</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">impl</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion10DepthImage10DepthImageENSt10shared_ptrI4ImplEE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Constructor used by the internal implementation. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion10DepthImage20DefaultMetersPerUnitEv">
+<span id="_CPPv3N8cumotion10DepthImage20DefaultMetersPerUnitEv"></span><span id="_CPPv2N8cumotion10DepthImage20DefaultMetersPerUnitEv"></span><span id="cumotion::DepthImage::DefaultMetersPerUnitCE"></span><span class="target" id="classcumotion_1_1DepthImage_1a7e0d164f647c6375b7513b5f70411516"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">constexpr</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DefaultMetersPerUnit</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion10DepthImage20DefaultMetersPerUnitEv" title="Link to this definition">#</a><br /></dt>
+<dd><p>Return the default <code class="docutils literal notranslate"><span class="pre">meters_per_unit</span></code> value for the scalar type <code class="docutils literal notranslate"><span class="pre">T</span></code>:</p>
+<p><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0.001</span></code> for <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>, corresponding to units of millimeters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1.0</span></code> for <code class="docutils literal notranslate"><span class="pre">float</span></code>, corresponding to units of meters. </p></li>
+</ul>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd">
+<span id="_CPPv3I0EN8cumotion20CreateDepthImageViewEP1TiiNSt8optionalIiEE15BufferResidencyd"></span><span id="_CPPv2I0EN8cumotion20CreateDepthImageViewEP1TiiNSt8optionalIiEE15BufferResidencyd"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname sig-name-template"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacecumotion_1a929b1e71fe11117122bdfc2b8f9499c4"></span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage"><span class="n"><span class="pre">DepthImage</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd" title="cumotion::CreateDepthImageView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">cumotion</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CreateDepthImageView</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd" title="cumotion::CreateDepthImageView::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">data</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">width</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">height</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullopt</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidencyE" title="cumotion::BufferResidency"><span class="n"><span class="pre">BufferResidency</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">residency</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidencyE" title="cumotion::BufferResidency"><span class="n"><span class="pre">BufferResidency</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N8cumotion15BufferResidency4HOSTE" title="cumotion::BufferResidency::HOST"><span class="n"><span class="pre">HOST</span></span></a></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">meters_per_unit</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN8cumotion10DepthImageE" title="cumotion::DepthImage"><span class="n"><span class="pre">DepthImage</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd" title="cumotion::CreateDepthImageView::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DefaultMetersPerUnit</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a non-owning <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> view from a depth data buffer.</p>
+<p>The template parameter <code class="docutils literal notranslate"><span class="pre">T</span></code> can be <code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>, <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">float</span></code>, or <code class="docutils literal notranslate"><span class="pre">const</span> <span class="pre">uint16_t</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter points to a contiguous buffer containing depth values arranged in row-major order. The buffer must remain valid for the lifetime of the returned <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> object, as the view does not take ownership of the memory.</p>
+<p>The optional <code class="docutils literal notranslate"><span class="pre">stride</span></code> parameter specifies the number of elements between consecutive rows. If not provided, the stride defaults to <code class="docutils literal notranslate"><span class="pre">width</span></code> (tightly-packed layout). The <code class="docutils literal notranslate"><span class="pre">residency</span></code> parameter indicates where the buffer is allocated, and the <code class="docutils literal notranslate"><span class="pre">meters_per_unit</span></code> parameter specifies the scaling factor to convert depth values to meters.</p>
+<p>A fatal error will be logged if:</p>
+<p><ol class="loweralpha simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">data</span></code> is null,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code> or <code class="docutils literal notranslate"><span class="pre">height</span></code> is zero or negative, or</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stride</span></code> is smaller than <code class="docutils literal notranslate"><span class="pre">width</span></code>. </p></li>
+</ol>
+</p>
+</dd></dl>
+
+</section>
+<section id="robot-segmentation">
+<h2>Robot Segmentation<a class="headerlink" href="#robot-segmentation" title="Link to this heading">#</a></h2>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cumotion/robot_segmenter.h&gt;</span>
+</pre></div>
+</div>
+<p>Public interface for segmenting out the contribution of a robot from a depth image. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This interface is experimental and may evolve in a future release. It also lacks a corresponding Python API. </p>
+</div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14RobotSegmenterE">
+<span id="_CPPv3N8cumotion14RobotSegmenterE"></span><span id="_CPPv2N8cumotion14RobotSegmenterE"></span><span id="cumotion::RobotSegmenter"></span><span class="target" id="classcumotion_1_1RobotSegmenter"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RobotSegmenter</span></span></span><a class="headerlink" href="#_CPPv4N8cumotion14RobotSegmenterE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Interface class for segmenting (masking) out the contribution of a robot from a depth image. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion14RobotSegmenter17segmentDepthImageERK5Pose3RKN5Eigen8VectorXdERK14DepthImageBaseP14DepthImageBaseP14DepthImageBasedd">
+<span id="_CPPv3N8cumotion14RobotSegmenter17segmentDepthImageERK5Pose3RKN5Eigen8VectorXdERK14DepthImageBaseP14DepthImageBaseP14DepthImageBasedd"></span><span id="_CPPv2N8cumotion14RobotSegmenter17segmentDepthImageERK5Pose3RKN5Eigen8VectorXdERK14DepthImageBaseP14DepthImageBaseP14DepthImageBasedd"></span><span id="cumotion::RobotSegmenter::segmentDepthImage__Pose3CR.Eigen::VectorXdCR.DepthImageBaseCR.DepthImageBaseP.DepthImageBaseP.double.double"></span><span class="target" id="classcumotion_1_1RobotSegmenter_1a033d3b661231973666f93961188174b5"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">segmentDepthImage</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion5Pose3E" title="cumotion::Pose3"><span class="n"><span class="pre">Pose3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">camera_pose_in_robot_frame</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Eigen</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">VectorXd</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cspace_position</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion14DepthImageBaseE" title="cumotion::DepthImageBase"><span class="n"><span class="pre">DepthImageBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">input_depth_image</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4N8cumotion14DepthImageBaseE" title="cumotion::DepthImageBase"><span class="n"><span class="pre">DepthImageBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">output_depth_image</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4N8cumotion14DepthImageBaseE" title="cumotion::DepthImageBase"><span class="n"><span class="pre">DepthImageBase</span></span></a><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">output_mask</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">min_depth</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.01</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_depth</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">numeric_limits</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N8cumotion14RobotSegmenter17segmentDepthImageERK5Pose3RKN5Eigen8VectorXdERK14DepthImageBaseP14DepthImageBaseP14DepthImageBasedd" title="Link to this definition">#</a><br /></dt>
+<dd><p>For the given <code class="docutils literal notranslate"><span class="pre">camera_pose_in_robot_frame</span></code>, <code class="docutils literal notranslate"><span class="pre">cspace_position</span></code> of the robot, and <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>, compute a filtered <code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> and/or <code class="docutils literal notranslate"><span class="pre">output_depth_mask</span></code>.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> and <code class="docutils literal notranslate"><span class="pre">output_mask</span></code> are optional, and passing in <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> for either will skip the corresponding computation. A warning will be logged if <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> is passed in for both.</p>
+<p>If not null, <code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> will be populated with the same depth values as <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code> for all pixels where the corresponding point (in three dimensions) is not contained within the robot geometry, taking into account the <code class="docutils literal notranslate"><span class="pre">additional_buffer_distance</span></code> specified during construction of the <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1RobotSegmenter"><span class="std std-ref"><span class="pre">RobotSegmenter</span></span></a></code>. Depth values for pixels corresponding to points contained in the robot geometry will be set to zero.</p>
+<p>If not null, <code class="docutils literal notranslate"><span class="pre">output_mask</span></code> will contain a zero for all pixels where the corresponding point (in three dimensions) is contained within the robot geometry and a value larger than zero for all other pixels. The mask is pixel-aligned with <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>. The particular nonzero value used depends on the scalar type of the <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code>:</p>
+<p><ul class="simple">
+<li><p>For a scalar type of <code class="docutils literal notranslate"><span class="pre">float</span></code>, the nonzero value is 1.0. Note that <code class="docutils literal notranslate"><span class="pre">meters_per_unit</span></code> for the <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> has no effect; it’s the “raw” value that’s set to 1.0.</p></li>
+<li><p>For a scalar type of <code class="docutils literal notranslate"><span class="pre">uint16_t</span></code>, the nonzero value is 65,535 (the maximum representable integer). Again, <code class="docutils literal notranslate"><span class="pre">meters_per_unit</span></code> for the <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> has no effect.</p></li>
+</ul>
+</p>
+<p><code class="docutils literal notranslate"><span class="pre">min_depth</span></code> and <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> are given in meters and influence the interpretation of depth values read from the <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>. A depth value outside the range (<code class="docutils literal notranslate"><span class="pre">min_depth</span></code>, <code class="docutils literal notranslate"><span class="pre">max_depth</span></code>) is assumed to correspond to a point that is not contained within the robot geometry, and such a depth value will be written to the <code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> unchanged.</p>
+<p>The current implementation requires that all depth images have <code class="docutils literal notranslate"><span class="pre">HOST</span></code> or <code class="docutils literal notranslate"><span class="pre">MANAGED</span></code> residency.</p>
+<p>A fatal error will be logged if:</p>
+<p><ol class="lowerroman simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> is not null, and its width or height differs from the width or height (respectively) of <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_mask</span></code> is not null, and its width or height differs from the width or height (respectively) of <code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code> or <code class="docutils literal notranslate"><span class="pre">output_mask</span></code> is provided as a <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1DepthImage"><span class="std std-ref"><span class="pre">DepthImage</span></span></a></code> with a <code class="docutils literal notranslate"><span class="pre">const</span></code> scalar type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">input_depth_image</span></code>, <code class="docutils literal notranslate"><span class="pre">output_depth_image</span></code>, or <code class="docutils literal notranslate"><span class="pre">output_mask</span></code> have <code class="docutils literal notranslate"><span class="pre">DEVICE</span></code> residency. </p></li>
+</ol>
+</p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE">
+<span id="_CPPv3N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE"></span><span id="_CPPv2N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE"></span><span id="cumotion::CreateRobotSegmenter__RobotDescriptionCR.CameraIntrinsicsCR.double.RobotSegmenter::RobotGeometryKind"></span><span class="target" id="namespacecumotion_1aeba70e32fc51fb363edcf070e659e4f4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N8cumotion14RobotSegmenterE" title="cumotion::RobotSegmenter"><span class="n"><span class="pre">RobotSegmenter</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">cumotion</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CreateRobotSegmenter</span></span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion16RobotDescriptionE" title="cumotion::RobotDescription"><span class="n"><span class="pre">RobotDescription</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">robot_description</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion16CameraIntrinsicsE" title="cumotion::CameraIntrinsics"><span class="n"><span class="pre">CameraIntrinsics</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">camera_intrinsics</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">additional_buffer_distance</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span></em>,</dd>
+<dd><em class="sig-param"><a class="reference internal" href="#_CPPv4N8cumotion14RobotSegmenterE" title="cumotion::RobotSegmenter"><span class="n"><span class="pre">RobotSegmenter</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RobotGeometryKind</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">robot_geometry_kind</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N8cumotion14RobotSegmenterE" title="cumotion::RobotSegmenter"><span class="n"><span class="pre">RobotSegmenter</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RobotGeometryKind</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">WORLD_COLLISION_SPHERES</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE" title="Link to this definition">#</a><br /></dt>
+<dd><p>Create a <code class="docutils literal notranslate"><a class="reference internal" href="#classcumotion_1_1RobotSegmenter"><span class="std std-ref"><span class="pre">RobotSegmenter</span></span></a></code> from a <code class="docutils literal notranslate"><span class="pre">robot_description</span></code> and <code class="docutils literal notranslate"><span class="pre">camera_intrinsics</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">camera_intrinsics</span></code> must be in the four-parameter “pinhole” format with zero skew.</p>
+<p>If provided, <code class="docutils literal notranslate"><span class="pre">additional_buffer_distance</span></code> will inflate the effective size of the robot geometry (e.g., collision spheres) such that a point within that distance is considered to be contained within the geometry. This <code class="docutils literal notranslate"><span class="pre">additional_buffer_distance</span></code> augments rather than replaces any per-link buffer distance specified in the XRDF for the robot.</p>
+<p><code class="docutils literal notranslate"><span class="pre">additional_buffer_distance</span></code> may be negative, shrinking the effective size of the robot geometry. A given part of the geometry (e.g., a collision sphere) will be ignored altogether once <code class="docutils literal notranslate"><span class="pre">additional_buffer_distance</span></code> is sufficiently negative (e.g., negative with a magnitude that exceeds the radius, for the case of a sphere).</p>
+<p>The currently-supported values for <code class="docutils literal notranslate"><span class="pre">robot_geometry_kind</span></code> are <code class="docutils literal notranslate"><span class="pre">SELF_COLLISION_SPHERES</span></code> and <code class="docutils literal notranslate"><span class="pre">WORLD_COLLISION_SPHERES</span></code>, mapping to the corresponding collision geometry types in XRDF.</p>
+<p>A fatal error will be logged if the <code class="docutils literal notranslate"><span class="pre">camera_intrinsics</span></code> are not in the four-parameter “pinhole” format (with zero skew). </p>
+</dd></dl>
+
+</section>
 </section>
 
 
@@ -7050,6 +7435,62 @@ Attributes:
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion30CreateCollisionSphereGeneratorERKNSt6vectorIN5Eigen8Vector3dEEERKNSt6vectorIN5Eigen8Vector3iEEE"><code class="docutils literal notranslate"><span class="pre">CreateCollisionSphereGenerator()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion24GenerateCollisionSpheresERKNSt6vectorIN5Eigen8Vector3dEEERKNSt6vectorIN5Eigen8Vector3iEEEdidibd"><code class="docutils literal notranslate"><span class="pre">GenerateCollisionSpheres()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#camera-definition-and-depth-images">Camera Definition and Depth Images</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion16CameraIntrinsicsE"><code class="docutils literal notranslate"><span class="pre">CameraIntrinsics</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsEdddd"><code class="docutils literal notranslate"><span class="pre">CameraIntrinsics()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion16CameraIntrinsics16CameraIntrinsicsERKN5Eigen8Matrix3dE"><code class="docutils literal notranslate"><span class="pre">CameraIntrinsics()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics2fxEv"><code class="docutils literal notranslate"><span class="pre">fx()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics2fyEv"><code class="docutils literal notranslate"><span class="pre">fy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics2cxEv"><code class="docutils literal notranslate"><span class="pre">cx()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics2cyEv"><code class="docutils literal notranslate"><span class="pre">cy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics6matrixEv"><code class="docutils literal notranslate"><span class="pre">matrix()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion16CameraIntrinsics9isPinholeEv"><code class="docutils literal notranslate"><span class="pre">isPinhole()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion15BufferResidencyE"><code class="docutils literal notranslate"><span class="pre">BufferResidency</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion15BufferResidency4HOSTE"><code class="docutils literal notranslate"><span class="pre">HOST</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion15BufferResidency6DEVICEE"><code class="docutils literal notranslate"><span class="pre">DEVICE</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion15BufferResidency7MANAGEDE"><code class="docutils literal notranslate"><span class="pre">MANAGED</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14DepthImageBaseE"><code class="docutils literal notranslate"><span class="pre">DepthImageBase</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14DepthImageBase10ScalarTypeE"><code class="docutils literal notranslate"><span class="pre">ScalarType</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14DepthImageBase10ScalarType5FLOATE"><code class="docutils literal notranslate"><span class="pre">FLOAT</span></code></a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14DepthImageBase10ScalarType6UINT16E"><code class="docutils literal notranslate"><span class="pre">UINT16</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN8cumotion10DepthImageE"><code class="docutils literal notranslate"><span class="pre">DepthImage</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I00EN8cumotion10DepthImage10DepthImageEiiNSt8optionalIiEE15BufferResidencyd"><code class="docutils literal notranslate"><span class="pre">DepthImage()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion10DepthImage4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage4dataEv"><code class="docutils literal notranslate"><span class="pre">data()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage5widthEv"><code class="docutils literal notranslate"><span class="pre">width()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage6heightEv"><code class="docutils literal notranslate"><span class="pre">height()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage6strideEv"><code class="docutils literal notranslate"><span class="pre">stride()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage9residencyEv"><code class="docutils literal notranslate"><span class="pre">residency()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage13metersPerUnitEv"><code class="docutils literal notranslate"><span class="pre">metersPerUnit()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage6isViewEv"><code class="docutils literal notranslate"><span class="pre">isView()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage10scalarTypeEv"><code class="docutils literal notranslate"><span class="pre">scalarType()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage7isConstEv"><code class="docutils literal notranslate"><span class="pre">isConst()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage2atEii"><code class="docutils literal notranslate"><span class="pre">at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion10DepthImage2atEii"><code class="docutils literal notranslate"><span class="pre">at()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4NK8cumotion10DepthImage13depthInMetersEii"><code class="docutils literal notranslate"><span class="pre">depthInMeters()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion10DepthImage10DepthImageENSt10shared_ptrI4ImplEE"><code class="docutils literal notranslate"><span class="pre">DepthImage()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion10DepthImage20DefaultMetersPerUnitEv"><code class="docutils literal notranslate"><span class="pre">DefaultMetersPerUnit()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4I0EN8cumotion20CreateDepthImageViewE10DepthImageI1TEP1TiiNSt8optionalIiEE15BufferResidencyd"><code class="docutils literal notranslate"><span class="pre">CreateDepthImageView()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#robot-segmentation">Robot Segmentation</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14RobotSegmenterE"><code class="docutils literal notranslate"><span class="pre">RobotSegmenter</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion14RobotSegmenter17segmentDepthImageERK5Pose3RKN5Eigen8VectorXdERK14DepthImageBaseP14DepthImageBaseP14DepthImageBasedd"><code class="docutils literal notranslate"><span class="pre">segmentDepthImage()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#_CPPv4N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE"><code class="docutils literal notranslate"><span class="pre">CreateRobotSegmenter()</span></code></a></li>
 </ul>
 </li>
 </ul>

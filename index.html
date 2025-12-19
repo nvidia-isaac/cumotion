@@ -300,7 +300,7 @@
 <h1>cuMotion: GPU-Accelerated Motion Generation for Robotics<a class="headerlink" href="#cumotion-gpu-accelerated-motion-generation-for-robotics" title="Link to this heading">#</a></h1>
 <p>NVIDIA cuMotion is a high-performance motion generation library for robotics, focused mainly on manipulation.
 GPU acceleration is leveraged throughout where beneficial for performance.</p>
-<p>In this <strong>Developer Preview</strong>, capabilities include:</p>
+<p>Capabilities include:</p>
 <ul class="simple">
 <li><p>Kinematics and inverse kinematics (IK)</p></li>
 <li><p>Collision-aware IK</p></li>
@@ -310,6 +310,7 @@ GPU acceleration is leveraged throughout where beneficial for performance.</p>
 <li><p>Time-optimal (collision-unaware) trajectory generation for paths given by any number of moves in configuration
 space (joint space) and/or task space</p></li>
 <li><p>Collision sphere generation, for approximating a closed mesh by a set of spheres</p></li>
+<li><p>Robot segmentation, for removing the contribution of a robot arm from one or more depth image streams</p></li>
 </ul>
 <p>Robots with any number of degrees of freedom are supported.</p>
 <p>cuMotion is implemented in C++ and provides a complete set of Python bindings.  Although developed as a
@@ -363,6 +364,8 @@ in cuRobo, including those for collision-aware IK and trajectory optimization.</
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#graph-based-path-planning">Graph-Based Path Planning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#rmpflow">RMPflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#collision-sphere-generation">Collision Sphere Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#camera-definition-and-depth-images">Camera Definition and Depth Images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#robot-segmentation">Robot Segmentation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/python_api.html">Python API</a><ul>
@@ -384,7 +387,8 @@ in cuRobo, including those for collision-aware IK and trajectory optimization.</
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="release_notes.html#developer-preview-1">Developer Preview 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#release-1-0-0">Release 1.0.0</a></li>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#developer-preview-1-november-26-2025">Developer Preview 1 - November 26, 2025</a></li>
 </ul>
 </li>
 </ul>
