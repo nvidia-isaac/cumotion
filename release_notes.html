@@ -322,16 +322,40 @@
                   
   <section id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h1>
-<section id="developer-preview-1">
-<h2>Developer Preview 1 - November 26, 2025<a class="headerlink" href="#developer-preview-1" title="Link to this heading">#</a></h2>
+<section id="release-1-0-0">
+<h2>Release 1.0.0 - December 19, 2025<a class="headerlink" href="#release-1-0-0" title="Link to this heading">#</a></h2>
 <section id="what-s-new">
 <h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h3>
 <ul class="simple">
-<li><p>Initial public release</p></li>
+<li><p>Improved performance of both collision-free IK and trajectory optimization.</p></li>
+<li><p>Added experimental support for segmenting (masking) out the contribution of a robot from a depth image.
+This functionality is currently only exposed in C++ and only supports depth image buffers stored on the host
+(i.e., in CPU memory).</p></li>
+<li><p>Eliminated all internal use of the default CUDA stream.</p></li>
 </ul>
 </section>
 <section id="known-issues">
 <h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>On Jetson Orin, cuMotion should not be run in the same process as other threads making simultaneous use of
+CUDA.  This restriction is related to the manner in which cuMotion uses CUDA Unified Memory and will be
+lifted in a future release.</p></li>
+<li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
+from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
+visualization when run on NVIDIA Jetson.</p></li>
+</ul>
+</section>
+</section>
+<section id="developer-preview-1-november-26-2025">
+<h2>Developer Preview 1 - November 26, 2025<a class="headerlink" href="#developer-preview-1-november-26-2025" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>What’s New<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Initial public release</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Known Issues<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
 from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
@@ -381,9 +405,14 @@ visualization when run on NVIDIA Jetson.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-preview-1">Developer Preview 1</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-0-0">Release 1.0.0 - December 19, 2025</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-new">What’s New</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-preview-1-november-26-2025">Developer Preview 1 - November 26, 2025</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Known Issues</a></li>
 </ul>
 </li>
 </ul>
