@@ -50,6 +50,20 @@ def test_world():
     world_inspector_a = cumotion.create_world_inspector(world_view_a)
     world_inspector_b = cumotion.create_world_inspector(world_view_b)
 
+    # Test that the inspector returns the obstacle pose and enabled state.
+    assert world_inspector_a.is_enabled(sphere_handle)
+    assert world_inspector_b.is_enabled(sphere_handle)
+    sphere_pose_a = world_inspector_a.pose(sphere_handle)
+    sphere_pose_b = world_inspector_b.pose(sphere_handle)
+    np.testing.assert_array_almost_equal(
+        initial_sphere_pose.translation, sphere_pose_a.translation)
+    np.testing.assert_array_almost_equal(
+        initial_sphere_pose.translation, sphere_pose_b.translation)
+    np.testing.assert_array_almost_equal(
+        initial_sphere_pose.rotation.matrix(), sphere_pose_a.rotation.matrix())
+    np.testing.assert_array_almost_equal(
+        initial_sphere_pose.rotation.matrix(), sphere_pose_b.rotation.matrix())
+
     # Test distance from a point at the origin to the sphere obstacle.
     sphere_distance_a = world_inspector_a.distance_to(sphere_handle, np.zeros(3))
     sphere_distance_b = world_inspector_b.distance_to(sphere_handle, np.zeros(3))
@@ -97,6 +111,20 @@ def test_world():
     world_view_a.update()
     world_view_b.update()
 
+    # Test that the inspector returns the cuboid pose and enabled state.
+    assert world_inspector_a.is_enabled(cuboid_handle)
+    assert world_inspector_b.is_enabled(cuboid_handle)
+    cuboid_pose_a = world_inspector_a.pose(cuboid_handle)
+    cuboid_pose_b = world_inspector_b.pose(cuboid_handle)
+    np.testing.assert_array_almost_equal(
+        initial_cuboid_pose.translation, cuboid_pose_a.translation)
+    np.testing.assert_array_almost_equal(
+        initial_cuboid_pose.translation, cuboid_pose_b.translation)
+    np.testing.assert_array_almost_equal(
+        initial_cuboid_pose.rotation.matrix(), cuboid_pose_a.rotation.matrix())
+    np.testing.assert_array_almost_equal(
+        initial_cuboid_pose.rotation.matrix(), cuboid_pose_b.rotation.matrix())
+
     # Test distance from a point at the origin to the cuboid obstacle.
     cuboid_distance_a = world_inspector_a.distance_to(cuboid_handle, np.zeros(3))
     cuboid_distance_b = world_inspector_b.distance_to(cuboid_handle, np.zeros(3))
@@ -138,6 +166,10 @@ def test_world():
     world_view_b.update()
     assert 1 == world_inspector_a.num_enabled_obstacles()
     assert 1 == world_inspector_b.num_enabled_obstacles()
+    assert not world_inspector_a.is_enabled(sphere_handle)
+    assert not world_inspector_b.is_enabled(sphere_handle)
+    assert world_inspector_a.is_enabled(cuboid_handle)
+    assert world_inspector_b.is_enabled(cuboid_handle)
 
     # The distance output should now only only include the cuboid.
     [distances_a, gradients_a] = world_inspector_a.distances_to(np.zeros(3), False)
@@ -153,6 +185,8 @@ def test_world():
     world.enable_obstacle(sphere_handle)
     world_view_a.update()
     world_view_b.update()
+    assert world_inspector_a.is_enabled(sphere_handle)
+    assert world_inspector_b.is_enabled(sphere_handle)
 
     # Define a test sphere known to be in collision with the cuboid obstacle, but no the sphere
     # obstacle.
@@ -206,6 +240,65 @@ def test_world():
     assert 0 == len(distances_b)
     assert gradients_a is None
     assert gradients_b is None
+
+
+def test_world_inspector_pose_and_is_enabled():
+    """Test `pose()` and `is_enabled()` return correct values and only update after view sync.
+
+    WorldInspector reflects the `WorldView` state; values do not change until
+    `world_view.update()` is called.
+    """
+    world = cumotion.create_world()
+
+    # Add obstacle with default (Identity) pose.
+    sphere = cumotion.create_obstacle(cumotion.Obstacle.Type.SPHERE)
+    sphere.set_attribute(cumotion.Obstacle.Attribute.RADIUS, 1.0)
+    handle = world.add_obstacle(sphere)
+    world_view = world.add_world_view()
+    inspector = cumotion.create_world_inspector(world_view)
+
+    assert inspector.is_enabled(handle)
+    identity_pose = inspector.pose(handle)
+    np.testing.assert_array_almost_equal(np.zeros(3), identity_pose.translation)
+    np.testing.assert_array_almost_equal(np.eye(3), identity_pose.rotation.matrix())
+
+    # Set a translation-only pose. The inspector does not update until `world_view` is synced.
+    translation = np.array([1.0, 2.0, 3.0])
+    pose_translation = cumotion.Pose3.from_translation(translation)
+    world.set_pose(handle, pose_translation)
+
+    pose_before_view_update = inspector.pose(handle)
+    np.testing.assert_array_almost_equal(np.zeros(3), pose_before_view_update.translation)
+    np.testing.assert_array_almost_equal(np.eye(3), pose_before_view_update.rotation.matrix())
+
+    world_view.update()
+    pose_after_update = inspector.pose(handle)
+    np.testing.assert_array_almost_equal(translation, pose_after_update.translation)
+    np.testing.assert_array_almost_equal(np.eye(3), pose_after_update.rotation.matrix())
+
+    # Set a pose with rotation. Again, the inspector does not update until `world_view` is synced.
+    quarter_pi = math.pi / 4.0
+    rotation = cumotion.Rotation3.from_scaled_axis(np.array([0.0, 0.0, quarter_pi]))
+    new_translation = np.array([4.0, 5.0, 6.0])
+    pose_with_rotation = cumotion.Pose3(rotation, new_translation)
+    world.set_pose(handle, pose_with_rotation)
+
+    pose_before_second_view_update = inspector.pose(handle)
+    np.testing.assert_array_almost_equal(translation, pose_before_second_view_update.translation)
+    np.testing.assert_array_almost_equal(
+        np.eye(3), pose_before_second_view_update.rotation.matrix())
+
+    world_view.update()
+    pose_with_rot = inspector.pose(handle)
+    np.testing.assert_array_almost_equal(new_translation, pose_with_rot.translation)
+    np.testing.assert_array_almost_equal(rotation.matrix(), pose_with_rot.rotation.matrix())
+
+    # `is_enabled()` also reflects the world view; disabling in world does not
+    # affect the inspector until `world_view.update()` is called.
+    world.disable_obstacle(handle)
+    assert inspector.is_enabled(handle)
+    world_view.update()
+    assert not inspector.is_enabled(handle)
 
 
 def test_min_distance():
@@ -439,9 +532,141 @@ def test_sdf_obstacles():
     distance_at_transformed_query_point = sdf_world_inspector_fp32.distance_to(
         sdf_handle_fp32, transformed_query_point)
     assert abs(distance_at_transformed_query_point - distance_at_query_point) < \
-           expected_floating_point_error
+        expected_floating_point_error
 
     # Test disabling sdf obstacles.
     sdf_world_fp32.disable_obstacle(sdf_handle_fp32)
     sdf_world_view_fp32.update()
     assert len(sdf_world_inspector_fp32.distances_to(transformed_query_point)[0]) == 0
+
+
+def test_inspect_sdf():
+    """Test `World.inspect_sdf()` function."""
+    # Create world.
+    world = cumotion.create_world()
+
+    num_voxels_x = 30
+    num_voxels_y = 32
+    num_voxels_z = 33
+    voxel_size = 0.015
+    host_precision = cumotion.Obstacle.GridPrecision.FLOAT
+    device_precision = cumotion.Obstacle.GridPrecision.FLOAT
+
+    # Create SDF obstacle.
+    sdf = cumotion.create_obstacle(cumotion.Obstacle.Type.SDF)
+    sdf.set_attribute(cumotion.Obstacle.Attribute.GRID,
+                      cumotion.Obstacle.Grid(num_voxels_x, num_voxels_y, num_voxels_z,
+                                             voxel_size, host_precision, device_precision))
+    sdf_handle = world.add_obstacle(sdf)
+
+    # Populate an SDF grid using a sphere as a distance function.
+    def populate_sdf_grid_host(sdf_data, voxel_size, sphere_position, sphere_radius):
+        for i in range(sdf_data.shape[0]):
+            for j in range(sdf_data.shape[1]):
+                for k in range(sdf_data.shape[2]):
+                    voxel_position = np.array([i, j, k]) * voxel_size + voxel_size * 0.5
+                    sdf_data[i, j, k] = \
+                        np.linalg.norm(voxel_position - sphere_position) - sphere_radius
+
+    sphere_position = np.array([0.2, 0.2, 0.2])
+    sphere_radius = 0.1
+    sdf_data = np.empty((num_voxels_x, num_voxels_y, num_voxels_z), dtype=np.float32)
+    populate_sdf_grid_host(sdf_data, voxel_size, sphere_position, sphere_radius)
+
+    # Populate the SDF with valid data.
+    world.set_sdf_grid_values_from_host(sdf_handle, sdf_data)
+
+    # Inspect SDF with default tolerances - expect no errors since it was populated from an
+    # analytically correct distance function.
+    results = world.inspect_sdf(sdf_handle)
+    assert results.num_errors() == 0
+    assert results.num_voxels_matching_all_neighbors == 0
+    assert results.num_voxels_too_far_from_neighbors == 0
+
+    # Inspect SDF with explicit default tolerances.
+    tolerances = cumotion.World.SdfInspectionTolerances()
+    results = world.inspect_sdf(sdf_handle, tolerances)
+    assert results.num_errors() == 0
+
+    # Introduce an outlier by modifying a single voxel value.
+    outlier_coord = (num_voxels_x // 2, num_voxels_y // 3, num_voxels_z // 4)
+    outlier_error = voxel_size * 2.0
+    sdf_data_with_outlier = sdf_data.copy()
+    sdf_data_with_outlier[outlier_coord] += outlier_error
+
+    world.set_sdf_grid_values_from_host(sdf_handle, sdf_data_with_outlier)
+
+    # Inspect SDF - expect errors due to the outlier voxel and its neighbors.
+    results = world.inspect_sdf(sdf_handle)
+    assert results.num_voxels_too_far_from_neighbors == 7
+    assert results.num_voxels_matching_all_neighbors == 0
+    assert results.num_errors() == 7
+
+    # Set tolerance to the introduced error - expect no errors.
+    tolerances = cumotion.World.SdfInspectionTolerances(0.0, outlier_error)
+    results = world.inspect_sdf(sdf_handle, tolerances)
+    assert results.num_voxels_too_far_from_neighbors == 0
+    assert results.num_voxels_matching_all_neighbors == 0
+    assert results.num_errors() == 0
+
+    # Create SDF data with voxels matching all neighbors (a homogeneous region).
+    sdf_data_homogeneous = sdf_data.copy()
+    homogeneous_value = -1.0
+    center_coord = (num_voxels_x // 2, num_voxels_y // 2, num_voxels_z // 2)
+    for i in range(-1, 2):
+        for j in range(-1, 2):
+            for k in range(-1, 2):
+                coord = (center_coord[0] + i, center_coord[1] + j, center_coord[2] + k)
+                sdf_data_homogeneous[coord] = homogeneous_value
+
+    world.set_sdf_grid_values_from_host(sdf_handle, sdf_data_homogeneous)
+
+    # Inspect SDF - expect the center voxel to match all neighbors.
+    results = world.inspect_sdf(sdf_handle)
+    assert results.num_voxels_matching_all_neighbors == 1
+    # The homogeneous region will also cause "too far from neighbor" errors at its boundaries.
+    assert results.num_errors() >= 1
+
+
+def test_inspect_sdf_error_cases():
+    """Test `World.inspect_sdf()` error cases."""
+    world = cumotion.create_world()
+
+    # Error case 1: Attempting to inspect a non-SDF obstacle should raise an exception.
+    sphere = cumotion.create_obstacle(cumotion.Obstacle.Type.SPHERE)
+    sphere.set_attribute(cumotion.Obstacle.Attribute.RADIUS, 1.0)
+    sphere_handle = world.add_obstacle(sphere)
+
+    with pytest.raises(RuntimeError):
+        world.inspect_sdf(sphere_handle)
+
+    # Error case 2: Attempting to inspect an unpopulated SDF should raise an exception.
+    num_voxels_x = 10
+    num_voxels_y = 10
+    num_voxels_z = 10
+    voxel_size = 0.01
+    host_precision = cumotion.Obstacle.GridPrecision.FLOAT
+    device_precision = cumotion.Obstacle.GridPrecision.FLOAT
+
+    sdf = cumotion.create_obstacle(cumotion.Obstacle.Type.SDF)
+    sdf.set_attribute(cumotion.Obstacle.Attribute.GRID,
+                      cumotion.Obstacle.Grid(num_voxels_x, num_voxels_y, num_voxels_z,
+                                             voxel_size, host_precision, device_precision))
+    sdf_handle = world.add_obstacle(sdf)
+
+    with pytest.raises(RuntimeError):
+        world.inspect_sdf(sdf_handle)
+
+    # Populate the SDF so we can test the removed obstacle case.
+    sdf_data = np.zeros((num_voxels_x, num_voxels_y, num_voxels_z), dtype=np.float32)
+    world.set_sdf_grid_values_from_host(sdf_handle, sdf_data)
+
+    # Verify inspection works after populating.
+    results = world.inspect_sdf(sdf_handle)
+    assert results is not None
+
+    # Error case 3: Attempting to inspect a removed obstacle should raise an exception.
+    world.remove_obstacle(sdf_handle)
+
+    with pytest.raises(RuntimeError):
+        world.inspect_sdf(sdf_handle)

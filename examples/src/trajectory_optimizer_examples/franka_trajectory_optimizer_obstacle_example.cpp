@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -52,7 +52,7 @@ int main() {
   // XRDF extends the URDF with additional information such as semantic labeling of configuration
   // space, acceleration limits, jerk limits, and collision spheres. For additional details,
   // see: https://nvidia-isaac-ros.github.io/concepts/manipulation/xrdf.html
-  const std::string xrdf_path = content_dir / "nvidia" / "shared" / "franka.xrdf";
+  const std::filesystem::path xrdf_path = content_dir / "nvidia" / "shared" / "franka.xrdf";
 
   // Load robot description.
   std::unique_ptr<cumotion::RobotDescription> robot_description =

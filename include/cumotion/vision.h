@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2024-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -24,6 +24,8 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Camera intrinsic parameters.
@@ -40,7 +42,7 @@ namespace cumotion {
 //!
 //! where `fx` and `fy` are the focal lengths in pixels, and `cx` and `cy` are the principal point
 //! coordinates (optical center) in pixels.
-class CameraIntrinsics {
+class CUMO_EXPORT CameraIntrinsics {
  public:
   //! Construct from the four standard pinhole camera parameters.
   //!
@@ -95,7 +97,7 @@ enum class BufferResidency {
 //! Type-agnostic base class for depth images and (non-owning) views of depth images.
 //!
 //! See `DepthImage` for member function documentation.
-class DepthImageBase {
+class CUMO_EXPORT DepthImageBase {
  public:
   //! Scalar type used to represent the depth values.
   enum class ScalarType {
@@ -255,6 +257,11 @@ class DepthImage : public DepthImageBase {
   std::shared_ptr<Impl> impl_;
 };
 
+extern template class CUMO_EXTERN_TEMPLATE_EXPORT DepthImage<float>;
+extern template class CUMO_EXTERN_TEMPLATE_EXPORT DepthImage<const float>;
+extern template class CUMO_EXTERN_TEMPLATE_EXPORT DepthImage<uint16_t>;
+extern template class CUMO_EXTERN_TEMPLATE_EXPORT DepthImage<const uint16_t>;
+
 //! Create a non-owning `DepthImage` view from a depth data buffer.
 //!
 //! The template parameter `T` can be `float`, `uint16_t`, `const float`, or `const uint16_t`.
@@ -274,7 +281,7 @@ class DepthImage : public DepthImageBase {
 //! 2. `width` or `height` is zero or negative, or
 //! 3. `stride` is smaller than `width`.
 template<typename T>
-DepthImage<T> CreateDepthImageView(
+CUMO_EXPORT DepthImage<T> CreateDepthImageView(
   T *data,
   int width,
   int height,

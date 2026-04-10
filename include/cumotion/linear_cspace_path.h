@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -16,6 +16,7 @@
 
 #include "cumotion/cspace_path.h"
 #include "cumotion/cspace_path_spec.h"
+#include "cumotion/cumotion_export.h"
 
 namespace cumotion {
 
@@ -23,7 +24,7 @@ namespace cumotion {
 //!
 //! This path is parameterized by independent variable `s` and will be continuous but not
 //! (in general) smooth.
-class LinearCSpacePath : public CSpacePath {
+class CUMO_EXPORT LinearCSpacePath : public CSpacePath {
  public:
   virtual ~LinearCSpacePath() = default;
 
@@ -63,6 +64,7 @@ class LinearCSpacePath : public CSpacePath {
 };
 
 //! Create a `LinearCSpacePath` from a c-space path specification.
-std::unique_ptr<LinearCSpacePath> CreateLinearCSpacePath(const CSpacePathSpec &cspace_path_spec);
+CUMO_EXPORT std::unique_ptr<LinearCSpacePath> CreateLinearCSpacePath(
+    const CSpacePathSpec &cspace_path_spec);
 
 }  // namespace cumotion

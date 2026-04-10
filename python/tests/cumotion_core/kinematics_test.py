@@ -275,19 +275,19 @@ def test_franka_kinematics(configure_franka_kinematics):
 
     # Check C-space position limits
     assert -2.8973 == kinematics.cspace_coord_limits(0).lower
-    assert 2.8973, kinematics.cspace_coord_limits(0).upper
-    assert -1.7628, kinematics.cspace_coord_limits(1).lower
-    assert 1.7628, kinematics.cspace_coord_limits(1).upper
-    assert -2.8973, kinematics.cspace_coord_limits(2).lower
-    assert 2.8973, kinematics.cspace_coord_limits(2).upper
-    assert -3.0718, kinematics.cspace_coord_limits(3).lower
-    assert -0.0698, kinematics.cspace_coord_limits(3).upper
-    assert -2.8973, kinematics.cspace_coord_limits(4).lower
-    assert 2.8973, kinematics.cspace_coord_limits(4).upper
-    assert -0.0175, kinematics.cspace_coord_limits(5).lower
-    assert 3.7525, kinematics.cspace_coord_limits(5).upper
-    assert -2.8973, kinematics.cspace_coord_limits(6).lower
-    assert 2.8973, kinematics.cspace_coord_limits(6).upper
+    assert 2.8973 == kinematics.cspace_coord_limits(0).upper
+    assert -1.7628 == kinematics.cspace_coord_limits(1).lower
+    assert 1.7628 == kinematics.cspace_coord_limits(1).upper
+    assert -2.8973 == kinematics.cspace_coord_limits(2).lower
+    assert 2.8973 == kinematics.cspace_coord_limits(2).upper
+    assert -3.0718 == kinematics.cspace_coord_limits(3).lower
+    assert -0.0698 == kinematics.cspace_coord_limits(3).upper
+    assert -2.8973 == kinematics.cspace_coord_limits(4).lower
+    assert 2.8973 == kinematics.cspace_coord_limits(4).upper
+    assert -0.0175 == kinematics.cspace_coord_limits(5).lower
+    assert 3.7525 == kinematics.cspace_coord_limits(5).upper
+    assert -2.8973 == kinematics.cspace_coord_limits(6).lower
+    assert 2.8973 == kinematics.cspace_coord_limits(6).upper
 
     # Check C-space velocity limits
     assert 2.175 == kinematics.cspace_coord_velocity_limit(0)

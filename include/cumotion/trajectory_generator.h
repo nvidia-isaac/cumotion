@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -17,6 +17,7 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/kinematics.h"
 #include "cumotion/trajectory.h"
 
@@ -37,7 +38,7 @@ namespace cumotion {
 //!   uses a single implementation that interpolates through waypoints using a series of cubic
 //!   splines. For this implementation, "smooth" is defined as smooth velocity, continuous
 //!   acceleration, and bounded jerk.
-class CSpaceTrajectoryGenerator {
+class CUMO_EXPORT CSpaceTrajectoryGenerator {
  public:
   virtual ~CSpaceTrajectoryGenerator() = default;
 
@@ -78,8 +79,8 @@ class CSpaceTrajectoryGenerator {
   //! the specified constraints.
   //!
   //! If a trajectory cannot be generated, `nullptr` is returned.
-  [[nodiscard]] virtual std::unique_ptr<Trajectory>
-  generateTrajectory(const std::vector<Eigen::VectorXd> &waypoints) const = 0;
+  [[nodiscard]] virtual std::unique_ptr<Trajectory> generateTrajectory(
+      const std::vector<Eigen::VectorXd> &waypoints) const = 0;
 
   //! Interpolation modes used by `interpolateTrajectory()`.
   enum class InterpolationMode {
@@ -123,7 +124,7 @@ class CSpaceTrajectoryGenerator {
   //!
   //! The required `SolverParamValue` constructor for each parameter is detailed in the
   //! documentation for `setSolverParam()`.
-  struct SolverParamValue {
+  struct CUMO_EXPORT SolverParamValue {
     //! Create `SolverParamValue` from `int`.
     SolverParamValue(int value);  // NOLINT Allow implicit conversion
     //! Create `SolverValue` from `double`.
@@ -205,7 +206,8 @@ class CSpaceTrajectoryGenerator {
 //!
 //! Position and derivative limits, bound constraints, and intermediate waypoints can be added
 //! after construction.
-std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(int num_cspace_coords);
+CUMO_EXPORT std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(
+    int num_cspace_coords);
 
 //! Create a `CSpaceTrajectoryGenerator` with the specified `kinematics`.
 //!
@@ -214,7 +216,7 @@ std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(int n
 //!
 //! Position and derivative limits may be added or overwritten after construction. Bound
 //! constraints and intermediate waypoints can be added after construction.
-std::unique_ptr<CSpaceTrajectoryGenerator>
-CreateCSpaceTrajectoryGenerator(const Kinematics &kinematics);
+CUMO_EXPORT std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(
+    const Kinematics &kinematics);
 
 }  // namespace cumotion

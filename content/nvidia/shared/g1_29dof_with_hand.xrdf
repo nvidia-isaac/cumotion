@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+format: xrdf
+format_version: 2.0
+
+default_joint_positions:
+  waist_yaw_joint: 0.0
+  waist_roll_joint: 0.0
+  waist_pitch_joint: 0.0
+  left_shoulder_pitch_joint: -0.4
+  left_shoulder_roll_joint: 0.5
+  left_shoulder_yaw_joint: -0.3
+  left_elbow_joint: 0.0
+  left_wrist_roll_joint: 0.0
+  left_wrist_pitch_joint: 0.0
+  left_wrist_yaw_joint: 0.0
+  right_shoulder_pitch_joint: -0.4
+  right_shoulder_roll_joint: -0.5
+  right_shoulder_yaw_joint: 0.3
+  right_elbow_joint: 0.0
+  right_wrist_roll_joint: 0.0
+  right_wrist_pitch_joint: 0.0
+  right_wrist_yaw_joint: 0.0
+
+cspace:
+  joint_names:
+    - "waist_yaw_joint"
+    - "waist_roll_joint"
+    - "waist_pitch_joint"
+    - "left_shoulder_pitch_joint"
+    - "left_shoulder_roll_joint"
+    - "left_shoulder_yaw_joint"
+    - "left_elbow_joint"
+    - "left_wrist_roll_joint"
+    - "left_wrist_pitch_joint"
+    - "left_wrist_yaw_joint"
+    - "right_shoulder_pitch_joint"
+    - "right_shoulder_roll_joint"
+    - "right_shoulder_yaw_joint"
+    - "right_elbow_joint"
+    - "right_wrist_roll_joint"
+    - "right_wrist_pitch_joint"
+    - "right_wrist_yaw_joint"
+  acceleration_limits: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0,
+                        120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0]
+  jerk_limits: [1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0,
+                1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0, 1200.0]
+
+tool_frames: ["left_hand_palm_link", "right_hand_palm_link"]

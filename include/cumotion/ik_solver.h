@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -18,12 +18,13 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/kinematics.h"
 
 namespace cumotion {
 
 //! Configuration for solving inverse kinematics.
-struct IkConfig {
+struct CUMO_EXPORT IkConfig {
   //! Construct configuration with default values likely to be appropriate for most 6- and 7-dof
   //! robotic arms.
   IkConfig() = default;
@@ -254,7 +255,7 @@ struct IkConfig {
 };
 
 //! Results from solving inverse kinematics.
-struct IkResults {
+struct CUMO_EXPORT IkResults {
   //! Indicate whether a valid `cspace_position` within the tolerances specified in the
   //! `IkConfig` has been found.
   bool success;
@@ -334,9 +335,9 @@ struct IkResults {
 //! Concise explanations of the CCD algorithm with interactive demonstrations are available at:
 //! [1] https://zalo.github.io/blog/inverse-kinematics/
 //! [2] http://rodolphe-vaillant.fr/?e=114
-IkResults SolveIk(const Kinematics &kinematics,
-                  const Pose3 &target_pose,
-                  const Kinematics::FrameHandle &target_frame,
-                  const IkConfig &config);
+CUMO_EXPORT IkResults SolveIk(const Kinematics &kinematics,
+                              const Pose3 &target_pose,
+                              const Kinematics::FrameHandle &target_frame,
+                              const IkConfig &config);
 
 }  // namespace cumotion

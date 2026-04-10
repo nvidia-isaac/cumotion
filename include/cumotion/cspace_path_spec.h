@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -15,11 +15,13 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! The `CSpacePathSpec` is used to procedurally specify a `CSpacePath` from a series of
 //! configuration space points.
-class CSpacePathSpec {
+class CUMO_EXPORT CSpacePathSpec {
  public:
   virtual ~CSpacePathSpec() = default;
 
@@ -36,7 +38,7 @@ class CSpacePathSpec {
 };
 
 //! Create a `CSpacePathSpec` with the specified `initial_cspace_position`.
-std::unique_ptr<CSpacePathSpec>
-CreateCSpacePathSpec(const Eigen::VectorXd &initial_cspace_position);
+CUMO_EXPORT std::unique_ptr<CSpacePathSpec> CreateCSpacePathSpec(
+    const Eigen::VectorXd &initial_cspace_position);
 
 }  // namespace cumotion

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2019-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2019-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -20,16 +20,17 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/pose3.h"
 
 namespace cumotion {
 
 //! Class representing the mapping from configuration space to coordinate frames that are rigidly
 //! attached to the kinematic structure.
-class Kinematics {
+class CUMO_EXPORT Kinematics {
  public:
   //! Opaque handle to a frame
-  struct FrameHandle {
+  struct CUMO_EXPORT FrameHandle {
     class Impl;
     std::shared_ptr<Impl> impl;
   };
@@ -47,7 +48,7 @@ class Kinematics {
   [[nodiscard]] virtual std::string cSpaceCoordName(int coord_index) const = 0;
 
   //! Lower and upper limits for a configuration space coordinate.
-  struct Limits {
+  struct CUMO_EXPORT Limits {
     double lower;  //!< lower limit
     double upper;  //!< upper limit
   };

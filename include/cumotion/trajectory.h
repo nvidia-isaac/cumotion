@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -13,10 +13,12 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Represent a path through configuration space (i.e., "c-space") parameterized by time.
-class Trajectory {
+class CUMO_EXPORT Trajectory {
  public:
   virtual ~Trajectory() = default;
 
@@ -25,7 +27,7 @@ class Trajectory {
 
   //! Indicates the continuous range of time values, `t`, for which the trajectory and its
   //! derivatives are defined.
-  struct Domain {
+  struct CUMO_EXPORT Domain {
     //! Minimum value of time defining domain.
     double lower;
 

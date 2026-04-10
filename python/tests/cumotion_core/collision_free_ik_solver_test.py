@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -32,9 +32,10 @@ from ._test_helper import CUMOTION_ROOT_DIR, errors_disabled
 
 
 # Test constants
+CSPACE_POSITION_TOLERANCE = 1e-12
 POSITION_TOLERANCE = 1e-3  # 1mm
 ORIENTATION_TOLERANCE = 5e-3  # ~0.29 degrees
-NUM_SEEDS = 100  # Number of IK seeds to use
+NUM_SEEDS = 400  # Number of IK seeds to use
 
 
 @pytest.fixture
@@ -244,6 +245,17 @@ def test_franka_position_only_constraints(configure_franka_with_obstacles):
     # Create IK solver
     ik_solver = cumotion.create_collision_free_ik_solver(config)
 
+    # Create a solver with `max_reattempts = 0` to compare `solve_array()` and `solve()` results.
+    # NOTE: Currently, batch mode (enabled via `solve_array()`) uses `max_reattempts = 0`, which
+    # affects Halton generator capacity. Using the same `max_reattempts` for the serial baseline
+    # ensures identical initial seeds, and identical results (within numerical tolerance).
+    config_zero_reattempts = cumotion.create_default_collision_free_ik_solver_config(
+        robot_description, tool_frame_name, world_view)
+    config_zero_reattempts.set_param("task_space_position_tolerance", POSITION_TOLERANCE)
+    config_zero_reattempts.set_param("num_seeds", NUM_SEEDS)
+    config_zero_reattempts.set_param("max_reattempts", 0)
+    ik_solver_zero_reattempts = cumotion.create_collision_free_ik_solver(config_zero_reattempts)
+
     # Create robot world inspector
     inspector = cumotion.create_robot_world_inspector(robot_description, world_view)
 
@@ -255,7 +267,32 @@ def test_franka_position_only_constraints(configure_franka_with_obstacles):
     # Extract translation targets
     translation_targets = [pose.translation for pose in poses]
 
-    # Test goalset with position-only constraints
+    # Test goalset with position-only constraints using `solve_array()`.
+    translation_goalset_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        [translation_targets])
+    orientation_goalset_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.none()
+    task_space_target_goalsest_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_array, orientation_goalset_array)
+
+    results_goalset_array = ik_solver.solve_array(task_space_target_goalsest_array)
+
+    assert results_goalset_array.num_problems() == 1
+    assert results_goalset_array.num_successes() == 1
+    first_result_array = results_goalset_array.problem(0)
+    assert first_result_array.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    solutions_array = first_result_array.cspace_positions()
+    assert len(solutions_array) > 0
+
+    goalset_array_target_indices = first_result_array.target_indices()
+
+    for solution, target_idx in zip(solutions_array, goalset_array_target_indices):
+        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
+                             translation_targets[target_idx], None, False,
+                             POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
+    expect_unique_solutions(solutions_array)
+
+    # DEPRECATED section. --------------------------------------------------------------------------
+    # Test goalset with position-only constraints using `solve_goalset()`.
     translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
         translation_targets)
     orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.none()
@@ -279,8 +316,14 @@ def test_franka_position_only_constraints(configure_franka_with_obstacles):
     # Verify solutions are unique
     expect_unique_solutions(goalset_solutions)
 
+    # Validate that the goalset results match the goalset array results.
+    assert goalset_results.status() == first_result_array.status()
+    assert len(goalset_solutions) == len(solutions_array)
+    assert list(goalset_target_indices) == list(goalset_array_target_indices)
+    # End of DEPRECATED section.  ------------------------------------------------------------------
+
     # Test single target
-    reached_target_idx = compute_mode(goalset_target_indices)
+    reached_target_idx = compute_mode(goalset_array_target_indices)
     reached_pose = poses[reached_target_idx]
 
     translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
@@ -304,6 +347,65 @@ def test_franka_position_only_constraints(configure_franka_with_obstacles):
     # Verify solutions are unique
     expect_unique_solutions(solutions)
 
+    # Test batch of single targets using `solve_array()`.
+
+    # Slightly modify the translation of the `reached_pose`.
+    modified_pose = cumotion.Pose3.from_translation(
+        reached_pose.translation + np.array([0.01, -0.01, 0.01]))
+
+    # Solve the modified target using `solve()`.
+    modified_translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
+        modified_pose.translation)
+    modified_task_space_target = cumotion.CollisionFreeIkSolver.TaskSpaceTarget(
+        modified_translation_target, orientation_target)
+    modified_results = ik_solver.solve(modified_task_space_target)
+    assert modified_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    modified_solutions = modified_results.cspace_positions()
+    assert len(modified_solutions) > 0
+
+    # Validate each modified solution
+    for solution in modified_solutions:
+        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
+                             modified_pose.translation, None, False,
+                             POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
+
+    # Verify modified solutions are unique
+    expect_unique_solutions(modified_solutions)
+
+    # Solve both targets serially using `ik_solver_zero_reattempts` (matching batch config).
+    results_serial_0 = ik_solver_zero_reattempts.solve(task_space_target)
+    assert results_serial_0.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    results_serial_1 = ik_solver_zero_reattempts.solve(modified_task_space_target)
+    assert results_serial_1.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+
+    # Create array of results from `solve()` for comparison with `solve_array()`.
+    results_solve = [results_serial_0, results_serial_1]
+
+    # Create batch translation targets with the original and modified targets.
+    translation_targets_batch_array = [[reached_pose.translation], [modified_pose.translation]]
+    translation_batch_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        translation_targets_batch_array)
+    orientation_batch_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.none()
+    task_space_target_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_batch_array, orientation_batch_array)
+
+    results_batch_array = ik_solver.solve_array(task_space_target_array)
+    num_problems_batch = 2
+    assert results_batch_array.num_problems() == num_problems_batch
+    assert results_batch_array.num_successes() == num_problems_batch
+
+    # Verify that each problem's results match exactly the corresponding single-target `solve()`.
+    for problem_index in range(num_problems_batch):
+        result_batch_array = results_batch_array.problem(problem_index)
+        result_solve = results_solve[problem_index]
+        assert result_batch_array.status() == result_solve.status()
+        assert list(result_batch_array.target_indices()) == list(result_solve.target_indices())
+        problem_solutions_array = result_batch_array.cspace_positions()
+        assert len(problem_solutions_array) == len(result_solve.cspace_positions())
+        for solution_solve, solution_array in zip(result_solve.cspace_positions(),
+                                                  problem_solutions_array):
+            assert np.allclose(solution_solve, solution_array, atol=CSPACE_POSITION_TOLERANCE)
+
 
 def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
     """Test IK solver with axis alignment constraints."""
@@ -322,6 +424,15 @@ def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
     # Create IK solver
     ik_solver = cumotion.create_collision_free_ik_solver(config)
 
+    # Create a solver with `max_reattempts = 0` to compare `solve_array()` and `solve()` results.
+    config_zero_reattempts = cumotion.create_default_collision_free_ik_solver_config(
+        robot_description, tool_frame_name, world_view)
+    config_zero_reattempts.set_param("task_space_position_tolerance", POSITION_TOLERANCE)
+    config_zero_reattempts.set_param("task_space_orientation_tolerance", ORIENTATION_TOLERANCE)
+    config_zero_reattempts.set_param("num_seeds", NUM_SEEDS)
+    config_zero_reattempts.set_param("max_reattempts", 0)
+    ik_solver_zero_reattempts = cumotion.create_collision_free_ik_solver(config_zero_reattempts)
+
     # Create robot world inspector
     inspector = cumotion.create_robot_world_inspector(robot_description, world_view)
 
@@ -338,7 +449,33 @@ def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
     tool_frame_axes = [np.array([0.0, 0.0, 1.0]) for _ in range(num_targets)]
     world_target_axes = [rotation.matrix()[:, 2] for rotation in rotation_targets]
 
-    # Test goalset with axis alignment constraints
+    # Test goalset with axis alignment constraints using `solve_array()`.
+    translation_goalset_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        [translation_targets])
+    orientation_goalset_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+        [tool_frame_axes], [world_target_axes])
+    task_space_target_goalset_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_array, orientation_goalset_array)
+
+    results_goalset_array = ik_solver.solve_array(task_space_target_goalset_array)
+
+    assert results_goalset_array.num_problems() == 1
+    assert results_goalset_array.num_successes() == 1
+    first_result_array = results_goalset_array.problem(0)
+    assert first_result_array.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    solutions_array = first_result_array.cspace_positions()
+    assert len(solutions_array) > 0
+
+    goalset_array_target_indices = first_result_array.target_indices()
+
+    for solution, target_idx in zip(solutions_array, goalset_array_target_indices):
+        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
+                             translation_targets[target_idx], rotation_targets[target_idx],
+                             True, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
+    expect_unique_solutions(solutions_array)
+
+    # DEPRECATED section. --------------------------------------------------------------------------
+    # Test goalset with axis alignment constraints using `solve_goalset()`.
     translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
         translation_targets)
     orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.axis(
@@ -363,8 +500,14 @@ def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
     # Verify solutions are unique
     expect_unique_solutions(goalset_solutions)
 
+    # Validate that the goalset results match the goalset array results.
+    assert goalset_results.status() == first_result_array.status()
+    assert len(goalset_solutions) == len(solutions_array)
+    assert list(goalset_target_indices) == list(goalset_array_target_indices)
+    # End of DEPRECATED section.  ------------------------------------------------------------------
+
     # Test single target
-    reached_target_idx = compute_mode(goalset_target_indices)
+    reached_target_idx = compute_mode(goalset_array_target_indices)
     reached_pose = poses[reached_target_idx]
 
     translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
@@ -390,6 +533,68 @@ def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
     # Verify solutions are unique
     expect_unique_solutions(solutions)
 
+    # Test batch of single targets using `solve_array()`.
+
+    # Slightly modify the translation and axis of the `reached_pose`.
+    modified_pose = cumotion.Pose3.from_translation(
+        reached_pose.translation + np.array([0.01, -0.01, 0.01]))
+    # Rotate the world target axis slightly.
+    small_rotation = cumotion.Rotation3.from_axis_angle(np.array([1.0, 0.0, 0.0]), 0.1)
+    modified_world_axis = small_rotation.matrix() @ world_target_axis
+
+    # Solve the modified target using `solve()`.
+    modified_translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
+        modified_pose.translation)
+    modified_orientation_target = cumotion.CollisionFreeIkSolver.OrientationConstraint.axis(
+        np.array([0.0, 0.0, 1.0]), modified_world_axis)
+    modified_task_space_target = cumotion.CollisionFreeIkSolver.TaskSpaceTarget(
+        modified_translation_target, modified_orientation_target)
+    modified_results = ik_solver.solve(modified_task_space_target)
+    assert modified_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    modified_solutions = modified_results.cspace_positions()
+    assert len(modified_solutions) > 0
+
+    # Verify modified solutions are unique
+    expect_unique_solutions(modified_solutions)
+
+    # Solve both targets serially using `ik_solver_zero_reattempts` (matching batch config).
+    results_serial_0 = ik_solver_zero_reattempts.solve(task_space_target)
+    assert results_serial_0.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    results_serial_1 = ik_solver_zero_reattempts.solve(modified_task_space_target)
+    assert results_serial_1.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+
+    # Create array of results from `solve()` for comparison with `solve_array()`.
+    results_solve = [results_serial_0, results_serial_1]
+
+    # Create batch targets with the original and modified targets.
+    translation_targets_batch_array = [[reached_pose.translation], [modified_pose.translation]]
+    tool_frame_axes_batch = [[np.array([0.0, 0.0, 1.0])], [np.array([0.0, 0.0, 1.0])]]
+    world_frame_axes_batch = [[world_target_axis], [modified_world_axis]]
+
+    translation_batch_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        translation_targets_batch_array)
+    orientation_batch_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+        tool_frame_axes_batch, world_frame_axes_batch)
+    task_space_target_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_batch_array, orientation_batch_array)
+
+    results_batch_array = ik_solver.solve_array(task_space_target_array)
+    num_problems_batch = 2
+    assert results_batch_array.num_problems() == num_problems_batch
+    assert results_batch_array.num_successes() == num_problems_batch
+
+    # Verify that each problem's results match exactly the corresponding single-target `solve()`.
+    for problem_index in range(num_problems_batch):
+        result_batch_array = results_batch_array.problem(problem_index)
+        result_solve = results_solve[problem_index]
+        assert result_batch_array.status() == result_solve.status()
+        assert list(result_batch_array.target_indices()) == list(result_solve.target_indices())
+        problem_solutions_array = result_batch_array.cspace_positions()
+        assert len(problem_solutions_array) == len(result_solve.cspace_positions())
+        for solution_solve, solution_array in zip(result_solve.cspace_positions(),
+                                                  problem_solutions_array):
+            assert np.allclose(solution_solve, solution_array, atol=CSPACE_POSITION_TOLERANCE)
+
 
 def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
     """Test IK solver with full orientation constraints."""
@@ -408,6 +613,15 @@ def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
     # Create IK solver
     ik_solver = cumotion.create_collision_free_ik_solver(config)
 
+    # Create a solver with `max_reattempts = 0` to compare `solve_array()` and `solve()` results.
+    config_zero_reattempts = cumotion.create_default_collision_free_ik_solver_config(
+        robot_description, tool_frame_name, world_view)
+    config_zero_reattempts.set_param("task_space_position_tolerance", POSITION_TOLERANCE)
+    config_zero_reattempts.set_param("task_space_orientation_tolerance", ORIENTATION_TOLERANCE)
+    config_zero_reattempts.set_param("num_seeds", NUM_SEEDS)
+    config_zero_reattempts.set_param("max_reattempts", 0)
+    ik_solver_zero_reattempts = cumotion.create_collision_free_ik_solver(config_zero_reattempts)
+
     # Create robot world inspector
     inspector = cumotion.create_robot_world_inspector(robot_description, world_view)
 
@@ -420,7 +634,33 @@ def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
     translation_targets = [pose.translation for pose in poses]
     rotation_targets = [pose.rotation for pose in poses]
 
-    # Test goalset with full orientation constraints
+    # Test goalset with full orientation constraints using `solve_array()`.
+    translation_goalset_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        [translation_targets])
+    orientation_goalset_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(
+        [rotation_targets])
+    task_space_target_goalset_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_array, orientation_goalset_array)
+
+    results_goalset_array = ik_solver.solve_array(task_space_target_goalset_array)
+
+    assert results_goalset_array.num_problems() == 1
+    assert results_goalset_array.num_successes() == 1
+    first_result_array = results_goalset_array.problem(0)
+    assert first_result_array.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    solutions_array = first_result_array.cspace_positions()
+    assert len(solutions_array) > 0
+
+    goalset_array_target_indices = first_result_array.target_indices()
+
+    for solution, target_idx in zip(solutions_array, goalset_array_target_indices):
+        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
+                             translation_targets[target_idx], rotation_targets[target_idx],
+                             False, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
+    expect_unique_solutions(solutions_array)
+
+    # DEPRECATED section. --------------------------------------------------------------------------
+    # Test goalset with full orientation constraints using `solve_goalset()`.
     translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
         translation_targets)
     orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
@@ -445,8 +685,14 @@ def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
     # Verify solutions are unique
     expect_unique_solutions(goalset_solutions)
 
+    # Validate that the goalset results match the goalset array results.
+    assert goalset_results.status() == first_result_array.status()
+    assert len(goalset_solutions) == len(solutions_array)
+    assert list(goalset_target_indices) == list(goalset_array_target_indices)
+    # End of DEPRECATED section.  ------------------------------------------------------------------
+
     # Test single target
-    reached_target_idx = compute_mode(goalset_target_indices)
+    reached_target_idx = compute_mode(goalset_array_target_indices)
     reached_pose = poses[reached_target_idx]
 
     translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
@@ -470,6 +716,68 @@ def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
 
     # Verify solutions are unique
     expect_unique_solutions(solutions)
+
+    # Test batch of single targets using `solve_array()`.
+
+    # Slightly modify the translation and orientation of the `reached_pose`.
+    modified_pose = cumotion.Pose3.from_translation(
+        reached_pose.translation + np.array([0.01, -0.01, 0.01]))
+    # Rotate the orientation slightly.
+    small_rotation = cumotion.Rotation3.from_axis_angle(np.array([1.0, 0.0, 0.0]), 0.1)
+    modified_rotation = cumotion.Rotation3.from_matrix(
+        small_rotation.matrix() @ reached_pose.rotation.matrix())
+
+    # Solve the modified target using `solve()`.
+    modified_translation_target = cumotion.CollisionFreeIkSolver.TranslationConstraint.target(
+        modified_pose.translation)
+    modified_orientation_target = cumotion.CollisionFreeIkSolver.OrientationConstraint.target(
+        modified_rotation)
+    modified_task_space_target = cumotion.CollisionFreeIkSolver.TaskSpaceTarget(
+        modified_translation_target, modified_orientation_target)
+    modified_results = ik_solver.solve(modified_task_space_target)
+    assert modified_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    modified_solutions = modified_results.cspace_positions()
+    assert len(modified_solutions) > 0
+
+    # Verify modified solutions are unique
+    expect_unique_solutions(modified_solutions)
+
+    # Solve both targets serially using `ik_solver_zero_reattempts` (matching batch config).
+    results_serial_0 = ik_solver_zero_reattempts.solve(task_space_target)
+    assert results_serial_0.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    results_serial_1 = ik_solver_zero_reattempts.solve(modified_task_space_target)
+    assert results_serial_1.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+
+    # Create array of results from `solve()` for comparison with `solve_array()`.
+    results_solve = [results_serial_0, results_serial_1]
+
+    # Create batch targets with the original and modified targets.
+    translation_targets_batch_array = [[reached_pose.translation], [modified_pose.translation]]
+    orientation_targets_batch_array = [[reached_pose.rotation], [modified_rotation]]
+
+    translation_batch_array = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+        translation_targets_batch_array)
+    orientation_batch_array = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(
+        orientation_targets_batch_array)
+    task_space_target_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_batch_array, orientation_batch_array)
+
+    results_batch_array = ik_solver.solve_array(task_space_target_array)
+    num_problems_batch = 2
+    assert results_batch_array.num_problems() == num_problems_batch
+    assert results_batch_array.num_successes() == num_problems_batch
+
+    # Verify that each problem's results match exactly the corresponding single-target `solve()`.
+    for problem_index in range(num_problems_batch):
+        result_batch_array = results_batch_array.problem(problem_index)
+        result_solve = results_solve[problem_index]
+        assert result_batch_array.status() == result_solve.status()
+        assert list(result_batch_array.target_indices()) == list(result_solve.target_indices())
+        problem_solutions_array = result_batch_array.cspace_positions()
+        assert len(problem_solutions_array) == len(result_solve.cspace_positions())
+        for solution_solve, solution_array in zip(result_solve.cspace_positions(),
+                                                  problem_solutions_array):
+            assert np.allclose(solution_solve, solution_array, atol=CSPACE_POSITION_TOLERANCE)
 
 
 def test_franka_custom_seeds(configure_franka_with_obstacles):
@@ -528,10 +836,49 @@ def test_franka_custom_seeds(configure_franka_with_obstacles):
     # (The number of solutions can be higher or lower depending on the seed quality).
     assert len(results_with_seeds.cspace_positions()) != len(results_no_seeds.cspace_positions())
 
-    # Test goalset with custom seeds
     translation_targets = [pose.translation for pose in poses]
     rotation_targets = [pose.rotation for pose in poses]
 
+    # Test with custom seeds using `solve_array()`.
+    translation_targets_goalset_array = [translation_targets]
+    rotation_targets_goalset_array = [rotation_targets]
+    translation_constraint_goalset_array = \
+        cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+            translation_targets_goalset_array)
+    orientation_constraint_goalset_array = \
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(
+            rotation_targets_goalset_array)
+    task_space_target_goalset_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_constraint_goalset_array, orientation_constraint_goalset_array)
+    results_array = ik_solver.solve_array(task_space_target_goalset_array)
+    assert results_array.num_problems() == 1
+    assert results_array.num_successes() == 1
+    first_result_array = results_array.problem(0)
+    assert first_result_array.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    solutions_array = first_result_array.cspace_positions()
+    assert len(solutions_array) > 0
+    target_indices_goalset_array = first_result_array.target_indices()
+
+    # Find the easiest target and create custom seeds from it
+    easiest_target_idx_array = compute_mode(target_indices_goalset_array)
+    custom_seeds_array = [cspace_samples[easiest_target_idx_array] for _ in range(num_custom_seeds)]
+
+    # Solve with custom seeds
+    results_with_seeds_array = ik_solver.solve_array(task_space_target_goalset_array,
+                                                     custom_seeds_array)
+    assert results_with_seeds_array.num_problems() == 1
+    assert results_with_seeds_array.num_successes() == 1
+    first_result_with_seeds_array = results_with_seeds_array.problem(0)
+    assert first_result_with_seeds_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+
+    # Custom seeds affect the optimization, so we expect different results
+    # (The number of solutions can be higher or lower depending on the seed quality)
+    assert len(first_result_with_seeds_array.cspace_positions()) != \
+        len(first_result_array.cspace_positions())
+
+    # DEPRECATED section. --------------------------------------------------------------------------
+    # Test goalset with custom seeds using `solve_goalset()`.
     translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
         translation_targets)
     orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
@@ -557,6 +904,15 @@ def test_franka_custom_seeds(configure_franka_with_obstacles):
     # (The number of solutions can be higher or lower depending on the seed quality)
     assert len(goalset_results_with_seeds.cspace_positions()) != \
         len(goalset_results_no_seeds.cspace_positions())
+
+    # Validate that the goalset results match the goalset array results.
+    assert goalset_results_with_seeds.status() == \
+        first_result_with_seeds_array.status()
+    assert len(goalset_results_with_seeds.cspace_positions()) == \
+        len(first_result_with_seeds_array.cspace_positions())
+    assert list(goalset_results_with_seeds.target_indices()) == \
+        list(first_result_with_seeds_array.target_indices())
+    # End of DEPRECATED section.  ------------------------------------------------------------------
 
 
 def test_franka_with_deviation_limits(configure_franka_with_obstacles):
@@ -585,7 +941,87 @@ def test_franka_with_deviation_limits(configure_franka_with_obstacles):
     config.set_param("num_seeds", NUM_SEEDS)
     ik_solver = cumotion.create_collision_free_ik_solver(config)
 
-    # Test goalset with position-only constraints
+    # Test goalset with position-only constraints using `solve_array()`.
+    # 1a. No deviation limit
+    translation_goalset_no_dev_array = \
+        cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target([translation_targets])
+    orientation_goalset_none_array = \
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.none()
+    task_space_goalset_no_dev_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_no_dev_array, orientation_goalset_none_array)
+
+    results_goalset_no_dev_array = ik_solver.solve_array(task_space_goalset_no_dev_array)
+    first_result_goalset_no_dev_array = results_goalset_no_dev_array.problem(0)
+    assert first_result_goalset_no_dev_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    num_solutions_goalset_no_dev_array = len(first_result_goalset_no_dev_array.cspace_positions())
+
+    # 1b. With position deviation limit
+    translation_goalset_with_dev_array = \
+        cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+            [translation_targets], position_deviation_limit)
+    task_space_goalset_with_dev_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_with_dev_array, orientation_goalset_none_array)
+
+    results_goalset_with_dev_array = ik_solver.solve_array(task_space_goalset_with_dev_array)
+    first_result_goalset_with_dev_array = results_goalset_with_dev_array.problem(0)
+    assert first_result_goalset_with_dev_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    num_solutions_goalset_with_dev_array = len(
+        first_result_goalset_with_dev_array.cspace_positions())
+
+    # Expect more or equal solutions with deviation limits
+    assert num_solutions_goalset_with_dev_array > num_solutions_goalset_no_dev_array
+
+    # Test goalset with full orientation constraints using `solve_array()`.
+    # 2a. No deviation limit
+    orientation_goalset_no_dev_array = \
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target([rotation_targets])
+    task_space_goalset_orient_no_dev_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_no_dev_array, orientation_goalset_no_dev_array)
+
+    results_goalset_orient_no_dev_array = \
+        ik_solver.solve_array(task_space_goalset_orient_no_dev_array)
+    first_result_goalset_orient_no_dev_array = results_goalset_orient_no_dev_array.problem(0)
+    assert first_result_goalset_orient_no_dev_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    num_solutions_goalset_orient_no_dev_array = len(
+        first_result_goalset_orient_no_dev_array.cspace_positions())
+
+    # 2b. With orientation deviation limit only
+    orientation_goalset_with_dev_array = \
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(
+            [rotation_targets], orientation_deviation_limit)
+    task_space_goalset_orient_with_dev_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_no_dev_array, orientation_goalset_with_dev_array)
+
+    results_goalset_orient_with_dev_array = ik_solver.solve_array(
+        task_space_goalset_orient_with_dev_array)
+    first_result_goalset_orient_with_dev_array = results_goalset_orient_with_dev_array.problem(0)
+    assert first_result_goalset_orient_with_dev_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    num_solutions_goalset_orient_with_dev_array = len(
+        first_result_goalset_orient_with_dev_array.cspace_positions())
+
+    # Expect more or equal solutions with deviation limits
+    assert num_solutions_goalset_orient_with_dev_array > num_solutions_goalset_orient_no_dev_array
+
+    # 2c. With both position and orientation deviation limits
+    task_space_goalset_both_dev_array = cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray(
+        translation_goalset_with_dev_array, orientation_goalset_with_dev_array)
+
+    results_goalset_both_dev_array = ik_solver.solve_array(task_space_goalset_both_dev_array)
+    first_result_goalset_both_dev_array = results_goalset_both_dev_array.problem(0)
+    assert first_result_goalset_both_dev_array.status() == \
+        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
+    num_solutions_goalset_both_dev_array = len(
+        first_result_goalset_both_dev_array.cspace_positions())
+
+    # Expect more or equal solutions with both deviation limits
+    assert num_solutions_goalset_both_dev_array > num_solutions_goalset_orient_no_dev_array
+
+    # DEPRECATED section. --------------------------------------------------------------------------
+    # Test goalset with position-only constraints using `solve_goalset()`.
     # 1a. No deviation limit
     translation_goalset_no_dev = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
         translation_targets)
@@ -641,9 +1077,10 @@ def test_franka_with_deviation_limits(configure_franka_with_obstacles):
 
     # Expect more or equal solutions with both deviation limits
     assert num_solutions_goalset_both_dev > num_solutions_goalset_orient_no_dev
+    # End of DEPRECATED section.  ------------------------------------------------------------------
 
     # Test single target with deviation limits
-    reached_target_idx = compute_mode(results_goalset_orient_no_dev.target_indices())
+    reached_target_idx = compute_mode(first_result_goalset_orient_no_dev_array.target_indices())
     reached_pose = poses[reached_target_idx]
 
     # 3a. No deviation limit
@@ -679,7 +1116,7 @@ def test_franka_with_deviation_limits(configure_franka_with_obstacles):
     num_solutions_single_orient_dev = len(results_single_orient_dev.cspace_positions())
 
     # Expect more or equal solutions with deviation limits
-    assert num_solutions_single_orient_dev > num_solutions_single_no_dev
+    assert num_solutions_single_orient_dev >= num_solutions_single_no_dev
 
     # 3d. With both position and orientation deviation limits
     task_space_target_both_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTarget(

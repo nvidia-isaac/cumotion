@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -17,16 +17,18 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! The `CollisionSphereGenerator` generates a set of spheres to approximate the volume enclosed by
 //! a triangular mesh.
-class CollisionSphereGenerator {
+class CUMO_EXPORT CollisionSphereGenerator {
  public:
   virtual ~CollisionSphereGenerator() = default;
 
   //! Simple representation of a sphere.
-  struct Sphere {
+  struct CUMO_EXPORT Sphere {
     //! 3d coordinates for the center position of the sphere.
     Eigen::Vector3d center;
 
@@ -48,7 +50,7 @@ class CollisionSphereGenerator {
   //!
   //! The required `ParamValue` constructor for each parameter is detailed in the documentation for
   //! `setParam()`.
-  struct ParamValue {
+  struct CUMO_EXPORT ParamValue {
     //! Create `ParamValue` from `int`.
     ParamValue(int value);  // NOLINT Allow implicit conversion
     //! Create `ParamValue` from `double`.
@@ -164,7 +166,7 @@ class CollisionSphereGenerator {
   //!      AABB has dimensions {20, 50, 30} and `num_voxels is set to 100, then each voxel will
   //!      have side length 50 / 100 = 0.5. Thus, the number of voxels along each axis of the grid
   //!      will be [40, 100, 60].
-  //!    - `voxel_size` must be positive.
+  //!    - `num_voxels` must be positive.
   //!    - Default value is 50.
   virtual bool setParam(const std::string &param_name, ParamValue value) = 0;
 
@@ -196,15 +198,15 @@ class CollisionSphereGenerator {
 //! Triangles with invalid indices will be discarded with verbose warnings.
 //!
 //! Additionally, each triangle in `triangles` is tested to ensure that its area is greater than or
-//! equal to `min_triangle_radius` (see `CollisionSphereGenerator::setParam()` documentation for
+//! equal to `min_triangle_area` (see `CollisionSphereGenerator::setParam()` documentation for
 //! details). Triangles that are too small will be discarded.
 //!
 //! By default, the triangle normals will be computed assuming a counter-clockwise winding
 //! direction. This convention can be flipped by setting `flip_normals` (see
 //! `CollisionSphereGenerator::setParam()` documentation for details).
-std::unique_ptr<CollisionSphereGenerator>
-CreateCollisionSphereGenerator(const std::vector<Eigen::Vector3d> &vertices,
-                               const std::vector<Eigen::Vector3i> &triangles);
+CUMO_EXPORT std::unique_ptr<CollisionSphereGenerator> CreateCollisionSphereGenerator(
+    const std::vector<Eigen::Vector3d> &vertices,
+    const std::vector<Eigen::Vector3i> &triangles);
 
 //! Default input parameters for `GenerateCollisionSpheres()`.
 constexpr double kCollisionSphereDefaultMaxOvershoot = 0.05;
@@ -263,7 +265,7 @@ constexpr double kCollisionSphereDefaultMinTriangleArea = 1e-8;
 //! Very small and/or degenerate triangles are unlikely to aid in collision sphere generation. Thus,
 //! triangles with surface area less than `min_triangle_area` are culled prior to sphere generation
 //! and selection. The `min_triangle_area` must be positive.
-std::vector<CollisionSphereGenerator::Sphere> GenerateCollisionSpheres(
+CUMO_EXPORT std::vector<CollisionSphereGenerator::Sphere> GenerateCollisionSpheres(
     const std::vector<Eigen::Vector3d> &vertices,
     const std::vector<Eigen::Vector3i> &triangles,
     double max_overshoot = kCollisionSphereDefaultMaxOvershoot,

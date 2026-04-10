@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -27,7 +27,7 @@ import pytest
 import cumotion
 
 # Local Folder
-from ._test_helper import CUMOTION_ROOT_DIR, errors_disabled
+from ._test_helper import CUMOTION_ROOT_DIR, errors_disabled, warnings_disabled
 
 
 class ThreeLinkArmMotionPlannerFixtureData:
@@ -39,7 +39,7 @@ class ThreeLinkArmMotionPlannerFixtureData:
 @pytest.fixture
 def configure_three_link_arm_motion_planner():
     """Test fixture to configure robot description and Motion Planner objects."""
-    def _configure_three_link_arm_motion_planner():
+    def _configure_three_link_arm_motion_planner(enable_self_collision_checking=False):
         # `data` will be returned at end of function and used for writing tests.
         data = ThreeLinkArmMotionPlannerFixtureData
 
@@ -96,6 +96,10 @@ def configure_three_link_arm_motion_planner():
         data.motion_planner_config.set_param(
             "task_space_planning_params/orientation_target_final_tolerance",
             data.orientation_target_final_tolerance)
+
+        # Default to disabled for the legacy fixture.  Individual tests can override this behavior.
+        data.motion_planner_config.set_param("enable_self_collision_checking",
+                                             enable_self_collision_checking)
 
         # RRT returning a valid path is dependent on the random seed used.
         data.motion_planner_config.set_param("seed", 1234)
@@ -175,7 +179,7 @@ def test_cspace_target(configure_three_link_arm_motion_planner):
     # and has the expected length.
     assert np.allclose(data.q0, results.interpolated_path[0])
     assert np.allclose(data.q_target, results.interpolated_path[-1])
-    assert len(results.interpolated_path) == 156
+    assert len(results.interpolated_path) == 149
 
 
 def test_translation_target(configure_three_link_arm_motion_planner):
@@ -197,7 +201,7 @@ def test_translation_target(configure_three_link_arm_motion_planner):
     assert np.allclose(data.pose_target.translation,
                        path_x_final_pose.translation,
                        data.translation_target_final_tolerance)
-    assert len(results.path) == 3
+    assert len(results.path) == 5
 
     # Check that planned path has the desired initial and final configurations, and has the expected
     # length.
@@ -206,7 +210,9 @@ def test_translation_target(configure_three_link_arm_motion_planner):
                                                           data.tool_frame_name)
     assert np.allclose(data.pose_target.translation, interpolated_path_x_final_pose.translation,
                        data.translation_target_final_tolerance)
-    assert len(results.interpolated_path) == 155
+    # A range of golden values is accepted due to numerical variation between platforms
+    # (e.g., x86_64 vs. aarch64 or GCC vs. MSVC).
+    assert len(results.interpolated_path) in range(150, 154)
 
 
 def test_pose_target(configure_three_link_arm_motion_planner):
@@ -231,7 +237,7 @@ def test_pose_target(configure_three_link_arm_motion_planner):
     rotation_distance = cumotion.Rotation3.distance(data.pose_target.rotation,
                                                     path_final_pose.rotation)
     assert (rotation_distance < data.orientation_target_final_tolerance)
-    assert len(results.path) == 5
+    assert len(results.path) == 4
 
     # Check that planned path has the desired initial and final configurations, and has the expected
     # length.
@@ -244,7 +250,94 @@ def test_pose_target(configure_three_link_arm_motion_planner):
     rotation_distance = cumotion.Rotation3.distance(data.pose_target.rotation,
                                                     interpolated_path_final_pose.rotation)
     assert (rotation_distance < data.orientation_target_final_tolerance)
-    assert len(results.interpolated_path) == 170
+    assert len(results.interpolated_path) == 158
+
+
+def test_cspace_target_self_collision_enabled(configure_three_link_arm_motion_planner):
+    """Test c-space planning with self-collision checking enabled."""
+    data = configure_three_link_arm_motion_planner(enable_self_collision_checking=True)
+
+    results = data.motion_planner.plan_to_cspace_target(data.q0, data.q_target, True)
+
+    assert results.path_found
+    assert len(results.path) > 0
+    assert np.allclose(data.q0, results.path[0])
+    assert np.allclose(data.q_target, results.path[-1])
+    assert len(results.path) == 5
+    assert len(results.interpolated_path) > 0
+    assert np.allclose(data.q0, results.interpolated_path[0])
+    assert np.allclose(data.q_target, results.interpolated_path[-1])
+    assert len(results.interpolated_path) == 160
+
+
+def test_translation_target_self_collision_enabled(configure_three_link_arm_motion_planner):
+    """Test translation planning with self-collision checking enabled."""
+    data = configure_three_link_arm_motion_planner(enable_self_collision_checking=True)
+
+    results = data.motion_planner.plan_to_translation_target(data.q0,
+                                                             data.pose_target.translation,
+                                                             True)
+
+    assert results.path_found
+    assert len(results.path) > 0
+    assert np.allclose(data.q0, results.path[0])
+    path_x_final_pose = data.kinematics.pose(results.path[-1], data.tool_frame_name)
+    assert np.allclose(data.pose_target.translation,
+                       path_x_final_pose.translation,
+                       data.translation_target_final_tolerance)
+    assert len(results.path) == 5
+
+    assert len(results.interpolated_path) > 0
+    assert np.allclose(data.q0, results.interpolated_path[0])
+    interpolated_path_x_final_pose = data.kinematics.pose(results.interpolated_path[-1],
+                                                          data.tool_frame_name)
+    assert np.allclose(data.pose_target.translation,
+                       interpolated_path_x_final_pose.translation,
+                       data.translation_target_final_tolerance)
+    # A range of golden values is accepted due to numerical variation between platforms
+    # (e.g., x86_64 vs. aarch64 or GCC vs. MSVC).
+    assert len(results.interpolated_path) in range(150, 154)
+
+
+def test_pose_target_self_collision_enabled(configure_three_link_arm_motion_planner):
+    """Test pose planning with self-collision checking enabled."""
+    data = configure_three_link_arm_motion_planner(enable_self_collision_checking=True)
+
+    results = data.motion_planner.plan_to_pose_target(data.q0,
+                                                      data.pose_target,
+                                                      True)
+
+    assert results.path_found
+    assert len(results.path) > 0
+    assert np.allclose(data.q0, results.path[0])
+    path_final_pose = data.kinematics.pose(results.path[-1], data.tool_frame_name)
+    assert np.allclose(data.pose_target.translation,
+                       path_final_pose.translation,
+                       data.translation_target_final_tolerance)
+    rotation_distance = cumotion.Rotation3.distance(data.pose_target.rotation,
+                                                    path_final_pose.rotation)
+    assert rotation_distance < data.orientation_target_final_tolerance
+    assert len(results.path) == 5
+
+    assert len(results.interpolated_path) > 0
+    assert np.allclose(data.q0, results.interpolated_path[0])
+    interpolated_path_final_pose = data.kinematics.pose(results.interpolated_path[-1],
+                                                        data.tool_frame_name)
+    assert np.allclose(data.pose_target.translation,
+                       interpolated_path_final_pose.translation,
+                       data.translation_target_final_tolerance)
+    rotation_distance = cumotion.Rotation3.distance(data.pose_target.rotation,
+                                                    interpolated_path_final_pose.rotation)
+    assert rotation_distance < data.orientation_target_final_tolerance
+    assert len(results.interpolated_path) == 161
+
+
+def test_set_param_enable_self_collision_checking(configure_three_link_arm_motion_planner):
+    """Test `MotionPlanner::setParam` interface for setting enable self-collision checking."""
+    data = configure_three_link_arm_motion_planner()
+
+    assert data.motion_planner_config.set_param("enable_self_collision_checking", True)
+    assert data.motion_planner_config.set_param("enable_self_collision_checking", False)
 
 
 def test_set_param_seed(configure_three_link_arm_motion_planner):
@@ -321,20 +414,24 @@ def test_set_param_cuda_tree_params(configure_three_link_arm_motion_planner):
     """Test `MotionPlanner::setParam` interface for CUDA tree params."""
     data = configure_three_link_arm_motion_planner()
 
+    # Deprecated `max_num_nodes` is accepted but ignored (logs warning).
+    with warnings_disabled:
+        assert data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 5000)
     # Test with valid, positive values.
-    assert data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 5000)
     assert data.motion_planner_config.set_param("cuda_tree_params/max_buffer_size", 12)
     assert data.motion_planner_config.set_param("cuda_tree_params/num_nodes_cpu_gpu_crossover", 12)
 
-    # `max_num_nodes` must be greater than `num_nodes_cpu_gpu_crossover`.
-    with errors_disabled:
-        assert not data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 3)
-        assert not data.motion_planner_config.set_param(
-            "cuda_tree_params/num_nodes_cpu_gpu_crossover", 6000)
+    # Deprecated `max_num_nodes` is accepted and ignored regardless of value.
+    with warnings_disabled:
+        assert data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 3)
+    # `num_nodes_cpu_gpu_crossover` can be any positive value.
+    assert data.motion_planner_config.set_param(
+        "cuda_tree_params/num_nodes_cpu_gpu_crossover", 150000)
 
-    # Negative values not accepted.
+    # Deprecated `max_num_nodes` is accepted and ignored; other params still validate
+    # that negative values are not accepted.
+    assert data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", -12)
     with errors_disabled:
-        assert not data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", -12)
         assert not data.motion_planner_config.set_param("cuda_tree_params/max_buffer_size", -12)
         assert not data.motion_planner_config.set_param(
             "cuda_tree_params/num_nodes_cpu_gpu_crossover", -12)
@@ -344,10 +441,13 @@ def test_set_param_cuda_tree_params(configure_three_link_arm_motion_planner):
 
     # CUDA tree params can't be updated while CUDA tree is disabled.
     with errors_disabled:
-        assert not data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 12)
         assert not data.motion_planner_config.set_param("cuda_tree_params/max_buffer_size", 12)
         assert not data.motion_planner_config.set_param(
             "cuda_tree_params/num_nodes_cpu_gpu_crossover", 12)
+    # Deprecated `max_num_nodes` is accepted and ignored; other params still validate
+    # that CUDA is enabled.
+    with warnings_disabled:
+        assert data.motion_planner_config.set_param("cuda_tree_params/max_num_nodes", 12)
 
 
 def test_set_param_cspace(configure_three_link_arm_motion_planner):
@@ -448,3 +548,65 @@ def test_set_param_task_space(configure_three_link_arm_motion_planner):
     with errors_disabled:
         assert not data.motion_planner_config.set_param(gradient_substep_size, -1.0)
         assert not data.motion_planner_config.set_param(gradient_substep_size, 0.0)
+
+
+def test_reset_cspace_target(configure_three_link_arm_motion_planner):
+    """Test that `reset()` produces identical c-space plans across multiple resets."""
+    data = configure_three_link_arm_motion_planner()
+
+    data.motion_planner.reset()
+    reference = data.motion_planner.plan_to_cspace_target(data.q0, data.q_target, True)
+    assert reference.path_found
+
+    for _ in range(5):
+        data.motion_planner.reset()
+        results = data.motion_planner.plan_to_cspace_target(data.q0, data.q_target, True)
+        assert results.path_found
+        assert len(results.path) == len(reference.path)
+        for ref_q, res_q in zip(reference.path, results.path):
+            np.testing.assert_array_equal(ref_q, res_q)
+        assert len(results.interpolated_path) == len(reference.interpolated_path)
+        for ref_q, res_q in zip(reference.interpolated_path, results.interpolated_path):
+            np.testing.assert_array_equal(ref_q, res_q)
+
+
+def test_reset_translation_target(configure_three_link_arm_motion_planner):
+    """Test that `reset()` produces identical translation plans across multiple resets."""
+    data = configure_three_link_arm_motion_planner()
+
+    data.motion_planner.reset()
+    reference = data.motion_planner.plan_to_translation_target(
+        data.q0, data.pose_target.translation, True)
+    assert reference.path_found
+
+    for _ in range(5):
+        data.motion_planner.reset()
+        results = data.motion_planner.plan_to_translation_target(
+            data.q0, data.pose_target.translation, True)
+        assert results.path_found
+        assert len(results.path) == len(reference.path)
+        for ref_q, res_q in zip(reference.path, results.path):
+            np.testing.assert_array_equal(ref_q, res_q)
+        assert len(results.interpolated_path) == len(reference.interpolated_path)
+        for ref_q, res_q in zip(reference.interpolated_path, results.interpolated_path):
+            np.testing.assert_array_equal(ref_q, res_q)
+
+
+def test_reset_pose_target(configure_three_link_arm_motion_planner):
+    """Test that `reset()` produces identical pose plans across multiple resets."""
+    data = configure_three_link_arm_motion_planner()
+
+    data.motion_planner.reset()
+    reference = data.motion_planner.plan_to_pose_target(data.q0, data.pose_target, True)
+    assert reference.path_found
+
+    for _ in range(5):
+        data.motion_planner.reset()
+        results = data.motion_planner.plan_to_pose_target(data.q0, data.pose_target, True)
+        assert results.path_found
+        assert len(results.path) == len(reference.path)
+        for ref_q, res_q in zip(reference.path, results.path):
+            np.testing.assert_array_equal(ref_q, res_q)
+        assert len(results.interpolated_path) == len(reference.interpolated_path)
+        for ref_q, res_q in zip(reference.interpolated_path, results.interpolated_path):
+            np.testing.assert_array_equal(ref_q, res_q)

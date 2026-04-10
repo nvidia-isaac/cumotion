@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2023-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -22,13 +22,14 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/robot_description.h"
 #include "cumotion/world.h"
 
 namespace cumotion {
 
 //! Interface for querying spatial relationships between a robot and a world.
-class RobotWorldInspector {
+class CUMO_EXPORT RobotWorldInspector {
  public:
   virtual ~RobotWorldInspector() = default;
 
@@ -172,7 +173,7 @@ class RobotWorldInspector {
 //! The `world_view` is optional. If not provided, queries related to obstacle collisions
 //! (e.g., `distanceToObstacle()`) will not be functional unless a world view is set by
 //! `setWorldView()` after construction.
-std::unique_ptr<RobotWorldInspector> CreateRobotWorldInspector(
+CUMO_EXPORT std::unique_ptr<RobotWorldInspector> CreateRobotWorldInspector(
     const RobotDescription &robot_description,
     std::optional<WorldViewHandle> world_view);
 
