@@ -1,5 +1,5 @@
 <p align="left">
-<img src="docs/sphinx/_static/images/m48-robot-manufacturing-256px-grn.png" width="192" /></p>
+<img src="https://media.githubusercontent.com/media/nvidia-isaac/cumotion/084b9bd853dd8c5bea2ac5839cf09e94e19f9dd9/_static/images/m48-robot-manufacturing-256px-grn.png" width="192" /></p>
 
 # cuMotion: GPU-Accelerated Motion Generation for Robotics
 
