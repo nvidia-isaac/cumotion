@@ -1,0 +1,1019 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>RMPflow &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>window.MathJax = {"TeX": {"Macros": {"T": ["{\\textsf{T}}", 0], "abs": ["{\\left\\lvert#1\\right\\rvert}", 1], "norm": ["{\\left\\lVert#1\\right\\rVert}", 1], "det": ["{\\left\\lvert#1\\right\\rvert}", 1], "innerprod": ["{\\left\\langle#1,#2\\right\\rangle}", 2], "vector": ["{[#1_1,\\ldots,#1_{#2}]}", 2], "N": "{\\mathbb{N}}", "Z": "{\\mathbb{Z}}", "R": "{\\mathbb{R}}", "C": "{\\mathbb{C}}", "Im": ["{\\mathcal{R}(#1)}", 1], "Ker": ["{\\mathcal{N}(#1)}", 1], "Tr": "{\\text{Tr}}", "pd": ["{\\frac{\\partial{#1}}{\\partial{#2}}}", 2], "E": ["{\\mathbf{E}\\left[#1\\right]}", 1], "V": ["{\\mathbf{V}\\left[#1\\right]}", 1], "U": "{\\mathcal{U}}", "half": "{\\frac{1}{2}}", "ceil": ["{\\left \\lceil{#1}\\right \\rceil}", 1], "floor": ["{\\left \\lfloor{#1}\\right \\rfloor}", 1]}}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'concepts/rmpflow';</script>
+
+    <link rel="icon" href="../_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RMPflow Tuning Guide" href="rmpflow_tuning_guide.html" />
+    <link rel="prev" title="Concepts" href="../concepts.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="../_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/world_tutorial.html">World Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../concepts.html">Concepts</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">RMPflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rmpflow_tuning_guide.html">RMPflow Tuning Guide</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../release_notes.html">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../concepts.html" class="nav-link">Concepts</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">RMPflow</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="rmpflow">
+<span id="concepts-rmpflow"></span><h1>RMPflow<a class="headerlink" href="#rmpflow" title="Link to this heading">#</a></h1>
+<p>A <strong>Riemannian Motion Policy</strong>, or <em>RMP</em>, is an acceleration policy
+accompanied by a matrix <span class="math notranslate nohighlight">\(M(q, \dot{q})\)</span> that is sometimes called an inertia matrix,
+borrowing terminology from classical mechanics, but is also closely related to the concept
+of a Riemannian metric.</p>
+<p>Leveraging the machinery of Riemannian geometry, <em>RMPflow</em> is a
+framework for combining RMPs representing multiple (possibly competing) objectives and
+constraints into a single global acceleration policy.  Within this framework, the local RMPs
+can be defined on any number of intermediate task spaces (including the operational space of
+the end effector, generalizing operational space control).  For details, refer to
+<a class="reference external" href="https://arxiv.org/abs/1811.07049">*RMPflow: A computational graph for automatic motion policy generation*</a>.</p>
+<p>Broadly defined, a <em>motion policy</em> is a mathematical function that takes the current
+state of a robot (for example, position and velocity in generalized coordinates) and returns
+a quantity representing a desired change in that state.  Such a policy can depend
+implicitly on variables representing one or more objectives or constraints as well as the state of
+the environment.  An <em>acceleration policy</em> is a motion policy where the output is
+desired acceleration, <span class="math notranslate nohighlight">\(\ddot q = \pi(q, \dot{q})\)</span>, resulting in a second-order
+differential equation.</p>
+<p>For the purpose of controlling a robot by position or velocity control, typically motion policies are used
+where the output is position or velocity.  Such policies can be produced from an acceleration policy using a
+numerical integration scheme such as Euler integration.</p>
+<p>After reviewing the basics here, also see the <a class="reference internal" href="rmpflow_tuning_guide.html"><span class="doc">RMPflow Tuning Guide</span></a>
+for practical advice on configuring RMPflow for a new robot.</p>
+<section id="rmpflow-configuration">
+<span id="concepts-rmpflow-configuration"></span><h2>RMPflow Configuration<a class="headerlink" href="#rmpflow-configuration" title="Link to this heading">#</a></h2>
+<p>Three files are necessary to configure RMPflow for use with a new robot:</p>
+<ul class="simple">
+<li><p>A <strong>URDF</strong> (universal robot description format) file, used for specifying robot kinematics
+as well as joint and link names.  Position limits for each joint are also required.
+Other properties in the URDF are ignored and can be omitted; these include masses,
+moments of inertia, visual, and collision meshes.</p></li>
+<li><p>An <strong>XRDF</strong> (extended robot description format) file.  In addition to enumerating
+the list of actuated joints that define the configuration space (c-space) for the robot,
+this file includes sections for specifying the default c-space configuration
+and sets of collision spheres used for collision avoidance.  This file can also
+be used to specify fixed positions for unactuated joints.</p></li>
+<li><p>A <strong>RMPflow configuration file</strong> in YAML format, containing parameters for all enabled RMPs.</p></li>
+</ul>
+<p>As a general mathematical framework, RMPflow does not prescribe the form that individual RMPs
+must take.  The particular implementation of RMPflow in cuMotion does
+however expose a pre-specified set of RMPs that have been constructed and empirically found
+to produce smooth reactive behaviors for a variety of manipulation tasks.</p>
+</section>
+<section id="c-space-target-rmp-c-space-target-rmp">
+<h2>C-Space Target RMP (<cite>c-space_target_rmp</cite>)<a class="headerlink" href="#c-space-target-rmp-c-space-target-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Specifies a default c-space configuration for the robot, used for redundancy resolution.</p>
+<p><strong>Definition:</strong> Acceleration for this RMP is given by an equation similar to a PD controller, with a
+position gain and damping gain, but the magnitude of the position term is capped when the C-space
+distance exceeds a threshold.  This cap avoids excessive forces when the configuration is far away
+from the target.  Defining <span class="math notranslate nohighlight">\(q\)</span> to be the full configuration vector:</p>
+<div class="math notranslate nohighlight">
+\[\ddot q = k_p r(q_0 - q) - k_d \dot q\,,\]</div>
+<p>where the “robust capping function” <span class="math notranslate nohighlight">\(r(p)\)</span> is given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}r(p) = \left \{ \begin{array}{cl}
+p, &amp; ||p|| &lt; \theta \\
+\theta\, p / ||p|| &amp; \textrm{otherwise.}
+\end{array} \right.\end{split}\]</div>
+<p>The inertia matrix is proportional to the identity:</p>
+<div class="math notranslate nohighlight">
+\[M = \mu I\]</div>
+<p>The <cite>c-space_target_rmp</cite> section of the RMPflow configuration file contains an additional
+<cite>inertia</cite> parameter <span class="math notranslate nohighlight">\(m\)</span>.  When this parameter is nonzero, it results in the introduction of
+a conceptually separate RMP corresponding to zero c-space acceleration, <span class="math notranslate nohighlight">\(\ddot q = 0\)</span>, with inertia
+matrix given by <span class="math notranslate nohighlight">\(M = mI\)</span>.</p>
+<p><strong>Parameters:</strong></p>
+<p>Units assume revolute joints where <span class="math notranslate nohighlight">\(q\)</span> is expressed in radians.  If joints are instead prismatic,
+<cite>robust_position_term_thresh</cite> will have units of meters.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Priority weight relative to other RMPs</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>position_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_p\)</span></p></td>
+<td><p>s<sup>-2</sup></p></td>
+<td><p>Position gain, determining how strongly configuration is pulled toward target</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>damping_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain, determining amount of “drag”</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>robust_position_term_thresh</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\theta\)</span></p></td>
+<td><p>rad</p></td>
+<td><p>Distance in c-space at which the position correction vector is capped</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>inertia</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Additional c-space inertia</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="target-rmp-target-rmp">
+<h2>Target RMP (<cite>target_rmp</cite>)<a class="headerlink" href="#target-rmp-target-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Drives end effector toward specified position target.</p>
+<p><strong>Definition:</strong> Similar to the c-space target RMP, acceleration for this RMP resembles a PD
+controller, albeit with a slightly different strategy for capping the magnitude of the position
+correction vector.</p>
+<div class="math notranslate nohighlight">
+\[\ddot x = k_p (x_0 - x) / (||x_0-x|| + \epsilon) - k_d \dot x\]</div>
+<p>The inertia matrix blends between a rank-deficient metric <span class="math notranslate nohighlight">\(S = n n^T`\)</span>, where <span class="math notranslate nohighlight">\(n\)</span> is
+the direction vector toward the target, and the identity <span class="math notranslate nohighlight">\(I\)</span>.</p>
+<p>Intuitively, <span class="math notranslate nohighlight">\(S\)</span> cares
+only about the direction toward the target (letting other RMPs such as the obstacle avoidance RMP
+control the orthogonal directions).</p>
+<p><span class="math notranslate nohighlight">\(I\)</span> cares about all directions.</p>
+<p>The contribution of
+<span class="math notranslate nohighlight">\(S\)</span> is larger farther from the goal, allowing obstacles to push the system more effectively,
+while <span class="math notranslate nohighlight">\(I\)</span> dominates near the goal, encouraging faster convergence.</p>
+<p>Blending is
+controlled by a radial basis function, specifically a Gaussian, that transitions from a minimum
+constant value far from the target to 1 near the target.</p>
+<p>Near the target, an additional nonlinear “proximity boost” multiplier turns on.  This
+factor takes the form of a Gaussian:</p>
+<div class="math notranslate nohighlight">
+\[M = \left[\beta(x) b + (1-\beta(x))\right] \left[\alpha(x) M_\textrm{near} + (1-\alpha(x)) M_\textrm{far} \right]\]</div>
+<p>where</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{array}{l}
+\alpha(x) = (1-\alpha_\textrm{min})\exp \left(\frac{-||x_0-x||^2}{2 \sigma_a^2}\right) + \alpha_\textrm{min} \\
+\beta(x) = \exp \left(-\frac{||x_0 - x||^2}{2 \sigma_b^2}\right) \\
+M_\textrm{near} = \mu_\textrm{near} I \\
+M_\textrm{far} = \mu_\textrm{far} S = \frac{\mu_\textrm{far}}{||x_0-x||^2} (x_0-x)(x_0-x)^T\,.
+\end{array}\end{split}\]</div>
+<p><strong>Parameters:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>accel_p_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_p\)</span></p></td>
+<td><p>m/s<sup>2</sup></p></td>
+<td><p>Position gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>accel_d_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>accel_norm_eps</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale controlling transition between constant acceleration region far from target and linear region near target</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_alpha_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma_a\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale of the Gaussian controlling blending between <span class="math notranslate nohighlight">\(S\)</span> and <span class="math notranslate nohighlight">\(I\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p><cite>min_metric_alpha</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\alpha_\textrm{min}\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Controls the minimum contribution of the isotropic <span class="math notranslate nohighlight">\(M_\textrm{near}\)</span> term to the metric (inertia matrix)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>max_metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_\textrm{near}\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Metric scalar for the isotropic <span class="math notranslate nohighlight">\(M_\textrm{near}\)</span> contribution to the metric (inertia matrix)</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>min_metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu_\textrm{far}\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Metric scalar for the directional <span class="math notranslate nohighlight">\(M_\textrm{far}\)</span> contribution to the metric (inertia matrix)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>proximity_metric_boost_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(b\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Scale factor controlling the strength of boosting near the target</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>proximity_metric_boost_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma_b\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale of the Gaussian controlling boosting near the target</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>xi_estimator_gate_std_dev</cite></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>Unused parameter (to be removed in a future release)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="axis-target-rmp-axis-target-rmp">
+<h2>Axis Target RMP (<cite>axis_target_rmp</cite>)<a class="headerlink" href="#axis-target-rmp-axis-target-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Drives x-, y-, or z-axis of end effector frame toward target orientation.  This
+RMP is used for general orientation targets (where an axis target RMP is added for each of the
+three axes) as well as for “partial pose” targets where only alignment of a single axis is
+desired.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Partial pose targets are not supported by the Motion Generation extension.</p>
+</div>
+<p><strong>Definition:</strong></p>
+<p>Similar to the (position) target RMP, the axis target RMP supports “proximity boosting,”
+but only when a target RMP is active at the same time.  In this case, it’s the distance to
+the position target (<span class="math notranslate nohighlight">\(||x_0-x||\)</span>) that controls the strength of boosting.</p>
+<p>The current and desired axis orientations are represented by unit vectors, denoted
+by <span class="math notranslate nohighlight">\(n\)</span> and <span class="math notranslate nohighlight">\(n_0\)</span> respectively.  Acceleration is given by:</p>
+<div class="math notranslate nohighlight">
+\[\ddot n = k_p (n_0 - n) - k_d \dot n\,\]</div>
+<p>If a position target (that is, target RMP) is active, the metric has the form:</p>
+<div class="math notranslate nohighlight">
+\[M_\textrm{boosted} = \left[\beta(x) b + (1-\beta(x))\right] \mu I\,\]</div>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[\beta(x) = \exp \left(-\frac{||x_0 - x||^2}{2 \sigma_b^2}\right)\,\]</div>
+<p>When no position target is active, this simplifies to:</p>
+<div class="math notranslate nohighlight">
+\[M = \mu I\,.\]</div>
+<p><strong>Parameters:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>accel_p_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_p\)</span></p></td>
+<td><p>s<sup>-2</sup></p></td>
+<td><p>Position gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>accel_d_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Priority weight relative to other RMPs</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>proximity_metric_boost_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(b\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Scale factor controlling the strength of boosting near the position target</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>proximity_metric_boost_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\sigma_b\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale of the Gaussian controlling boosting near the position target</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="joint-limit-rmp-joint-limit-rmp">
+<h2>Joint Limit RMP (<cite>joint_limit_rmp</cite>)<a class="headerlink" href="#joint-limit-rmp-joint-limit-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Avoids joint limits.</p>
+<p><strong>Definition:</strong> This is a one-dimensional RMP that depends on a single
+c-space coordinate (joint) and a corresponding upper or lower joint limit as specified in
+the URDF for the robot.  If a robot has <span class="math notranslate nohighlight">\(N\)</span> joints, it follows that a total of <span class="math notranslate nohighlight">\(2N\)</span>
+joint limit RMPs will be introduced.  The joint limits specified in the URDF can be padded
+(that is, made more conservative) by entering positive padding values in the <cite>joint_limit_buffers</cite>
+array in the RMPflow configuration file.  For a given joint, the same padding value is used
+for both upper and lower limits.</p>
+<p>The task space for this RMP consists of a shifted and scaled c-space coordinate, measuring
+the scaled distance to either the upper or lower joint limit.  Without loss of generality,
+we consider a lower joint limit RMP.  If <span class="math notranslate nohighlight">\(q\)</span> is the c-space coordinate for a given
+joint, and <span class="math notranslate nohighlight">\(q_\textrm{upper}\)</span> and <span class="math notranslate nohighlight">\(q_\textrm{lower}\)</span> are the upper and lower
+limits for that joint, respectively, we define:</p>
+<div class="math notranslate nohighlight">
+\[x = \frac{q - q_\textrm{lower}}{q_\textrm{upper} - q_\textrm{lower}}\,\]</div>
+<p>The acceleration for that coordinate is then given by:</p>
+<div class="math notranslate nohighlight">
+\[\ddot x = \frac{k_p}{x^2/\ell_p^2 + \epsilon_p} - k_d \dot x\,\]</div>
+<p>The metric (inertia matrix) is a scalar given by:</p>
+<div class="math notranslate nohighlight">
+\[m = \left(1 - \frac{1}{1+\exp(-\dot x/v_m)}\right) \frac{\mu}{x/\ell_m + \epsilon_m}\,\]</div>
+<p><strong>Parameters:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Overall priority weight relative to other RMPs</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ell_m\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Length scale controlling ramp-up of metric as joint limit is approached</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>metric_exploder_eps</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon_m\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Offset determining <span class="math notranslate nohighlight">\(x\)</span> value at which metric diverges</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_velocity_gate_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(v_m\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Scale determining rate at which metric increases with velocity in direction of barrier</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>accel_damper_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>accel_potential_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_p\)</span></p></td>
+<td><p>s<sup>-2</sup></p></td>
+<td><p>Gain multiplying position barrier term</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>accel_potential_exploder_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ell_p\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Length scale controlling steepness of position barrier</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>accel_potential_exploder_eps</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon_p\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Offset limiting divergence of position barrier strength</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="joint-velocity-limit-rmp-joint-velocity-cap-rmp">
+<h2>Joint Velocity Limit RMP (<cite>joint_velocity_cap_rmp</cite>)<a class="headerlink" href="#joint-velocity-limit-rmp-joint-velocity-cap-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Limits maximum joint velocity.</p>
+<p><strong>Definition:</strong> This RMP applies damping when the magnitude of the velocity of a given joint
+approaches the specified limit.</p>
+<p>This is a one-dimensional RMP with acceleration given by:</p>
+<div class="math notranslate nohighlight">
+\[\ddot q = -k_d\,\textrm{sgn}(\dot q) \left(|\dot q| - (v_\textrm{max} - v_r)\right)\,\]</div>
+<p>The metric (inertia matrix) is a scalar given by:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}m = \left \{ \begin{array}{cl}
+0, &amp; |\dot q| &lt; (v_\textrm{max} - v_r) \\
+\frac{\mu}{1 - \left(|\dot q| - (v_\textrm{max} - v_r)\right)^2 / v_r^2} &amp; \textrm{otherwise.}
+\end{array} \right.\end{split}\]</div>
+<p>The metric is zero outside you-specified damping region, thereby disabling this RMP.
+In addition, clipping is applied to avoid divergence of the metric as <span class="math notranslate nohighlight">\(\dot q\)</span> approaches <span class="math notranslate nohighlight">\(v_\textrm{max}\)</span>.</p>
+<p><strong>Parameters:</strong></p>
+<p>Units assume revolute joints where <span class="math notranslate nohighlight">\(q\)</span> is expressed in radians.  If joints are instead prismatic,
+<cite>max_velocity</cite> and <cite>velocity_damping_region</cite> will have units of m/s.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>max_velocity</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(v_\textrm{max}\)</span></p></td>
+<td><p>rad/s</p></td>
+<td><p>Maximum allowed velocity magnitude</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>velocity_damping_region</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(v_r\)</span></p></td>
+<td><p>rad/s</p></td>
+<td><p>Defines width of velocity region affect by damping</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>damping_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_weight</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Overall priority weight relative to other RMPs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="collision-avoidance-rmp-collision-rmp">
+<h2>Collision Avoidance RMP (<cite>collision_rmp</cite>)<a class="headerlink" href="#collision-avoidance-rmp-collision-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Avoids collision with obstacles in the environment.</p>
+<p><strong>Definition:</strong> This is a one-dimensional RMP where the task space consists of a single
+coordinate measuring distance from a given collision sphere on the robot (specified in the
+robot description YAML file) to an obstacle in the environment.  Denoting that coordinate
+as <span class="math notranslate nohighlight">\(x\)</span>, the acceleration is given by:</p>
+<div class="math notranslate nohighlight">
+\[\ddot x = k_p \exp(-x / \ell_p) - k_d \left[1 - \frac{1}{1 + \exp(-\dot x/v_d)} \right] \frac{\dot x}{x/\ell_d + \epsilon_d}\,\]</div>
+<p>The metric (inertia matrix) is a scalar given by:</p>
+<div class="math notranslate nohighlight">
+\[m = \left[1 - \frac{1}{1 + \exp(-\dot x/v_d)} \right] g(x) \frac{\mu}{x / \ell_m + \epsilon_m}\,\]</div>
+<p>where <span class="math notranslate nohighlight">\(g(x)\)</span> is a piecewise polynomial that varies smoothly from 1 to 0 as <span class="math notranslate nohighlight">\(x\)</span> varies from 0 to <span class="math notranslate nohighlight">\(r\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}g(x) = \left \{ \begin{array}{cl}
+x^2/r^2 -2s/r + 1, &amp; x\le r \\
+0, &amp; x\gt r
+\end{array} \right.\end{split}\]</div>
+<p><strong>Parameters:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>damping_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>s<sup>-1</sup></p></td>
+<td><p>Damping gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>damping_std_dev</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ell_d\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale controlling increase in acceleration as obstacle is approached</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>damping_robustness_eps</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon_d\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Offset determining <span class="math notranslate nohighlight">\(x\)</span> value at which acceleration diverges (before clipping)</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>damping_velocity_gate_length_scale</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(v_d\)</span></p></td>
+<td><p>m/s</p></td>
+<td><p>Scale determining velocity dependence of “velocity gating” function</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>repulsion_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_p\)</span></p></td>
+<td><p>m/s<sup>2</sup></p></td>
+<td><p>Gain for position repulsion term</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>repulsion_std_dev</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ell_p\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale controlling distance dependence of repulsion</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>metric_modulation_radius</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(r\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale determining distance from obstacle at which RMP is disabled completely</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Overall priority weight relative to other RMPs</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>metric_exploder_std_dev</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\ell_m\)</span></p></td>
+<td><p>m</p></td>
+<td><p>Length scale controlling increase in metric as obstacle is approached</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_exploder_eps</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\epsilon_m\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Offset determining <span class="math notranslate nohighlight">\(x\)</span> value at which metric diverges (before clipping)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="damping-rmp-damping-rmp">
+<h2>Damping RMP (<cite>damping_rmp</cite>)<a class="headerlink" href="#damping-rmp-damping-rmp" title="Link to this heading">#</a></h2>
+<p><strong>Purpose:</strong> Contributes additional nonlinear damping based on control frame
+(for example, end effector) velocity relative to target.</p>
+<p><strong>Definition:</strong> This is a one-dimensional RMP where the task space consists of a single coordinate
+<span class="math notranslate nohighlight">\(x\)</span> measuring distance from the origin of the control frame to the target.
+The acceleration is given by:</p>
+<div class="math notranslate nohighlight">
+\[\ddot x = -k_d |\dot x|\dot x\]</div>
+<p>and the metric by:</p>
+<div class="math notranslate nohighlight">
+\[M = \mu |\dot x| I\,\]</div>
+<p>The <cite>damping_rmp</cite> section of the RMPflow configuration file contains an additional
+<cite>inertia</cite> parameter <span class="math notranslate nohighlight">\(m\)</span>.  When this parameter is nonzero, it results in the introduction of
+a conceptually separate RMP corresponding to zero acceleration, <span class="math notranslate nohighlight">\(\ddot x = 0\)</span>, with inertia
+matrix given by <span class="math notranslate nohighlight">\(M = mI\)</span>.</p>
+<p><strong>Parameters:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Symbol</p></th>
+<th class="head"><p>Units</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>accel_d_gain</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(k_d\)</span></p></td>
+<td><p>m<sup>-1</sup></p></td>
+<td><p>Nonlinear damping gain</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>metric_scalar</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(\mu\)</span></p></td>
+<td><p>(m/s)<sup>-1</sup></p></td>
+<td><p>Priority weight relative to other RMPs</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>inertia</cite></p></td>
+<td><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+<td><p>-</p></td>
+<td><p>Additional inertia</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Link to this heading">#</a></h2>
+<p>Refer to the <a class="reference internal" href="rmpflow_tuning_guide.html"><span class="doc">RMPflow Tuning Guide</span></a> for practical advice on configuring RMPflow for a new robot.</p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../concepts.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Concepts</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="rmpflow_tuning_guide.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">RMPflow Tuning Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#rmpflow-configuration">RMPflow Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#c-space-target-rmp-c-space-target-rmp">C-Space Target RMP (<cite>c-space_target_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#target-rmp-target-rmp">Target RMP (<cite>target_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#axis-target-rmp-axis-target-rmp">Axis Target RMP (<cite>axis_target_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joint-limit-rmp-joint-limit-rmp">Joint Limit RMP (<cite>joint_limit_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#joint-velocity-limit-rmp-joint-velocity-cap-rmp">Joint Velocity Limit RMP (<cite>joint_velocity_cap_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#collision-avoidance-rmp-collision-rmp">Collision Avoidance RMP (<cite>collision_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#damping-rmp-damping-rmp">Damping RMP (<cite>damping_rmp</cite>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#further-reading">Further Reading</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="../_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

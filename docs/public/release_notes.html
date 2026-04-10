@@ -1,0 +1,591 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Release Notes &#8212; cuMotion</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3835c3f0" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'release_notes';</script>
+
+    <link rel="icon" href="_static/favicon.png"/>
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Python API" href="api/python_api.html" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+
+
+  </head>
+
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/nvidia-logo-horiz-rgb-blk-for-screen.svg" class="logo__image only-light" alt="cuMotion - Home"/>
+    <img src="_static/nvidia-logo-horiz-rgb-wht-for-screen.svg" class="logo__image only-dark pst-js-only" alt="cuMotion - Home"/>
+  
+  
+    <p class="title logo__title">cuMotion</p>
+  
+</a>
+
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Table of Contents">
+  <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/robot_description_tutorial.html">Robot Description Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/world_tutorial.html">World Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="concepts.html">Concepts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts/rmpflow.html">RMPflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/rmpflow_tuning_guide.html">RMPflow Tuning Guide</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="api/cpp_api.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/python_api.html">Python API</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Release Notes</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Release Notes</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="release-notes">
+<h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h1>
+<section id="release-1-1-0-april-10-2026">
+<h2>Release 1.1.0 - April 10, 2026<a class="headerlink" href="#release-1-1-0-april-10-2026" title="Link to this heading">#</a></h2>
+<section id="what-s-new">
+<h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Added support for NVIDIA DGX Spark.</p></li>
+<li><p>Added support for Microsoft Windows.</p></li>
+<li><p>Added wheel files for all actively-supported Python versions (currently 3.10 through 3.14)
+for all platforms.</p></li>
+<li><p>Added support for batch mode in <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolverE" title="cumotion::CollisionFreeIkSolver"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">collision-free</span> <span class="pre">IK</span></code></a>.</p></li>
+<li><p>Added multi-target support for <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlowE" title="cumotion::RmpFlow"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">RMPflow</span></code></a>.</p></li>
+<li><p>Added self-collision support for geometric motion planning. Self-collision checking is now the
+default for both <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlannerE" title="cumotion::MotionPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlanner</span></code></a> and geometric planning within the
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a> pipeline.</p></li>
+<li><p>Improved performance of nearest-neighbor queries for geometric planning. This optimization is
+only enabled when using unweighted <code class="docutils literal notranslate"><span class="pre">distance_metric_weights</span></code> (i.e., a vector of all ones).
+This is the default, generally-recommended setting for
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlannerE" title="cumotion::MotionPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlanner</span></code></a>.</p></li>
+<li><p>Improved performance of trajectory optimization.</p></li>
+<li><p>Updated default parameters for collision-free IK and trajectory optimization to improve success
+rates and convergence.</p></li>
+<li><p>Extended <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion14WorldInspectorE" title="cumotion::WorldInspector"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">WorldInspector</span></code></a> to support querying obstacle
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector4poseERKN5World14ObstacleHandleE" title="cumotion::WorldInspector::pose"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">pose()</span></code></a> and
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector9isEnabledERKN5World14ObstacleHandleE" title="cumotion::WorldInspector::isEnabled"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">isEnabled()</span></code></a> status.</p></li>
+<li><p>Enabled Python interface compatibility with NumPy 2.x by updating to pybind11 version 3.0.1.</p></li>
+<li><p>Eliminated all internal use of CUDA Unified Memory. On Jetson Orin, this enables cuMotion to run in the same
+process as other threads making simultaneous use of CUDA. Platforms with full Unified Memory support
+(i.e., x86_64 and Jetson Thor) are unaffected by this change.</p></li>
+</ul>
+</section>
+<section id="deprecation-notice">
+<h3>Deprecation Notice<a class="headerlink" href="#deprecation-notice" title="Link to this heading">#</a></h3>
+<p>The following items are deprecated and will be removed in the next release:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveGoalset()</span></code></a>
+and related target constructors have been deprecated in favor of
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveArray()</span></code></a> and
+related target constructors. The newly added
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">solveArray()</span></code></a> supports both batch mode (i.e., multiple problems
+with a single target per problem) and goalset mode (i.e., a single problem with multiple targets). Goalset
+batch mode support (i.e., multiple problems, each with multiple targets) will be added in a future
+release.</p></li>
+<li><p>The single-target interface in RMPflow
+(<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow31setEndEffectorPositionAttractorERKN5Eigen8Vector3dE" title="cumotion::RmpFlow::setEndEffectorPositionAttractor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setEndEffectorPositionAttractor()</span></code></a>,
+etc.) has been deprecated in favor of the new multi-target interface
+(<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow14addTargetFrameERKNSt6stringENSt8optionalI15TargetRmpConfigEE" title="cumotion::RmpFlow::addTargetFrame"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::addTargetFrame()</span></code></a>,
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow17setPositionTargetERKNSt6stringERKN5Eigen8Vector3dE" title="cumotion::RmpFlow::setPositionTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setPositionTarget()</span></code></a>, etc.).</p></li>
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11distancesToERKN5Eigen8Vector3dERNSt6vectorIdEEPNSt6vectorIN5Eigen8Vector3dEEE" title="cumotion::WorldInspector::distancesTo"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">WorldInspector::distancesTo()</span></code></a> now expects
+<code class="docutils literal notranslate"><span class="pre">distances</span></code> to be input by reference. A deprecated overload supports pointer input.</p></li>
+<li><p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19MotionPlannerConfigE" title="cumotion::MotionPlannerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlannerConfig</span></code></a> parameter <code class="docutils literal notranslate"><span class="pre">cuda_tree_params/max_num_nodes</span></code> has
+been deprecated and will now be ignored (with warning). The size of CUDA-accelerated trees is no
+longer directly bounded and <code class="docutils literal notranslate"><span class="pre">cuda_tree_params/max_num_nodes</span></code> will be ignored.</p></li>
+</ul>
+</section>
+<section id="known-issues">
+<h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>A CPU memory leak is exposed when adding and removing obstacles to a world. Each cycle adding and removing an obstacle
+will grow memory usage, with impacts most noticeable for SDF obstacles. Updating values of an existing SDF does not
+contribute to this memory leak.</p></li>
+<li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
+from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
+visualization when run on NVIDIA Jetson or NVIDIA DGX Spark.</p></li>
+</ul>
+</section>
+</section>
+<section id="release-1-0-0-december-19-2025">
+<h2>Release 1.0.0 - December 19, 2025<a class="headerlink" href="#release-1-0-0-december-19-2025" title="Link to this heading">#</a></h2>
+<section id="id1">
+<h3>What’s New<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Improved performance of both collision-free IK and trajectory optimization.</p></li>
+<li><p>Added experimental support for segmenting (masking) out the contribution of a robot from a depth image.
+This functionality is currently only exposed in C++ and only supports depth image buffers stored on the host
+(i.e., in CPU memory).</p></li>
+<li><p>Eliminated all internal use of the default CUDA stream.</p></li>
+</ul>
+</section>
+<section id="id2">
+<h3>Known Issues<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>On Jetson Orin, cuMotion should not be run in the same process as other threads making simultaneous use of
+CUDA.  This restriction is related to the manner in which cuMotion uses CUDA Unified Memory and will be
+lifted in a future release.</p></li>
+<li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
+from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
+visualization when run on NVIDIA Jetson.</p></li>
+</ul>
+</section>
+</section>
+<section id="developer-preview-1-november-26-2025">
+<h2>Developer Preview 1 - November 26, 2025<a class="headerlink" href="#developer-preview-1-november-26-2025" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h3>What’s New<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Initial public release</p></li>
+</ul>
+</section>
+<section id="id5">
+<h3>Known Issues<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
+from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
+visualization when run on NVIDIA Jetson.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="api/python_api.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Python API</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+
+
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-1-0-april-10-2026">Release 1.1.0 - April 10, 2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-new">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deprecation-notice">Deprecation Notice</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">Known Issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-0-0-december-19-2025">Release 1.0.0 - December 19, 2025</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Known Issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-preview-1-november-26-2025">Developer Preview 1 - November 26, 2025</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Known Issues</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+<a class="footer-brand logo" href="https://www.nvidia.com">
+  <img src="_static/nvidia-logo-horiz-rgb-1c-blk-for-screen.svg" class="logo__image only-light" alt="NVIDIA"/>
+  <img src="_static/nvidia-logo-horiz-rgb-1c-wht-for-screen.svg" class="logo__image only-dark" alt="NVIDIA"/>
+</a></div>
+      
+        <div class="footer-item">
+
+<div class="footer-links">
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-policy/">Privacy Policy</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/privacy-center/">Your Privacy Choices</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/terms-of-service/">Terms of Service</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/accessibility/">Accessibility</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/about-nvidia/company-policies/">Corporate Policies</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/product-security/">Product Security</a>
+   | 
+  
+  
+  
+  <a class="external" href="https://www.nvidia.com/en-us/contact/">Contact</a>
+  
+  
+  
+</div>
+</div>
+      
+        <div class="footer-item">
+
+
+
+
+  <p class="copyright">
+    
+      Copyright © 2019-2025 NVIDIA Corporation &amp; Affiliates.
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+  </body>
+</html>

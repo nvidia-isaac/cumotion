@@ -33,7 +33,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
@@ -47,13 +47,13 @@
 
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
     <script>window.MathJax = {"TeX": {"Macros": {"T": ["{\\textsf{T}}", 0], "abs": ["{\\left\\lvert#1\\right\\rvert}", 1], "norm": ["{\\left\\lVert#1\\right\\rVert}", 1], "det": ["{\\left\\lvert#1\\right\\rvert}", 1], "innerprod": ["{\\left\\langle#1,#2\\right\\rangle}", 2], "vector": ["{[#1_1,\\ldots,#1_{#2}]}", 2], "N": "{\\mathbb{N}}", "Z": "{\\mathbb{Z}}", "R": "{\\mathbb{R}}", "C": "{\\mathbb{C}}", "Im": ["{\\mathcal{R}(#1)}", 1], "Ker": ["{\\mathcal{N}(#1)}", 1], "Tr": "{\\text{Tr}}", "pd": ["{\\frac{\\partial{#1}}{\\partial{#2}}}", 2], "E": ["{\\mathbf{E}\\left[#1\\right]}", 1], "V": ["{\\mathbf{V}\\left[#1\\right]}", 1], "U": "{\\mathcal{U}}", "half": "{\\frac{1}{2}}", "ceil": ["{\\left \\lceil{#1}\\right \\rceil}", 1], "floor": ["{\\left \\lfloor{#1}\\right \\rfloor}", 1]}}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'tutorials/inverse_kinematics_tutorial';</script>
 
     <link rel="icon" href="../_static/favicon.png"/>
@@ -261,13 +261,18 @@
   <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Inverse Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
-</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../concepts.html">Concepts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/rmpflow.html">RMPflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/rmpflow_tuning_guide.html">RMPflow Tuning Guide</a></li>
+</ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
@@ -343,10 +348,11 @@
 <ol class="arabic simple">
 <li><p>Create a problem setup with a single robot and a world with obstacles</p></li>
 <li><p>Create an IK config</p></li>
-<li><p>Sett a parameter in the IK config</p></li>
+<li><p>Set a parameter in the IK config</p></li>
 <li><p>Create an IK solver</p></li>
 <li><p>Solve an inverse kinematics problem with a target pose</p></li>
 <li><p>Query the solution</p></li>
+<li><p>Solve a batch of inverse kinematics problems</p></li>
 <li><p>Solve an inverse kinematics problem with a goalset</p></li>
 </ol>
 </section>
@@ -555,7 +561,7 @@ to be modified, a new solver will need to be instantiated.</p>
 <ol class="arabic simple">
 <li><p>Defining the task-space constraint</p></li>
 <li><dl class="simple">
-<dt>Calling <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver5solveERK15TaskSpaceTargetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solve"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solve()</span></code></a> or</dt><dd><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveGoalset()</span></code></a></p>
+<dt>Calling <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver5solveERK15TaskSpaceTargetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solve"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solve()</span></code></a> or</dt><dd><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveArray()</span></code></a></p>
 </dd>
 </dl>
 </li>
@@ -577,7 +583,7 @@ C++</label><div class="sd-tab-content docutils">
 <span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="w"> </span><span class="n">orientation_constraint</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraint</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">target_rotation</span><span class="p">);</span>
 
-<span class="c1">// Create the task space target.</span>
+<span class="c1">// Create the task-space target.</span>
 <span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTarget</span><span class="w"> </span><span class="nf">task_space_target</span><span class="p">(</span><span class="n">translation_constraint</span><span class="p">,</span>
 <span class="w">                                                                    </span><span class="n">orientation_constraint</span><span class="p">);</span>
 </pre></div>
@@ -599,7 +605,7 @@ PYTHON</label><div class="sd-tab-content docutils">
     <span class="n">target_rotation</span>
 <span class="p">)</span>
 
-<span class="c1"># Create the task space target.</span>
+<span class="c1"># Create the task-space target.</span>
 <span class="n">task_space_target</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTarget</span><span class="p">(</span>
     <span class="n">translation_constraint</span><span class="p">,</span> <span class="n">orientation_constraint</span>
 <span class="p">)</span>
@@ -642,9 +648,9 @@ to check the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cum
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">results</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 <span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
-<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;IK solve failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
 </pre></div>
@@ -764,8 +770,199 @@ Number of solutions found with obstacle: 23
 </pre></div>
 </div>
 </section>
+<section id="solving-for-an-array-of-target-poses">
+<span id="id1"></span><h2>Solving for an Array of Target Poses<a class="headerlink" href="#solving-for-an-array-of-target-poses" title="Link to this heading">#</a></h2>
+<p>Sometimes we are interested in solving for a batch of target poses at once, rather than a single
+target pose.
+For example, this arises when:</p>
+<ul class="simple">
+<li><p>Exploring reachability of multiple targets at once.</p></li>
+<li><p>Training policies in simulated environments.</p></li>
+</ul>
+<p>Here we demonstrate the following:</p>
+<ol class="arabic simple">
+<li><p>How to define an array of problems, with each problem having a single task-space target</p></li>
+<li><p>How to solve IK for an array of problems in batch</p></li>
+<li><p>How to query the solutions for each problem</p></li>
+</ol>
+<p>It is important to note that cuMotion makes the following assumptions about arrays of target poses:</p>
+<ul class="simple">
+<li><p>All targets have identical constraint types. For example, they all must be full pose targets,
+or they all must specify only position, and leave orientation free.</p></li>
+<li><p>All the problems share the same robot configuration and world view (obstacles).</p></li>
+</ul>
+<section id="defining-an-array-of-problems">
+<h3>Defining an array of problems<a class="headerlink" href="#defining-an-array-of-problems" title="Link to this heading">#</a></h3>
+<p>We can define an array of problems by creating a
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray</span></code></a> object, which represents a 2D
+jagged array of task-space targets. The outer dimension of the array represents the number of
+problems to solve, and the inner dimension represents the number of targets for each problem.</p>
+<p>Note that currently cuMotion supports multiple problems with a single target, and one problem
+with multiple targets (<a class="reference internal" href="#solving-for-a-goalset"><span class="std std-ref">goalset planning</span></a>), but does not support
+solving for multiple targets for multiple problems (goalset batch planning).</p>
+<p>Here we create two problems at either side of the obstacle, each with a single translation-only
+target:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create two translation targets on either side of the obstacle.</span>
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">batch_left_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">batch_left_target</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span>
+<span class="n">batch_left_target</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+
+<span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="w"> </span><span class="n">batch_right_target</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">default_tool_pose</span><span class="p">.</span><span class="n">translation</span><span class="p">;</span>
+<span class="n">batch_right_target</span><span class="p">.</span><span class="n">x</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.3</span><span class="p">;</span>
+<span class="n">batch_right_target</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
+
+<span class="c1">// Wrap targets in a 2D array: two problems in the outer vector, each with a single target.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">batch_translation_targets_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="p">{</span><span class="n">batch_left_target</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="n">batch_right_target</span><span class="p">}};</span>
+
+<span class="c1">// Create translation constraint array (position-only, no orientation constraint).</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintArray</span>
+<span class="w">    </span><span class="n">batch_translation_constraint_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintArray</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span>
+<span class="w">            </span><span class="n">batch_translation_targets_array</span><span class="p">);</span>
+
+<span class="c1">// Create an empty orientation constraint array.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintArray</span>
+<span class="w">    </span><span class="n">batch_orientation_constraint_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintArray</span><span class="o">::</span><span class="n">None</span><span class="p">();</span>
+
+<span class="c1">// Create the task-space target array with two problems.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTargetArray</span><span class="w"> </span><span class="nf">batch_task_space_target_array</span><span class="p">(</span>
+<span class="w">    </span><span class="n">batch_translation_constraint_array</span><span class="p">,</span><span class="w"> </span><span class="n">batch_orientation_constraint_array</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create two translation targets on either side of the obstacle.</span>
+<span class="n">batch_left_target</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">batch_left_target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span>
+<span class="n">batch_left_target</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.1</span>
+
+<span class="n">batch_right_target</span> <span class="o">=</span> <span class="n">default_tool_pose</span><span class="o">.</span><span class="n">translation</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">batch_right_target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.3</span>
+<span class="n">batch_right_target</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.1</span>
+
+<span class="c1"># Wrap as a 2D array: two problems in the outer list, each with a single target.</span>
+<span class="n">batch_translation_targets_array</span> <span class="o">=</span> <span class="p">[[</span><span class="n">batch_left_target</span><span class="p">],</span> <span class="p">[</span><span class="n">batch_right_target</span><span class="p">]]</span>
+
+<span class="c1"># Create translation constraint array (position-only, no orientation constraint).</span>
+<span class="n">batch_translation_constraint_array</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TranslationConstraintArray</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+        <span class="n">batch_translation_targets_array</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Create an empty orientation constraint array.</span>
+<span class="n">batch_orientation_constraint_array</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">OrientationConstraintArray</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="c1"># Create the task-space target array with two problems.</span>
+<span class="n">batch_task_space_target_array</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTargetArray</span><span class="p">(</span>
+    <span class="n">batch_translation_constraint_array</span><span class="p">,</span> <span class="n">batch_orientation_constraint_array</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="solving-a-batch-of-problems">
+<h3>Solving a batch of problems<a class="headerlink" href="#solving-a-batch-of-problems" title="Link to this heading">#</a></h3>
+<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray</span></code></a> object, we can
+pass it to <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveArray()</span></code></a> and save the results to a new
+variable. The returned <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver12ResultsArrayE" title="cumotion::CollisionFreeIkSolver::ResultsArray"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::ResultsArray</span></code></a> provides
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray11numProblemsEv" title="cumotion::CollisionFreeIkSolver::ResultsArray::numProblems"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">numProblems()</span></code></a> and
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray12numSuccessesEv" title="cumotion::CollisionFreeIkSolver::ResultsArray::numSuccesses"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">numSuccesses()</span></code></a> to summarize the
+results of the batch:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">ResultsArray</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batch_results_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solveArray</span><span class="p">(</span><span class="n">batch_task_space_target_array</span><span class="p">);</span>
+
+<span class="kt">int</span><span class="w"> </span><span class="n">batch_num_problems</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batch_results_array</span><span class="o">-&gt;</span><span class="n">numProblems</span><span class="p">();</span>
+<span class="kt">int</span><span class="w"> </span><span class="n">batch_num_successes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batch_results_array</span><span class="o">-&gt;</span><span class="n">numSuccesses</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Batch IK: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">batch_num_problems</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; problems, &quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">batch_num_successes</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;/&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">batch_num_problems</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; succeeded (&quot;</span>
+<span class="w">          </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">batch_num_successes</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">batch_num_problems</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;%)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">batch_results_array</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve_array</span><span class="p">(</span><span class="n">batch_task_space_target_array</span><span class="p">)</span>
+
+<span class="n">batch_num_problems</span> <span class="o">=</span> <span class="n">batch_results_array</span><span class="o">.</span><span class="n">num_problems</span><span class="p">()</span>
+<span class="n">batch_num_successes</span> <span class="o">=</span> <span class="n">batch_results_array</span><span class="o">.</span><span class="n">num_successes</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Batch IK: </span><span class="si">{</span><span class="n">batch_num_problems</span><span class="si">}</span><span class="s2"> problems, &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">batch_num_successes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">batch_num_problems</span><span class="si">}</span><span class="s2"> succeeded &quot;</span>
+      <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">batch_num_successes</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="n">batch_num_problems</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Batch</span> <span class="n">IK</span><span class="p">:</span> <span class="mi">2</span> <span class="n">problems</span><span class="p">,</span> <span class="mi">2</span><span class="o">/</span><span class="mi">2</span> <span class="n">succeeded</span> <span class="p">(</span><span class="mi">100</span><span class="o">%</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="querying-the-results-for-each-problem">
+<h3>Querying the results for each problem<a class="headerlink" href="#querying-the-results-for-each-problem" title="Link to this heading">#</a></h3>
+<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver12ResultsArrayE" title="cumotion::CollisionFreeIkSolver::ResultsArray"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::ResultsArray</span></code></a> object, we can access the
+results for each problem using
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray7problemEi" title="cumotion::CollisionFreeIkSolver::ResultsArray::problem"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">problem()</span></code></a>, and then query the
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7Results6StatusE" title="cumotion::CollisionFreeIkSolver::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">status</span></code></a> and solutions the same way we
+did before:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">batch_results_array</span><span class="o">-&gt;</span><span class="n">numProblems</span><span class="p">();</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">batch_problem_results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">        </span><span class="n">batch_results_array</span><span class="o">-&gt;</span><span class="n">problem</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">batch_problem_results</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">()</span><span class="w"> </span><span class="o">==</span>
+<span class="w">        </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Problem &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: IK solve succeeded! &quot;</span>
+<span class="w">                  </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;(&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">batch_problem_results</span><span class="o">-&gt;</span><span class="n">cSpacePositions</span><span class="p">().</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; solutions)</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_RED</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Problem &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;: IK solve failed.</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">RESET</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">batch_results_array</span><span class="o">.</span><span class="n">num_problems</span><span class="p">()):</span>
+    <span class="n">batch_problem_results</span> <span class="o">=</span> <span class="n">batch_results_array</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">batch_problem_results</span><span class="o">.</span><span class="n">status</span><span class="p">()</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
+        <span class="n">num_solutions</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_problem_results</span><span class="o">.</span><span class="n">cspace_positions</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: IK solve succeeded! (</span><span class="si">{</span><span class="n">num_solutions</span><span class="si">}</span><span class="s2"> solutions)&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Problem </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: IK solve failed.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Problem 0: IK solve succeeded! (47 solutions)
+Problem 1: IK solve succeeded! (48 solutions)
+</pre></div>
+</div>
+</section>
+</section>
 <section id="solving-for-a-target-goalset">
-<h2>Solving for a Target Goalset<a class="headerlink" href="#solving-for-a-target-goalset" title="Link to this heading">#</a></h2>
+<span id="solving-for-a-goalset"></span><h2>Solving for a Target Goalset<a class="headerlink" href="#solving-for-a-target-goalset" title="Link to this heading">#</a></h2>
 <p>Sometimes we don’t have a single desired task-space goal, but rather several goals that are all equally valid.
 For example, this arises when there are:</p>
 <ul class="simple">
@@ -783,17 +980,21 @@ For example, this arises when there are:</p>
 <li><p>All goals / targets have identical constraint types. For example, they all must be full pose targets, or they all
 must specify only position, and leave orientation free.</p></li>
 <li><p>All goals / targets are equally valid. There can be no preference for which is selected (this can,
-of course, by done externally by the user, either by making individual calls for each target, or by filtering the
-returned solutions)</p></li>
+of course, be done externally by the user, either by filtering the returned solutions, or by
+making individual calls for each target – see <a class="reference internal" href="#solving-for-an-array-of-target-poses"><span class="std std-ref">Solving for an Array of Target Poses</span></a>).</p></li>
 </ul>
 <section id="defining-a-goalset">
 <h3>Defining a Goalset<a class="headerlink" href="#defining-a-goalset" title="Link to this heading">#</a></h3>
-<p>Defining a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver22TaskSpaceTargetGoalsetE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">goalset</span> <span class="pre">task</span></code></a> is straightforward.
-Here we demonstrate specifying two goals, one on either side of the obstacle, this time allowing the orientation at the
-target to be unconstrained:</p>
+<p>A goalset task is defined using the same
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray</span></code></a> used above when solving a batch
+of IK problems. To define a goalset rather than an array of problems, place multiple targets in a
+single problem (creating a “row” instead of a “column” in the 2D array). Note that cuMotion
+currently does not support multiple problems with more than one target.
+Here we demonstrate specifying two goals, one on either side of the obstacle, this time allowing the
+orientation at the target to be unconstrained:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-24">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a goalset with translation-only constraints on either side of the obstacle.</span>
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;</span><span class="w"> </span><span class="n">translation_targets</span><span class="p">;</span>
@@ -810,22 +1011,27 @@ C++</label><div class="sd-tab-content docutils">
 <span class="n">right_target</span><span class="p">.</span><span class="n">y</span><span class="p">()</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mf">0.1</span><span class="p">;</span>
 <span class="n">translation_targets</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">right_target</span><span class="p">);</span>
 
-<span class="c1">// Create translation constraint goalset (position-only, no orientation constraint).</span>
-<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="w"> </span><span class="n">translation_goalset</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintGoalset</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span><span class="n">translation_targets</span><span class="p">);</span>
+<span class="c1">// Wrap targets in a 2D array: one problem in the outer vector with multiple targets (goalset) in</span>
+<span class="c1">// the first element of the inner vector.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">translation_targets_array</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="n">translation_targets</span><span class="p">};</span>
 
-<span class="c1">// Create an empty orientation constraint goalset.</span>
-<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintGoalset</span><span class="w"> </span><span class="n">orientation_goalset</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintGoalset</span><span class="o">::</span><span class="n">None</span><span class="p">();</span>
+<span class="c1">// Create translation constraint array (position-only, no orientation constraint).</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintArray</span><span class="w"> </span><span class="n">translation_constraint_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TranslationConstraintArray</span><span class="o">::</span><span class="n">Target</span><span class="p">(</span>
+<span class="w">        </span><span class="n">translation_targets_array</span><span class="p">);</span>
 
-<span class="c1">// Create the task space target goalset.</span>
-<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTargetGoalset</span><span class="w"> </span><span class="nf">task_space_target_goalset</span><span class="p">(</span>
-<span class="w">    </span><span class="n">translation_goalset</span><span class="p">,</span><span class="w"> </span><span class="n">orientation_goalset</span><span class="p">);</span>
+<span class="c1">// Create an empty orientation constraint array.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintArray</span><span class="w"> </span><span class="n">orientation_constraint_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">OrientationConstraintArray</span><span class="o">::</span><span class="n">None</span><span class="p">();</span>
+
+<span class="c1">// Create the task-space target array.</span>
+<span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">TaskSpaceTargetArray</span><span class="w"> </span><span class="nf">task_space_target_array</span><span class="p">(</span>
+<span class="w">    </span><span class="n">translation_constraint_array</span><span class="p">,</span><span class="w"> </span><span class="n">orientation_constraint_array</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
+<input id="sd-tab-item-25" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-25">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a goalset with translation-only constraints on either side of the obstacle.</span>
 <span class="n">translation_targets</span> <span class="o">=</span> <span class="p">[]</span>
@@ -842,17 +1048,21 @@ PYTHON</label><div class="sd-tab-content docutils">
 <span class="n">right_target</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.1</span>
 <span class="n">translation_targets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">right_target</span><span class="p">)</span>
 
-<span class="c1"># Create translation constraint goalset (position-only, no orientation constraint).</span>
-<span class="n">translation_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TranslationConstraintGoalset</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
-    <span class="n">translation_targets</span>
+<span class="c1"># Wrap targets in a 2D array: one problem in the outer vector with multiple targets (goalset) in the</span>
+<span class="c1"># first element of the inner vector.</span>
+<span class="n">translation_targets_array</span> <span class="o">=</span> <span class="p">[</span><span class="n">translation_targets</span><span class="p">]</span>
+
+<span class="c1"># Create translation constraint array (position-only, no orientation constraint).</span>
+<span class="n">translation_constraint_array</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TranslationConstraintArray</span><span class="o">.</span><span class="n">target</span><span class="p">(</span>
+    <span class="n">translation_targets_array</span>
 <span class="p">)</span>
 
-<span class="c1"># Create an empty orientation constraint goalset.</span>
-<span class="n">orientation_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">OrientationConstraintGoalset</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
+<span class="c1"># Create an empty orientation constraint array.</span>
+<span class="n">orientation_constraint_array</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">OrientationConstraintArray</span><span class="o">.</span><span class="n">none</span><span class="p">()</span>
 
-<span class="c1"># Create the task space target goalset.</span>
-<span class="n">task_space_target_goalset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTargetGoalset</span><span class="p">(</span>
-    <span class="n">translation_goalset</span><span class="p">,</span> <span class="n">orientation_goalset</span>
+<span class="c1"># Create the task-space target array.</span>
+<span class="n">task_space_target_array</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">TaskSpaceTargetArray</span><span class="p">(</span>
+    <span class="n">translation_constraint_array</span><span class="p">,</span> <span class="n">orientation_constraint_array</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -861,29 +1071,31 @@ PYTHON</label><div class="sd-tab-content docutils">
 </section>
 <section id="solving-a-goalset">
 <h3>Solving a Goalset<a class="headerlink" href="#solving-a-goalset" title="Link to this heading">#</a></h3>
-<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver22TaskSpaceTargetGoalsetE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset</span></code></a> object, we can pass it to
-<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveGoalset()</span></code></a> and save the results to a new variable:</p>
+<p>Once we have a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray"><code class="xref cpp cpp-struct docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray</span></code></a> object, we can pass it to
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::solveArray()</span></code></a> and save the results to a new variable:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
+<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-26">
 C++</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goalset_results</span><span class="w"> </span><span class="o">=</span>
-<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solveGoalset</span><span class="p">(</span><span class="n">task_space_target_goalset</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">ResultsArray</span><span class="o">&gt;</span><span class="w"> </span><span class="n">results_array</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">ik_solver</span><span class="o">-&gt;</span><span class="n">solveArray</span><span class="p">(</span><span class="n">task_space_target_array</span><span class="p">);</span>
+
+<span class="c1">// Get the results for the first (and only) problem in the goalset.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">&gt;</span><span class="w"> </span><span class="n">goalset_results</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">results_array</span><span class="o">-&gt;</span><span class="n">problem</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
+<input id="sd-tab-item-27" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-27">
 PYTHON</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">goalset_results</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve_goalset</span><span class="p">(</span><span class="n">task_space_target_goalset</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">results_array</span> <span class="o">=</span> <span class="n">ik_solver</span><span class="o">.</span><span class="n">solve_array</span><span class="p">(</span><span class="n">task_space_target_array</span><span class="p">)</span>
+
+<span class="c1"># Get the results for the first (and only) problem in the goalset.</span>
+<span class="n">goalset_results</span> <span class="o">=</span> <span class="n">results_array</span><span class="o">.</span><span class="n">problem</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-</div>
-<p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Goalset IK solve succeeded!
-Number of valid solutions: 49
-</pre></div>
 </div>
 <p>We can query the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver7Results6StatusE" title="cumotion::CollisionFreeIkSolver::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">status</span></code></a> and solutions the
 same way we did before. However, we often want to know which goal / target each IK solution corresponds to.
@@ -891,10 +1103,10 @@ We can use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumo
 has the same length as the output of <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver7Results15cSpacePositionsEv" title="cumotion::CollisionFreeIkSolver::Results::cSpacePositions"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CollisionFreeIkSolver::Results::cSpacePositions()</span></code></a>, and
 provides the goal index of each solution, which in our example will be either 0 or 1 since we have two goals:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-28">
 C++</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Load the robot.</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Check the status of the goalset results.</span>
 <span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="w"> </span><span class="n">goalset_status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">goalset_results</span><span class="o">-&gt;</span><span class="n">status</span><span class="p">();</span>
 <span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">goalset_status</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CollisionFreeIkSolver</span><span class="o">::</span><span class="n">Results</span><span class="o">::</span><span class="n">Status</span><span class="o">::</span><span class="n">SUCCESS</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">text_style</span><span class="o">::</span><span class="n">BRIGHT_GREEN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Goalset IK solve succeeded!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
@@ -934,10 +1146,10 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
+<input id="sd-tab-item-29" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-29">
 PYTHON</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the robot.</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check the status of the goalset results.</span>
 <span class="n">goalset_status</span> <span class="o">=</span> <span class="n">goalset_results</span><span class="o">.</span><span class="n">status</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">goalset_status</span> <span class="o">==</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">CollisionFreeIkSolver</span><span class="o">.</span><span class="n">Results</span><span class="o">.</span><span class="n">Status</span><span class="o">.</span><span class="n">SUCCESS</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Goalset IK solve succeeded!&quot;</span><span class="p">)</span>
@@ -970,57 +1182,60 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Solution</span> <span class="n">Index</span>    <span class="n">Target</span> <span class="n">Index</span>      <span class="n">Position</span> <span class="n">Error</span> <span class="p">(</span><span class="n">um</span><span class="p">)</span>
-<span class="o">------------------------------------------------------</span>
-<span class="mi">0</span>                 <span class="mi">1</span>                 <span class="mf">0.47</span>
-<span class="mi">1</span>                 <span class="mi">1</span>                 <span class="mf">0.39</span>
-<span class="mi">2</span>                 <span class="mi">0</span>                 <span class="mf">0.20</span>
-<span class="mi">3</span>                 <span class="mi">0</span>                 <span class="mf">0.34</span>
-<span class="mi">4</span>                 <span class="mi">1</span>                 <span class="mf">0.32</span>
-<span class="mi">5</span>                 <span class="mi">1</span>                 <span class="mf">0.71</span>
-<span class="mi">6</span>                 <span class="mi">0</span>                 <span class="mf">0.24</span>
-<span class="mi">7</span>                 <span class="mi">1</span>                 <span class="mf">0.44</span>
-<span class="mi">8</span>                 <span class="mi">0</span>                 <span class="mf">0.24</span>
-<span class="mi">9</span>                 <span class="mi">1</span>                 <span class="mf">0.41</span>
-<span class="mi">10</span>                <span class="mi">0</span>                 <span class="mf">0.24</span>
-<span class="mi">11</span>                <span class="mi">0</span>                 <span class="mf">0.25</span>
-<span class="mi">12</span>                <span class="mi">0</span>                 <span class="mf">0.11</span>
-<span class="mi">13</span>                <span class="mi">1</span>                 <span class="mf">0.41</span>
-<span class="mi">14</span>                <span class="mi">1</span>                 <span class="mf">0.16</span>
-<span class="mi">15</span>                <span class="mi">1</span>                 <span class="mf">0.51</span>
-<span class="mi">16</span>                <span class="mi">1</span>                 <span class="mf">0.25</span>
-<span class="mi">17</span>                <span class="mi">0</span>                 <span class="mf">0.27</span>
-<span class="mi">18</span>                <span class="mi">0</span>                 <span class="mf">0.32</span>
-<span class="mi">19</span>                <span class="mi">1</span>                 <span class="mf">0.27</span>
-<span class="mi">20</span>                <span class="mi">1</span>                 <span class="mf">0.18</span>
-<span class="mi">21</span>                <span class="mi">0</span>                 <span class="mf">0.19</span>
-<span class="mi">22</span>                <span class="mi">0</span>                 <span class="mf">0.12</span>
-<span class="mi">23</span>                <span class="mi">0</span>                 <span class="mf">0.25</span>
-<span class="mi">24</span>                <span class="mi">0</span>                 <span class="mf">0.17</span>
-<span class="mi">25</span>                <span class="mi">0</span>                 <span class="mf">0.26</span>
-<span class="mi">26</span>                <span class="mi">0</span>                 <span class="mf">0.35</span>
-<span class="mi">27</span>                <span class="mi">1</span>                 <span class="mf">0.29</span>
-<span class="mi">28</span>                <span class="mi">1</span>                 <span class="mf">0.28</span>
-<span class="mi">29</span>                <span class="mi">0</span>                 <span class="mf">0.31</span>
-<span class="mi">30</span>                <span class="mi">1</span>                 <span class="mf">0.36</span>
-<span class="mi">31</span>                <span class="mi">0</span>                 <span class="mf">0.47</span>
-<span class="mi">32</span>                <span class="mi">1</span>                 <span class="mf">0.34</span>
-<span class="mi">33</span>                <span class="mi">1</span>                 <span class="mf">0.26</span>
-<span class="mi">34</span>                <span class="mi">0</span>                 <span class="mf">0.20</span>
-<span class="mi">35</span>                <span class="mi">0</span>                 <span class="mf">0.15</span>
-<span class="mi">36</span>                <span class="mi">0</span>                 <span class="mf">0.32</span>
-<span class="mi">37</span>                <span class="mi">1</span>                 <span class="mf">0.35</span>
-<span class="mi">38</span>                <span class="mi">0</span>                 <span class="mf">0.27</span>
-<span class="mi">39</span>                <span class="mi">0</span>                 <span class="mf">0.16</span>
-<span class="mi">40</span>                <span class="mi">1</span>                 <span class="mf">0.34</span>
-<span class="mi">41</span>                <span class="mi">0</span>                 <span class="mf">0.29</span>
-<span class="mi">42</span>                <span class="mi">0</span>                 <span class="mf">0.12</span>
-<span class="mi">43</span>                <span class="mi">1</span>                 <span class="mf">0.42</span>
-<span class="mi">44</span>                <span class="mi">0</span>                 <span class="mf">0.19</span>
-<span class="mi">45</span>                <span class="mi">1</span>                 <span class="mf">0.19</span>
-<span class="mi">46</span>                <span class="mi">0</span>                 <span class="mf">0.24</span>
-<span class="mi">47</span>                <span class="mi">0</span>                 <span class="mf">0.15</span>
-<span class="mi">48</span>                <span class="mi">0</span>                 <span class="mf">0.30</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Goalset IK solve succeeded!
+Number of valid solutions: 49
+
+Solution Index    Target Index      Position Error (um)
+------------------------------------------------------
+0                 1                 0.47
+1                 1                 0.39
+2                 0                 0.20
+3                 0                 0.34
+4                 1                 0.32
+5                 1                 0.71
+6                 0                 0.24
+7                 1                 0.44
+8                 0                 0.24
+9                 1                 0.41
+10                0                 0.24
+11                0                 0.25
+12                0                 0.11
+13                1                 0.41
+14                1                 0.16
+15                1                 0.51
+16                1                 0.25
+17                0                 0.27
+18                0                 0.32
+19                1                 0.27
+20                1                 0.18
+21                0                 0.19
+22                0                 0.12
+23                0                 0.25
+24                0                 0.17
+25                0                 0.26
+26                0                 0.35
+27                1                 0.29
+28                1                 0.28
+29                0                 0.31
+30                1                 0.36
+31                0                 0.47
+32                1                 0.34
+33                1                 0.26
+34                0                 0.20
+35                0                 0.15
+36                0                 0.32
+37                1                 0.35
+38                0                 0.27
+39                0                 0.16
+40                1                 0.34
+41                0                 0.29
+42                0                 0.12
+43                1                 0.42
+44                0                 0.19
+45                1                 0.19
+46                0                 0.24
+47                0                 0.15
+48                0                 0.30
 </pre></div>
 </div>
 </section>
@@ -1086,6 +1301,12 @@ PYTHON</label><div class="sd-tab-content docutils">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-for-a-target-pose">Solving for a Target Pose</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-the-results">Querying the Results</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-the-world">Updating the World</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-for-an-array-of-target-poses">Solving for an Array of Target Poses</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-an-array-of-problems">Defining an array of problems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-batch-of-problems">Solving a batch of problems</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-the-results-for-each-problem">Querying the results for each problem</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-for-a-target-goalset">Solving for a Target Goalset</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-a-goalset">Defining a Goalset</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solving-a-goalset">Solving a Goalset</a></li>

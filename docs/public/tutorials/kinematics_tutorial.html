@@ -33,7 +33,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
@@ -47,8 +47,8 @@
 
 
     <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="../_static/doctools.js?v=888ff710"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -259,13 +259,18 @@
   <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><ul class="current">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../tutorials.html">Tutorials</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="robot_description_tutorial.html">Robot Description Tutorial</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
-</ul><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../concepts.html">Concepts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/rmpflow.html">RMPflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concepts/rmpflow_tuning_guide.html">RMPflow Tuning Guide</a></li>
+</ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/cpp_api.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api/python_api.html">Python API</a></li>
@@ -337,8 +342,9 @@
 <h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
 <p>Through this tutorial, you will learn how to:</p>
 <ol class="arabic simple">
-<li><p>Check for frames defined in the kinematics,</p></li>
+<li><p>Check for frames defined in the kinematics</p></li>
 <li><p>Query the position and orientation of a frame given the c-space coordinates (i.e. forward kinematics)</p></li>
+<li><p>Compute the Jacobian of the frame’s position and orientation with respect to the c-space coordinates</p></li>
 </ol>
 </section>
 <section id="what-are-kinematics">
@@ -364,7 +370,8 @@ Alternatively, there may not be any valid c-space positions that produce a given
 <li><p>The robot does not have enough degrees of freedom (e.g. a 3D gantry robot has a fixed orientation, and therefore
 cannot achieve an arbitrary tool frame orientation)</p></li>
 <li><p>The tool frame would result in self-collision (e.g. the desired tool frame is in the middle of the base of the
-robot).</p></li>
+robot)</p></li>
+<li><p>The tool frame would result in a collision with an obstacle in the world (e.g. the desired tool frame is inside an obstacle)</p></li>
 </ul>
 <p>This tutorial is focused on the utilities provided by cuMotion for <strong>forward kinematics</strong>.
 See <a class="reference internal" href="inverse_kinematics_tutorial.html"><span class="doc">Inverse Kinematics Tutorial</span></a> to learn more about using cuMotion for solving the inverse kinematics.</p>
@@ -478,7 +485,11 @@ C++</label><div class="sd-tab-content docutils">
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">C-space limits:&quot;</span><span class="p">)</span>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">C-space limits:&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
     <span class="n">limits</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">cspace_coord_limits</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coordinate </span><span class="si">{}</span><span class="s2"> limits: [</span><span class="si">{}</span><span class="s2">, </span><span class="si">{}</span><span class="s2">]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_index</span><span class="p">,</span> <span class="n">limits</span><span class="o">.</span><span class="n">lower</span><span class="p">,</span> <span class="n">limits</span><span class="o">.</span><span class="n">upper</span><span class="p">))</span>
@@ -499,8 +510,8 @@ C++</label><div class="sd-tab-content docutils">
 </div>
 <p>It’s often useful to know whether a given c-space position is within the limits, which can be done with:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-5">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">test_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">position_upper_limits</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">1.1</span><span class="p">;</span>
 <span class="kt">bool</span><span class="w"> </span><span class="n">within_limits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">withinCSpaceLimits</span><span class="p">(</span><span class="n">test_position</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
@@ -508,8 +519,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-6">
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">test_position</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_coords</span><span class="p">)</span>
 <span class="n">within_limits</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">within_cspace_limits</span><span class="p">(</span><span class="n">test_position</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
@@ -533,8 +544,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 <h3>Velocity, Acceleration, and Jerk Limits<a class="headerlink" href="#velocity-acceleration-and-jerk-limits" title="Link to this heading">#</a></h3>
 <p>In addition to position limits, we can also query the velocity, acceleration, and jerk limits for each c-space coordinate:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-7">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">velocity_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
 <span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="nf">acceleration_limits</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
@@ -562,8 +573,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-8">
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Velocity limits:&quot;</span><span class="p">)</span>
 <span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">):</span>
@@ -621,8 +632,8 @@ The kinematics (both forward and inverse) are defined between two frames, which 
 rigidly attached to the environment) and the tool frame.</p>
 <p>To get a list of all the frame names in the robot, use <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::frameNames()</span></code>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-9">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">frame_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frameNames</span><span class="p">();</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Frame names:</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
@@ -632,8 +643,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-10">
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frame_names</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">frame_names</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Frame names:&quot;</span><span class="p">)</span>
@@ -684,16 +695,16 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 <p>The base frame (the root of the kinematic tree structure), is given by <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::baseFrame()</span></code>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-11">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">base_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frameName</span><span class="p">(</span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">baseFrame</span><span class="p">());</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">Base frame: &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">base_frame_name</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-12">
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">base_frame_name</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">base_frame_name</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Base frame: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">base_frame_name</span><span class="p">))</span>
@@ -711,7 +722,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 functions require a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code>, instead of a <code class="docutils literal notranslate"><span class="pre">std::string</span></code>. To avoid the overhead of string processing
 and lookup, the user is expected to create the <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> for the frame of interest once, and then re-use
 it.</p>
-<p>Do <strong>NOT</strong> attempt to use a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> created from a difference instance of the kinematics. This will
+<p>Do <strong>NOT</strong> attempt to use a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> created from a different instance of the kinematics. This will
 result in silent errors. For this reason, it is strongly recommended that the user create a single instance
 of the kinematics (which can be moved to a <code class="docutils literal notranslate"><span class="pre">std::shared_ptr</span></code>, if needed) and create a <code class="docutils literal notranslate"><span class="pre">FrameHandle</span></code> only when
 it can be guaranteed that the handle will always be used with the kinematics from which it was created.</p>
@@ -721,10 +732,10 @@ it can be guaranteed that the handle will always be used with the kinematics fro
 <h2>Forward Kinematics<a class="headerlink" href="#forward-kinematics" title="Link to this heading">#</a></h2>
 <p>Once we know the name of the frame we want to work with, we can use <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::position()</span></code>,
 <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::orientation()</span></code>, and <code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Kinematics::pose()</span></code> to compute the forward kinematics
-of the given frame, with respect to the <cite>baseFrame()</cite>.</p>
+of the given frame, with respect to the <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics9baseFrameEv" title="cumotion::Kinematics::baseFrame"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">baseFrame()</span></code></a>.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-13">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">defaultCSpaceConfiguration</span><span class="p">();</span>
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tool_frame_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">toolFrameNames</span><span class="p">().</span><span class="n">front</span><span class="p">();</span>
@@ -742,8 +753,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-14">
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cspace_position</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">default_cspace_configuration</span><span class="p">()</span>
 <span class="n">tool_frame_name</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">tool_frame_names</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
@@ -768,8 +779,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Alternatively, if we want to compute the forward kinematics with respect to a different frame, we can pass in
 the reference frame as the last argument:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-15">
+<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-16">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">FrameHandle</span><span class="w"> </span><span class="n">link1_frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">frame</span><span class="p">(</span><span class="n">frame_names</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
 <span class="n">tool_pose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">,</span><span class="w"> </span><span class="n">link1_frame</span><span class="p">);</span>
@@ -783,8 +794,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-16" name="sd-tab-set-8" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-16">
+<input id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-17">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">link1_name</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">frame_names</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
 <span class="n">tool_pose</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">pose</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">,</span> <span class="n">link1_name</span><span class="p">)</span>
@@ -814,8 +825,8 @@ use-cases for these Jacobians; however, here we will simply demonstrate how to c
 <cite>N</cite> is the number of c-space coordinates (<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics15numCSpaceCoordsEv" title="cumotion::Kinematics::numCSpaceCoords"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Kinematics::numCSpaceCoords()</span></code></a>), where column <cite>i</cite> of the
 Jacobian tells us how much the frame will translate in the world frame when we change coordinate <cite>i</cite>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-17">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-18">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">position_jacobian</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">positionJacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
@@ -824,8 +835,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-9" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-18">
+<input id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-19">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">position_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">position_jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Position Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -842,8 +853,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 Here column <cite>i</cite> of the Jacobian tells us how much the frame will rotate about the given axis in the world frame when we
 change coordinate <cite>i</cite>:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-19">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-20">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">orientation_jacobian</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">orientationJacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
@@ -852,8 +863,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-20" name="sd-tab-set-10" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-20">
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-21">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">orientation_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">orientation_jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Orientation Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">orientation_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
@@ -869,8 +880,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>To compute both at the same time, use <a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion10Kinematics8jacobianERKN5Eigen8VectorXdERK11FrameHandle" title="cumotion::Kinematics::jacobian"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::Kinematics::jacobian()</span></code></a>, which stacks the position
 Jacobian on top of the orientation Jacobian:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-11" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-21">
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-22">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w"> </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Dynamic</span><span class="o">&gt;</span><span class="w"> </span><span class="n">full_jacobian</span><span class="w"> </span><span class="o">=</span>
 <span class="w">    </span><span class="n">kinematics</span><span class="o">-&gt;</span><span class="n">jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span><span class="w"> </span><span class="n">tool_frame</span><span class="p">);</span>
@@ -879,8 +890,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-22" name="sd-tab-set-11" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-22">
+<input id="sd-tab-item-23" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-23">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">full_jacobian</span> <span class="o">=</span> <span class="n">kinematics</span><span class="o">.</span><span class="n">jacobian</span><span class="p">(</span><span class="n">cspace_position</span><span class="p">,</span> <span class="n">tool_frame_name</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Full Jacobian shape: </span><span class="si">{}</span><span class="s2"> x </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">full_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">full_jacobian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>

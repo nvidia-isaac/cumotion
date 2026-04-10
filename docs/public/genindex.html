@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/styles/nvidia-sphinx-theme.css?v=933278ad" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3835c3f0" />
@@ -46,8 +46,8 @@
 
 
     <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
@@ -252,13 +252,18 @@
   <p class="bd-links__title" role="heading" aria-level="1">Table of Contents</p>
   <div class="bd-toc-item navbar-nav"><ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials.html">Tutorials</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/robot_description_tutorial.html">Robot Description Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
-</ul><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="concepts.html">Concepts</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="concepts/rmpflow.html">RMPflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concepts/rmpflow_tuning_guide.html">RMPflow Tuning Guide</a></li>
+</ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="api/cpp_api.html">C++ API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/python_api.html">Python API</a></li>
@@ -294,7 +299,8 @@
 <h1 id="index">Index</h1>
 
 <div class="genindex-jumpbox">
- <a href="#A"><strong>A</strong></a>
+ <a href="#_"><strong>_</strong></a>
+ | <a href="#A"><strong>A</strong></a>
  | <a href="#B"><strong>B</strong></a>
  | <a href="#C"><strong>C</strong></a>
  | <a href="#D"><strong>D</strong></a>
@@ -321,9 +327,41 @@
  | <a href="#Z"><strong>Z</strong></a>
  
 </div>
+<h2 id="_">_</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.IkConfig.__init__">__init__() (cumotion.IkConfig method)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.Pose3.__init__">(cumotion.Pose3 method)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.Rotation3.__init__">(cumotion.Rotation3 method)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.TaskSpacePathConversionConfig.__init__">(cumotion.TaskSpacePathConversionConfig method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.DampingConfig.accel_d_gain">accel_d_gain (cumotion.RmpFlow.TargetRmpConfig.DampingConfig property)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig.accel_d_gain">(cumotion.RmpFlow.TargetRmpConfig.OrientationConfig property)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.accel_d_gain">(cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.accel_norm_eps">accel_norm_eps (cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig.accel_p_gain">accel_p_gain (cumotion.RmpFlow.TargetRmpConfig.OrientationConfig property)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.accel_p_gain">(cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      </ul></li>
       <li><a href="api/python_api.html#cumotion.TaskSpacePath.accumulated_rotation">accumulated_rotation() (cumotion.TaskSpacePath method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CompositePathSpec.add_cspace_path_spec">add_cspace_path_spec() (cumotion.CompositePathSpec method)</a>
@@ -338,12 +376,14 @@
 </li>
       <li><a href="api/python_api.html#cumotion.TaskSpacePathSpec.add_tangent_arc">add_tangent_arc() (cumotion.TaskSpacePathSpec method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.TaskSpacePathSpec.add_tangent_arc_with_orientation_target">add_tangent_arc_with_orientation_target() (cumotion.TaskSpacePathSpec method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.add_target_frame">add_target_frame() (cumotion.RmpFlow method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CompositePathSpec.add_task_space_path_spec">add_task_space_path_spec() (cumotion.CompositePathSpec method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.TaskSpacePathSpec.add_three_point_arc">add_three_point_arc() (cumotion.TaskSpacePathSpec method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.TaskSpacePathSpec.add_three_point_arc_with_orientation_target">add_three_point_arc_with_orientation_target() (cumotion.TaskSpacePathSpec method)</a>
@@ -359,6 +399,8 @@
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraint.axis">axis() (cumotion.CollisionFreeIkSolver.OrientationConstraint static method)</a>
 
       <ul>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis">(cumotion.CollisionFreeIkSolver.OrientationConstraintArray static method)</a>
+</li>
         <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.axis">(cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset static method)</a>
 </li>
         <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.CSpaceTarget.OrientationPathConstraint.axis">(cumotion.TrajectoryOptimizer.CSpaceTarget.OrientationPathConstraint static method)</a>
@@ -414,11 +456,19 @@
 </li>
       <li><a href="api/python_api.html#cumotion.RmpFlow.clear_end_effector_position_attractor">clear_end_effector_position_attractor() (cumotion.RmpFlow method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.clear_orientation_target">clear_orientation_target() (cumotion.RmpFlow method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.clear_pose_target">clear_pose_target() (cumotion.RmpFlow method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.clear_position_target">clear_position_target() (cumotion.RmpFlow method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.clear_world_view">clear_world_view() (cumotion.RobotWorldInspector method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver">CollisionFreeIkSolver (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraint">CollisionFreeIkSolver.OrientationConstraint (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray">CollisionFreeIkSolver.OrientationConstraintArray (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset">CollisionFreeIkSolver.OrientationConstraintGoalset (class in cumotion)</a>
 </li>
@@ -426,11 +476,17 @@
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.Results.Status">CollisionFreeIkSolver.Results.Status (class in cumotion)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.ResultsArray">CollisionFreeIkSolver.ResultsArray (class in cumotion)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TaskSpaceTarget">CollisionFreeIkSolver.TaskSpaceTarget (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray">CollisionFreeIkSolver.TaskSpaceTargetArray (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset">CollisionFreeIkSolver.TaskSpaceTargetGoalset (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraint">CollisionFreeIkSolver.TranslationConstraint (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintArray">CollisionFreeIkSolver.TranslationConstraintArray (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset">CollisionFreeIkSolver.TranslationConstraintGoalset (class in cumotion)</a>
 </li>
@@ -576,6 +632,18 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver21OrientationConstraint6TargetERK9Rotation3NSt8optionalIdEE">cumotion::CollisionFreeIkSolver::OrientationConstraint::Target (C++ function)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26OrientationConstraintArrayE">cumotion::CollisionFreeIkSolver::OrientationConstraintArray (C++ class)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26OrientationConstraintArray4AxisERKNSt6vectorINSt6vectorIN5Eigen8Vector3dEEEEERKNSt6vectorINSt6vectorIN5Eigen8Vector3dEEEEENSt8optionalIdEE">cumotion::CollisionFreeIkSolver::OrientationConstraintArray::Axis (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26OrientationConstraintArray4NoneEv">cumotion::CollisionFreeIkSolver::OrientationConstraintArray::None (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver26OrientationConstraintArray14numConstraintsEi">cumotion::CollisionFreeIkSolver::OrientationConstraintArray::numConstraints (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver26OrientationConstraintArray11numProblemsEv">cumotion::CollisionFreeIkSolver::OrientationConstraintArray::numProblems (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26OrientationConstraintArray6TargetERKNSt6vectorINSt6vectorI9Rotation3EEEENSt8optionalIdEE">cumotion::CollisionFreeIkSolver::OrientationConstraintArray::Target (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver28OrientationConstraintGoalsetE">cumotion::CollisionFreeIkSolver::OrientationConstraintGoalset (C++ class)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver28OrientationConstraintGoalset4AxisERKNSt6vectorIN5Eigen8Vector3dEEERKNSt6vectorIN5Eigen8Vector3dEEENSt8optionalIdEE">cumotion::CollisionFreeIkSolver::OrientationConstraintGoalset::Axis (C++ function)</a>
@@ -598,13 +666,31 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver7Results13targetIndicesEv">cumotion::CollisionFreeIkSolver::Results::targetIndices (C++ function)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver12ResultsArrayE">cumotion::CollisionFreeIkSolver::ResultsArray (C++ class)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray11numProblemsEv">cumotion::CollisionFreeIkSolver::ResultsArray::numProblems (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray12numSuccessesEv">cumotion::CollisionFreeIkSolver::ResultsArray::numSuccesses (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12ResultsArray7problemEi">cumotion::CollisionFreeIkSolver::ResultsArray::problem (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver5solveERK15TaskSpaceTargetRKNSt6vectorIN5Eigen8VectorXdEEE">cumotion::CollisionFreeIkSolver::solve (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE">cumotion::CollisionFreeIkSolver::solveArray (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE">cumotion::CollisionFreeIkSolver::solveGoalset (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver15TaskSpaceTargetE">cumotion::CollisionFreeIkSolver::TaskSpaceTarget (C++ struct)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver15TaskSpaceTarget15TaskSpaceTargetERK21TranslationConstraintRK21OrientationConstraint">cumotion::CollisionFreeIkSolver::TaskSpaceTarget::TaskSpaceTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArray11numProblemsEv">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray::numProblems (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArray10numTargetsEi">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray::numTargets (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArray20TaskSpaceTargetArrayERK26TranslationConstraintArrayRK26OrientationConstraintArray">cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray::TaskSpaceTargetArray (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver22TaskSpaceTargetGoalsetE">cumotion::CollisionFreeIkSolver::TaskSpaceTargetGoalset (C++ struct)</a>
 </li>
@@ -613,6 +699,14 @@
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver21TranslationConstraintE">cumotion::CollisionFreeIkSolver::TranslationConstraint (C++ class)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver21TranslationConstraint6TargetERKN5Eigen8Vector3dENSt8optionalIdEE">cumotion::CollisionFreeIkSolver::TranslationConstraint::Target (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26TranslationConstraintArrayE">cumotion::CollisionFreeIkSolver::TranslationConstraintArray (C++ class)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver26TranslationConstraintArray14numConstraintsEi">cumotion::CollisionFreeIkSolver::TranslationConstraintArray::numConstraints (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver26TranslationConstraintArray11numProblemsEv">cumotion::CollisionFreeIkSolver::TranslationConstraintArray::numProblems (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26TranslationConstraintArray6TargetERKNSt6vectorINSt6vectorIN5Eigen8Vector3dEEEEENSt8optionalIdEE">cumotion::CollisionFreeIkSolver::TranslationConstraintArray::Target (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver28TranslationConstraintGoalsetE">cumotion::CollisionFreeIkSolver::TranslationConstraintGoalset (C++ class)</a>
 </li>
@@ -708,9 +802,9 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion13CreateRmpFlowERK13RmpFlowConfig">cumotion::CreateRmpFlow (C++ function)</a>
 </li>
-      <li><a href="api/cpp_api.html#_CPPv4N8cumotion27CreateRmpFlowConfigFromFileERKNSt10filesystem4pathERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle">cumotion::CreateRmpFlowConfigFromFile (C++ function)</a>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion27CreateRmpFlowConfigFromFileERKNSt10filesystem4pathERK16RobotDescriptionRK15WorldViewHandle">cumotion::CreateRmpFlowConfigFromFile (C++ function)</a>
 </li>
-      <li><a href="api/cpp_api.html#_CPPv4N8cumotion29CreateRmpFlowConfigFromMemoryERKNSt6stringERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle">cumotion::CreateRmpFlowConfigFromMemory (C++ function)</a>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion29CreateRmpFlowConfigFromMemoryERKNSt6stringERK16RobotDescriptionRK15WorldViewHandle">cumotion::CreateRmpFlowConfigFromMemory (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion20CreateRobotSegmenterERK16RobotDescriptionRK16CameraIntrinsicsdN14RobotSegmenter17RobotGeometryKindE">cumotion::CreateRobotSegmenter (C++ function)</a>
 </li>
@@ -924,8 +1018,6 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion10Kinematics6Limits5lowerE">cumotion::Kinematics::Limits::lower (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion10Kinematics6Limits5upperE">cumotion::Kinematics::Limits::upper (C++ member)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion10Kinematics15numCSpaceCoordsEv">cumotion::Kinematics::numCSpaceCoords (C++ function)</a>
@@ -946,6 +1038,8 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion16LinearCSpacePathE">cumotion::LinearCSpacePath (C++ class)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion16LinearCSpacePath6domainEv">cumotion::LinearCSpacePath::domain (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion16LinearCSpacePath4evalEd">cumotion::LinearCSpacePath::eval (C++ function)</a>
@@ -1003,6 +1097,8 @@
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner16planToPoseTargetERKN5Eigen8VectorXdERK5Pose3b">cumotion::MotionPlanner::planToPoseTarget (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner23planToTranslationTargetERKN5Eigen8VectorXdERKN5Eigen8Vector3dEb">cumotion::MotionPlanner::planToTranslationTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner5resetEv">cumotion::MotionPlanner::reset (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner7ResultsE">cumotion::MotionPlanner::Results (C++ struct)</a>
 </li>
@@ -1100,19 +1196,89 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlowE">cumotion::RmpFlow (C++ class)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow14addTargetFrameERKNSt6stringENSt8optionalI15TargetRmpConfigEE">cumotion::RmpFlow::addTargetFrame (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow36clearEndEffectorOrientationAttractorEv">cumotion::RmpFlow::clearEndEffectorOrientationAttractor (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow33clearEndEffectorPositionAttractorEv">cumotion::RmpFlow::clearEndEffectorPositionAttractor (C++ function)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow22clearOrientationTargetERKNSt6stringE">cumotion::RmpFlow::clearOrientationTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15clearPoseTargetERKNSt6stringE">cumotion::RmpFlow::clearPoseTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow19clearPositionTargetERKNSt6stringE">cumotion::RmpFlow::clearPositionTarget (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion7RmpFlow9evalAccelERKN5Eigen8VectorXdERKN5Eigen8VectorXdEN5Eigen3RefIN5Eigen8VectorXdEEE">cumotion::RmpFlow::evalAccel (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion7RmpFlow18evalForceAndMetricERKN5Eigen8VectorXdERKN5Eigen8VectorXdEN5Eigen3RefIN5Eigen8VectorXdEEEN5Eigen3RefIN5Eigen8MatrixXdEEE">cumotion::RmpFlow::evalForceAndMetric (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion7RmpFlow15numTargetFramesEv">cumotion::RmpFlow::numTargetFrames (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow17removeTargetFrameERKNSt6stringE">cumotion::RmpFlow::removeTargetFrame (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow18setCSpaceAttractorERKN5Eigen8VectorXdE">cumotion::RmpFlow::setCSpaceAttractor (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow34setEndEffectorOrientationAttractorERK9Rotation3">cumotion::RmpFlow::setEndEffectorOrientationAttractor (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow31setEndEffectorPositionAttractorERKN5Eigen8Vector3dE">cumotion::RmpFlow::setEndEffectorPositionAttractor (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow20setOrientationTargetERKNSt6stringERK9Rotation3">cumotion::RmpFlow::setOrientationTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow13setPoseTargetERKNSt6stringERK5Pose3">cumotion::RmpFlow::setPoseTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow17setPositionTargetERKNSt6stringERKN5Eigen8Vector3dE">cumotion::RmpFlow::setPositionTarget (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion7RmpFlow16targetFrameNamesEv">cumotion::RmpFlow::targetFrameNames (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfigE">cumotion::RmpFlow::TargetRmpConfig (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14damping_configE">cumotion::RmpFlow::TargetRmpConfig::damping_config (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig13DampingConfigE">cumotion::RmpFlow::TargetRmpConfig::DampingConfig (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig13DampingConfig12accel_d_gainE">cumotion::RmpFlow::TargetRmpConfig::DampingConfig::accel_d_gain (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig13DampingConfig7inertiaE">cumotion::RmpFlow::TargetRmpConfig::DampingConfig::inertia (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig13DampingConfig13metric_scalarE">cumotion::RmpFlow::TargetRmpConfig::DampingConfig::metric_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig18orientation_configE">cumotion::RmpFlow::TargetRmpConfig::orientation_config (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfigE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfig12accel_d_gainE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig::accel_d_gain (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfig12accel_p_gainE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig::accel_p_gain (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfig13metric_scalarE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig::metric_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfig35proximity_metric_boost_length_scaleE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig::proximity_metric_boost_length_scale (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig17OrientationConfig29proximity_metric_boost_scalarE">cumotion::RmpFlow::TargetRmpConfig::OrientationConfig::proximity_metric_boost_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig15position_configE">cumotion::RmpFlow::TargetRmpConfig::position_config (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfigE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig12accel_d_gainE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::accel_d_gain (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig14accel_norm_epsE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::accel_norm_eps (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig12accel_p_gainE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::accel_p_gain (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig17max_metric_scalarE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::max_metric_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig25metric_alpha_length_scaleE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::metric_alpha_length_scale (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig16min_metric_alphaE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::min_metric_alpha (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig17min_metric_scalarE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::min_metric_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig35proximity_metric_boost_length_scaleE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::proximity_metric_boost_length_scale (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig14PositionConfig29proximity_metric_boost_scalarE">cumotion::RmpFlow::TargetRmpConfig::PositionConfig::proximity_metric_boost_scalar (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig15TargetRmpConfigERK13RmpFlowConfig">cumotion::RmpFlow::TargetRmpConfig::TargetRmpConfig (C++ function)</a>, <a href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow15TargetRmpConfig15TargetRmpConfigEv">[1]</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion13RmpFlowConfigE">cumotion::RmpFlowConfig (C++ class)</a>
 </li>
@@ -1372,6 +1538,8 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6Status31INVALID_INITIAL_CSPACE_POSITIONE">cumotion::TrajectoryOptimizer::Results::Status::INVALID_INITIAL_CSPACE_POSITION (C++ enumerator)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6Status30INVALID_TARGET_CSPACE_POSITIONE">cumotion::TrajectoryOptimizer::Results::Status::INVALID_TARGET_CSPACE_POSITION (C++ enumerator)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6Status28INVALID_TARGET_SPECIFICATIONE">cumotion::TrajectoryOptimizer::Results::Status::INVALID_TARGET_SPECIFICATION (C++ enumerator)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6Status26INVERSE_KINEMATICS_FAILUREE">cumotion::TrajectoryOptimizer::Results::Status::INVERSE_KINEMATICS_FAILURE (C++ enumerator)</a>
@@ -1424,9 +1592,25 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World14enableObstacleERK14ObstacleHandle">cumotion::World::enableObstacle (C++ function)</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion5World10inspectSdfERK14ObstacleHandleNSt8optionalI23SdfInspectionTolerancesEE">cumotion::World::inspectSdf (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World14ObstacleHandleE">cumotion::World::ObstacleHandle (C++ struct)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World14removeObstacleERK14ObstacleHandle">cumotion::World::removeObstacle (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World20SdfInspectionResultsE">cumotion::World::SdfInspectionResults (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World20SdfInspectionResults33num_voxels_matching_all_neighborsE">cumotion::World::SdfInspectionResults::num_voxels_matching_all_neighbors (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World20SdfInspectionResults33num_voxels_too_far_from_neighborsE">cumotion::World::SdfInspectionResults::num_voxels_too_far_from_neighbors (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion5World20SdfInspectionResults9numErrorsEv">cumotion::World::SdfInspectionResults::numErrors (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World23SdfInspectionTolerancesE">cumotion::World::SdfInspectionTolerances (C++ struct)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World23SdfInspectionTolerances32voxel_matches_neighbor_toleranceE">cumotion::World::SdfInspectionTolerances::voxel_matches_neighbor_tolerance (C++ member)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World23SdfInspectionTolerances37voxel_too_far_from_neighbor_toleranceE">cumotion::World::SdfInspectionTolerances::voxel_too_far_from_neighbor_tolerance (C++ member)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion5World7setPoseERK14ObstacleHandleRK5Pose3">cumotion::World::setPose (C++ function)</a>
 </li>
@@ -1436,15 +1620,19 @@
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion14WorldInspectorE">cumotion::WorldInspector (C++ class)</a>
 </li>
-      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11distancesToERKN5Eigen8Vector3dEPNSt6vectorIdEEPNSt6vectorIN5Eigen8Vector3dEEE">cumotion::WorldInspector::distancesTo (C++ function)</a>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11distancesToERKN5Eigen8Vector3dEPNSt6vectorIdEEPNSt6vectorIN5Eigen8Vector3dEEE">cumotion::WorldInspector::distancesTo (C++ function)</a>, <a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11distancesToERKN5Eigen8Vector3dERNSt6vectorIdEEPNSt6vectorIN5Eigen8Vector3dEEE">[1]</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector10distanceToERKN5World14ObstacleHandleERKN5Eigen8Vector3dEPN5Eigen8Vector3dE">cumotion::WorldInspector::distanceTo (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11inCollisionERKN5Eigen8Vector3dEd">cumotion::WorldInspector::inCollision (C++ function)</a>, <a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11inCollisionERKN5World14ObstacleHandleERKN5Eigen8Vector3dEd">[1]</a>
 </li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector9isEnabledERKN5World14ObstacleHandleE">cumotion::WorldInspector::isEnabled (C++ function)</a>
+</li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11minDistanceERKN5Eigen8Vector3dEPN5Eigen8Vector3dE">cumotion::WorldInspector::minDistance (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector19numEnabledObstaclesEv">cumotion::WorldInspector::numEnabledObstacles (C++ function)</a>
+</li>
+      <li><a href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector4poseERKN5World14ObstacleHandleE">cumotion::WorldInspector::pose (C++ function)</a>
 </li>
       <li><a href="api/cpp_api.html#_CPPv4N8cumotion15WorldViewHandleE">cumotion::WorldViewHandle (C++ struct)</a>
 </li>
@@ -1456,6 +1644,8 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.damping_config">damping_config (cumotion.RmpFlow.TargetRmpConfig property)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RobotDescription.default_cspace_configuration">default_cspace_configuration() (cumotion.RobotDescription method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.IkConfig.CSpaceLimitBiasing.DISABLE">DISABLE (cumotion.IkConfig.CSpaceLimitBiasing attribute)</a>
@@ -1466,10 +1656,10 @@
 </li>
       <li><a href="api/python_api.html#cumotion.WorldInspector.distance_to">distance_to() (cumotion.WorldInspector method)</a>
 </li>
-      <li><a href="api/python_api.html#cumotion.RobotWorldInspector.distance_to_obstacle">distance_to_obstacle() (cumotion.RobotWorldInspector method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.RobotWorldInspector.distance_to_obstacle">distance_to_obstacle() (cumotion.RobotWorldInspector method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.WorldInspector.distances_to">distances_to() (cumotion.WorldInspector method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CSpacePath.domain">domain() (cumotion.CSpacePath method)</a>
@@ -1608,15 +1798,21 @@
 </li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.in_self_collision">in_self_collision() (cumotion.RobotWorldInspector method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.DampingConfig.inertia">inertia (cumotion.RmpFlow.TargetRmpConfig.DampingConfig property)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.TaskSpacePathConversionConfig.initial_s_step_size">initial_s_step_size (cumotion.TaskSpacePathConversionConfig property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.TaskSpacePathConversionConfig.initial_s_step_size_delta">initial_s_step_size_delta (cumotion.TaskSpacePathConversionConfig property)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/python_api.html#cumotion.TaskSpacePathConversionConfig.initial_s_step_size_delta">initial_s_step_size_delta (cumotion.TaskSpacePathConversionConfig property)</a>
+      <li><a href="api/python_api.html#cumotion.World.inspect_sdf">inspect_sdf() (cumotion.World method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.MotionPlanner.Results.interpolated_path">interpolated_path (cumotion.MotionPlanner.Results property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.Results.Status.INVALID_INITIAL_CSPACE_POSITION">INVALID_INITIAL_CSPACE_POSITION (cumotion.TrajectoryOptimizer.Results.Status attribute)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.Results.Status.INVALID_TARGET_CSPACE_POSITION">INVALID_TARGET_CSPACE_POSITION (cumotion.TrajectoryOptimizer.Results.Status attribute)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.Results.Status.INVALID_TARGET_SPECIFICATION">INVALID_TARGET_SPECIFICATION (cumotion.TrajectoryOptimizer.Results.Status attribute)</a>
 </li>
@@ -1633,6 +1829,8 @@
 </li>
       </ul></li>
       <li><a href="api/python_api.html#cumotion.IkConfig.irwin_hall_sampling_order">irwin_hall_sampling_order (cumotion.IkConfig property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.WorldInspector.is_enabled">is_enabled() (cumotion.WorldInspector method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1736,6 +1934,8 @@
 </li>
       <li><a href="api/python_api.html#cumotion.Trajectory.max_jerk_magnitude">max_jerk_magnitude() (cumotion.Trajectory method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.max_metric_scalar">max_metric_scalar (cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.IkConfig.max_num_descents">max_num_descents (cumotion.IkConfig property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CSpacePath.max_position">max_position() (cumotion.CSpacePath method)</a>
@@ -1752,11 +1952,23 @@
 </li>
       <li><a href="api/python_api.html#cumotion.Trajectory.max_velocity_magnitude">max_velocity_magnitude() (cumotion.Trajectory method)</a>
 </li>
-      <li><a href="api/python_api.html#cumotion.WorldInspector.min_distance">min_distance() (cumotion.WorldInspector method)</a>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.metric_alpha_length_scale">metric_alpha_length_scale (cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.DampingConfig.metric_scalar">metric_scalar (cumotion.RmpFlow.TargetRmpConfig.DampingConfig property)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig.metric_scalar">(cumotion.RmpFlow.TargetRmpConfig.OrientationConfig property)</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.WorldInspector.min_distance">min_distance() (cumotion.WorldInspector method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.min_distance_to_obstacle">min_distance_to_obstacle() (cumotion.RobotWorldInspector method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.min_metric_alpha">min_metric_alpha (cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.min_metric_scalar">min_metric_scalar (cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CSpacePath.min_position">min_position() (cumotion.CSpacePath method)</a>
 
@@ -1790,29 +2002,11 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.Results.Status.name">name (cumotion.CollisionFreeIkSolver.Results.Status property)</a>
-
-      <ul>
-        <li><a href="api/python_api.html#cumotion.CompositePathSpec.PathSpecType.name">(cumotion.CompositePathSpec.PathSpecType property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.CompositePathSpec.TransitionMode.name">(cumotion.CompositePathSpec.TransitionMode property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.CSpaceTrajectoryGenerator.InterpolationMode.name">(cumotion.CSpaceTrajectoryGenerator.InterpolationMode property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.IkConfig.CSpaceLimitBiasing.name">(cumotion.IkConfig.CSpaceLimitBiasing property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.Obstacle.Attribute.name">(cumotion.Obstacle.Attribute property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.Obstacle.GridPrecision.name">(cumotion.Obstacle.GridPrecision property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.Obstacle.Type.name">(cumotion.Obstacle.Type property)</a>
-</li>
-        <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.Results.Status.name">(cumotion.TrajectoryOptimizer.Results.Status property)</a>
-</li>
-      </ul></li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraint.none">none() (cumotion.CollisionFreeIkSolver.OrientationConstraint static method)</a>
 
       <ul>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray.none">(cumotion.CollisionFreeIkSolver.OrientationConstraintArray static method)</a>
+</li>
         <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.none">(cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset static method)</a>
 </li>
         <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.CSpaceTarget.OrientationPathConstraint.none">(cumotion.TrajectoryOptimizer.CSpaceTarget.OrientationPathConstraint static method)</a>
@@ -1824,8 +2018,12 @@
         <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.OrientationConstraintGoalset.none">(cumotion.TrajectoryOptimizer.OrientationConstraintGoalset static method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray.num_constraints">num_constraints() (cumotion.CollisionFreeIkSolver.OrientationConstraintArray method)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintArray.num_constraints">(cumotion.CollisionFreeIkSolver.TranslationConstraintArray method)</a>
+</li>
+      </ul></li>
       <li><a href="api/python_api.html#cumotion.CompositePathSpec.num_cspace_coords">num_cspace_coords() (cumotion.CompositePathSpec method)</a>
 
       <ul>
@@ -1844,15 +2042,39 @@
         <li><a href="api/python_api.html#cumotion.Trajectory.num_cspace_coords">(cumotion.Trajectory method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.IkResults.num_descents">num_descents (cumotion.IkResults property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.WorldInspector.num_enabled_obstacles">num_enabled_obstacles() (cumotion.WorldInspector method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionResults.num_errors">num_errors() (cumotion.World.SdfInspectionResults method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.CompositePathSpec.num_path_specs">num_path_specs() (cumotion.CompositePathSpec method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray.num_problems">num_problems() (cumotion.CollisionFreeIkSolver.OrientationConstraintArray method)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.ResultsArray.num_problems">(cumotion.CollisionFreeIkSolver.ResultsArray method)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray.num_problems">(cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray method)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintArray.num_problems">(cumotion.CollisionFreeIkSolver.TranslationConstraintArray method)</a>
+</li>
+      </ul></li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.num_self_collision_spheres">num_self_collision_spheres() (cumotion.RobotWorldInspector method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.ResultsArray.num_successes">num_successes() (cumotion.CollisionFreeIkSolver.ResultsArray method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.num_target_frames">num_target_frames() (cumotion.RmpFlow method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray.num_targets">num_targets() (cumotion.CollisionFreeIkSolver.TaskSpaceTargetArray method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.CollisionSphereGenerator.num_triangles">num_triangles() (cumotion.CollisionSphereGenerator method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionResults.num_voxels_matching_all_neighbors">num_voxels_matching_all_neighbors (cumotion.World.SdfInspectionResults property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionResults.num_voxels_too_far_from_neighbors">num_voxels_too_far_from_neighbors (cumotion.World.SdfInspectionResults property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.num_world_collision_spheres">num_world_collision_spheres() (cumotion.RobotWorldInspector method)</a>
 </li>
@@ -1870,13 +2092,15 @@
 </li>
       <li><a href="api/python_api.html#cumotion.Obstacle.Grid">Obstacle.Grid (class in cumotion)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.Obstacle.GridPrecision">Obstacle.GridPrecision (class in cumotion)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.Obstacle.Type">Obstacle.Type (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.Kinematics.orientation">orientation() (cumotion.Kinematics method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.orientation_config">orientation_config (cumotion.RmpFlow.TargetRmpConfig property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.Kinematics.orientation_jacobian">orientation_jacobian() (cumotion.Kinematics method)</a>
 </li>
@@ -1910,19 +2134,25 @@
       </ul></li>
       <li><a href="api/python_api.html#cumotion.MotionPlanner.plan_to_pose_target">plan_to_pose_target() (cumotion.MotionPlanner method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.plan_to_task_space_goalset">plan_to_task_space_goalset() (cumotion.TrajectoryOptimizer method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.plan_to_task_space_target">plan_to_task_space_target() (cumotion.TrajectoryOptimizer method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.MotionPlanner.plan_to_translation_target">plan_to_translation_target() (cumotion.MotionPlanner method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.Kinematics.pose">pose() (cumotion.Kinematics method)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.WorldInspector.pose">(cumotion.WorldInspector method)</a>
 </li>
+      </ul></li>
       <li><a href="api/python_api.html#cumotion.Pose3">Pose3 (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.Kinematics.position">position() (cumotion.Kinematics method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.position_config">position_config (cumotion.RmpFlow.TargetRmpConfig property)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.IkResults.position_error">position_error (cumotion.IkResults property)</a>
 </li>
@@ -1930,6 +2160,20 @@
 </li>
       <li><a href="api/python_api.html#cumotion.IkConfig.position_tolerance">position_tolerance (cumotion.IkConfig property)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.ResultsArray.problem">problem() (cumotion.CollisionFreeIkSolver.ResultsArray method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig.proximity_metric_boost_length_scale">proximity_metric_boost_length_scale (cumotion.RmpFlow.TargetRmpConfig.OrientationConfig property)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.proximity_metric_boost_length_scale">(cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      </ul></li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig.proximity_metric_boost_scalar">proximity_metric_boost_scalar (cumotion.RmpFlow.TargetRmpConfig.OrientationConfig property)</a>
+
+      <ul>
+        <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig.proximity_metric_boost_scalar">(cumotion.RmpFlow.TargetRmpConfig.PositionConfig property)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1942,10 +2186,22 @@
 </li>
       <li><a href="api/python_api.html#cumotion.World.remove_obstacle">remove_obstacle() (cumotion.World method)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.remove_target_frame">remove_target_frame() (cumotion.RmpFlow method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.MotionPlanner.reset">reset() (cumotion.MotionPlanner method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RmpFlow">RmpFlow (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig">RmpFlow.TargetRmpConfig (class in cumotion)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.DampingConfig">RmpFlow.TargetRmpConfig.DampingConfig (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.OrientationConfig">RmpFlow.TargetRmpConfig.OrientationConfig (class in cumotion)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.TargetRmpConfig.PositionConfig">RmpFlow.TargetRmpConfig.PositionConfig (class in cumotion)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RmpFlowConfig">RmpFlowConfig (class in cumotion)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.RobotDescription">RobotDescription (class in cumotion)</a>
@@ -1994,6 +2250,8 @@
 </li>
       <li><a href="api/python_api.html#cumotion.set_log_level">set_log_level() (in module cumotion)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.set_orientation_target">set_orientation_target() (cumotion.RmpFlow method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolverConfig.set_param">set_param() (cumotion.CollisionFreeIkSolverConfig method)</a>
 
       <ul>
@@ -2006,11 +2264,15 @@
         <li><a href="api/python_api.html#cumotion.TrajectoryOptimizerConfig.set_param">(cumotion.TrajectoryOptimizerConfig method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api/python_api.html#cumotion.World.set_pose">set_pose() (cumotion.World method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.set_pose_target">set_pose_target() (cumotion.RmpFlow method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.CSpaceTrajectoryGenerator.set_position_limits">set_position_limits() (cumotion.CSpaceTrajectoryGenerator method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.set_position_target">set_position_target() (cumotion.RmpFlow method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.World.set_sdf_grid_values_from_host">set_sdf_grid_values_from_host() (cumotion.World method)</a>
 </li>
@@ -2031,6 +2293,8 @@
       <li><a href="api/python_api.html#cumotion.Rotation3.slerp">slerp() (cumotion.Rotation3 static method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.solve">solve() (cumotion.CollisionFreeIkSolver method)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.solve_array">solve_array() (cumotion.CollisionFreeIkSolver method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.solve_goalset">solve_goalset() (cumotion.CollisionFreeIkSolver method)</a>
 </li>
@@ -2067,9 +2331,13 @@
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraint.target">target() (cumotion.CollisionFreeIkSolver.OrientationConstraint static method)</a>
 
       <ul>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target">(cumotion.CollisionFreeIkSolver.OrientationConstraintArray static method)</a>
+</li>
         <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target">(cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset static method)</a>
 </li>
         <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraint.target">(cumotion.CollisionFreeIkSolver.TranslationConstraint static method)</a>
+</li>
+        <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target">(cumotion.CollisionFreeIkSolver.TranslationConstraintArray static method)</a>
 </li>
         <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target">(cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset static method)</a>
 </li>
@@ -2078,6 +2346,8 @@
         <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.TranslationConstraintGoalset.target">(cumotion.TrajectoryOptimizer.TranslationConstraintGoalset static method)</a>
 </li>
       </ul></li>
+      <li><a href="api/python_api.html#cumotion.RmpFlow.target_frame_names">target_frame_names() (cumotion.RmpFlow method)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.TrajectoryOptimizer.Results.target_index">target_index() (cumotion.TrajectoryOptimizer.Results method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.CollisionFreeIkSolver.Results.target_indices">target_indices() (cumotion.CollisionFreeIkSolver.Results method)</a>
@@ -2215,6 +2485,12 @@
 </li>
       </ul></li>
   </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionTolerances.voxel_matches_neighbor_tolerance">voxel_matches_neighbor_tolerance (cumotion.World.SdfInspectionTolerances property)</a>
+</li>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionTolerances.voxel_too_far_from_neighbor_tolerance">voxel_too_far_from_neighbor_tolerance (cumotion.World.SdfInspectionTolerances property)</a>
+</li>
+  </ul></td>
 </tr></table>
 
 <h2 id="W">W</h2>
@@ -2230,8 +2506,12 @@
 </li>
       <li><a href="api/python_api.html#cumotion.World.ObstacleHandle">World.ObstacleHandle (class in cumotion)</a>
 </li>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionResults">World.SdfInspectionResults (class in cumotion)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api/python_api.html#cumotion.World.SdfInspectionTolerances">World.SdfInspectionTolerances (class in cumotion)</a>
+</li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.world_collision_sphere_frame_name">world_collision_sphere_frame_name() (cumotion.RobotWorldInspector method)</a>
 </li>
       <li><a href="api/python_api.html#cumotion.RobotWorldInspector.world_collision_sphere_positions">world_collision_sphere_positions() (cumotion.RobotWorldInspector method)</a>
