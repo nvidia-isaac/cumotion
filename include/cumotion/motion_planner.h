@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -21,18 +21,19 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/robot_description.h"
 #include "cumotion/world.h"
 
 namespace cumotion {
 
 //! Configuration parameters for a `MotionPlanner`.
-class MotionPlannerConfig {
+class CUMO_EXPORT MotionPlannerConfig {
  public:
   virtual ~MotionPlannerConfig() = default;
 
   //! Indicate lower and upper limits for a coordinate.
-  struct Limit {
+  struct CUMO_EXPORT Limit {
     double lower;
     double upper;
   };
@@ -41,7 +42,7 @@ class MotionPlannerConfig {
   //!
   //! The required `ParamValue` constructor for each param is detailed in the
   //! documentation for `setParam()`.
-  struct ParamValue {
+  struct CUMO_EXPORT ParamValue {
     //! Create `ParamValue` from `int`.
     ParamValue(int value);  // NOLINT Allow implicit conversion
     //! Create `ParamValue` from `double`.
@@ -76,8 +77,8 @@ class MotionPlannerConfig {
   //!   - Default: 1234
   //!
   //! `step_size` [`double`]
-  //!   - Step size for tree extension and (optionally) for discretization of `expanded_path` in
-  //!     `Results`
+  //!   - Step size for tree extension and (optionally) for discretization of `interpolated_path`
+  //!     in `Results`
   //!   - It is assumed that a straight path connecting two valid c-space configurations with
   //!     separation distance <= `step_size` is a valid edge, where separation distance is defined
   //!     as the L2-norm of the difference between the two configurations.
@@ -104,7 +105,12 @@ class MotionPlannerConfig {
   //!       `distance_metric_weights`.
   //!   - The length of the `distance_metric_weights` must be equal to the number of c-space
   //!     coordinates for the robot and each weight must be positive.
-  //!   - Default: Vectors of ones with length set by the number of c-space coordinates in
+  //!   - NOTE: In general, it is recommended to use a vector of ones for `distance_metric_weights`
+  //!           (i.e., unweighted squared L2-norm). Doing so enables significant performance
+  //!           optimization for nearest neighbor searches during geometric planning. Non-unity
+  //!           weights should only be considered if the benefits of the weighted distance metric
+  //!           outweigh the cost of more expensive nearest neighbor searches.
+  //!   - Default: Vector of ones with length set by the number of c-space coordinates in
   //!     `robot_description`.
   //!
   //! `tool_frame_name` [`std::string`]
@@ -120,9 +126,17 @@ class MotionPlannerConfig {
   //!   - Each upper limit must be >= the corresponding lower limit.
   //!   - Default: Lower limits default to -1 and upper limits to 1.
   //!
+  //! `enable_self_collision_checking` [`bool`]
+  //!  - Set to `true` to enable self-collision checking during motion planning.
+  //!  - When enabled, configurations that result in self-collision (collision between robot
+  //!    self-collision spheres) will be considered invalid during path planning.
+  //!  - Default: `true`
+  //!
   //! `enable_cuda_tree` [`bool`]
   //!   - Set to `true` to enable use of CUDA for storing explored configurations and performing
   //!     nearest neighbor look-up, or `false` to disable usage of CUDA.
+  //!   - When `enable_cuda_tree` is set to `true`, CUDA will only be used when
+  //!     `distance_metric_weights` is not equal to `Eigen::VectorXd::Ones(cspace_dimension)`.
   //!   - If set to `true` from the `false` state, default values for `cuda_tree_params` will be
   //!     used.
   //!   - If set to `false` from the `true` state, current values for `cuda_tree_params` will be
@@ -133,11 +147,13 @@ class MotionPlannerConfig {
   //!   - Default: `true`
   //!
   //! `cuda_tree_params/max_num_nodes` [`int`]
-  //!   - Maximum number of valid explored configurations that can be stored in a CUDA tree.
-  //!   - A default value of 10000 is recommended for most use-cases.
-  //!   - `cuda_tree_params/max_num_nodes` must be positive AND greater than
-  //!     `num_nodes_cpu_gpu_crossover`.
-  //!   - Default: 10'000
+  //!   - DEPRECATED
+  //!   - The number of configurations that can be stored in CUDA-accelerated trees is no longer
+  //!     bound by a preset value. Growth is now limited by `max_iterations`, rather than the
+  //!     coupling of `max_iterations` and `cuda_tree_params/max_num_nodes`.
+  //!   - A deprecation warning is logged when `cuda_tree_params/max_num_nodes` is set via
+  //!     `setParam()` or when present in a configuration file. It is recommended to *not*
+  //!     provide a value for this parameter, as it will be ignored.
   //!
   //! `cuda_tree_params/max_buffer_size` [`int`]
   //!   - Maximum number of valid configurations that are buffered on CPU prior to transferring to
@@ -150,8 +166,7 @@ class MotionPlannerConfig {
   //!   - Number of valid explored configurations added to tree prior to copying all configurations
   //!     to GPU and using GPU for nearest neighbor lookup.
   //!   - A default value of 3000 is recommended for most use-cases.
-  //!   - `cuda_tree_params/num_nodes_cpu_gpu_crossover` must be positive AND less than
-  //!     `max_num_nodes`.
+  //!   - `cuda_tree_params/num_nodes_cpu_gpu_crossover` must be positive.
   //!   - Default: 3000
   //!
   //!  NOTE: For all of the `cuda_tree_params` listed above, the best values for optimal performance
@@ -355,7 +370,7 @@ class MotionPlannerConfig {
 //!   1. `robot_description` is invalid, *OR*
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFile(
+CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFile(
     const std::filesystem::path &motion_planner_config_file,
     const RobotDescription &robot_description,
     const std::string &tool_frame_name,
@@ -370,7 +385,7 @@ std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFile(
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //!
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfig(
+CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfig(
     const RobotDescription &robot_description,
     const std::string &tool_frame_name,
     const WorldViewHandle &world_view);
@@ -378,14 +393,14 @@ std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfig(
 //! Interface class for planning collision-free paths for robotic manipulators.
 //! Supports both configuration space (i.e., joint position) targets and task space (e.g., end
 //! effector position) targets.
-class MotionPlanner {
+class CUMO_EXPORT MotionPlanner {
  public:
   virtual ~MotionPlanner() = default;
 
   //! Results from a path search.
-  struct Results {
+  struct CUMO_EXPORT Results {
     //! Indicate whether a collision-free path was found.
-    //! If `false`, `path` and `expanded_path` will be empty.
+    //! If `false`, `path` and `interpolated_path` will be empty.
     bool path_found;
 
     //! Minimal representation of collision-free path.
@@ -426,9 +441,13 @@ class MotionPlanner {
   virtual Results planToPoseTarget(const Eigen::VectorXd &q_initial,
                                    const Pose3 &pose_target,
                                    bool generate_interpolated_path = false) = 0;
+
+  //! Reset all internal state so that subsequent planning calls produce the same results as they
+  //! did immediately after construction, given the same inputs.
+  virtual void reset() = 0;
 };
 
 //! Create a `MotionPlanner` with the given `config`.
-std::unique_ptr<MotionPlanner> CreateMotionPlanner(const MotionPlannerConfig &config);
+CUMO_EXPORT std::unique_ptr<MotionPlanner> CreateMotionPlanner(const MotionPlannerConfig &config);
 
 }  // namespace cumotion

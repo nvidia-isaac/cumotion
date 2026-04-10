@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/pose3.h"
 
 namespace cumotion {
@@ -19,12 +20,12 @@ namespace cumotion {
 //!
 //! This path is parameterized by independent variable `s` and is generally expected to be
 //! continuous, but not necessarily smooth.
-class TaskSpacePath {
+class CUMO_EXPORT TaskSpacePath {
  public:
   virtual ~TaskSpacePath() = default;
 
   //! Indicates continuous range of independent values, `s`, for which the path is defined.
-  struct Domain {
+  struct CUMO_EXPORT Domain {
     //! Minimum value of `s` defining domain.
     double lower;
 

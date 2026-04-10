@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -19,12 +19,13 @@
 #include "Eigen/Core"
 #include "Eigen/Geometry"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/rotation3.h"
 
 namespace cumotion {
 
 //! Class representing a 3d pose.
-struct Pose3 {
+struct CUMO_EXPORT Pose3 {
  public:
   //! Default constructor (set `rotation` identity and `translation` to zero).
   Pose3();
@@ -64,10 +65,10 @@ struct Pose3 {
       const Eigen::Matrix<double, 3, Eigen::Dynamic> &vectors) const;
 
   //! Compose poses via * operator.
-  friend Pose3 operator*(const Pose3 &lhs, const Pose3 &rhs);
+  friend CUMO_EXPORT Pose3 operator*(const Pose3 &lhs, const Pose3 &rhs);
 
   //! Transforms a vector by the given pose.
-  friend Eigen::Vector3d operator*(const Pose3 &pose, const Eigen::Vector3d &vector);
+  friend CUMO_EXPORT Eigen::Vector3d operator*(const Pose3 &pose, const Eigen::Vector3d &vector);
 
   //! Rotation component of pose.
   Rotation3 rotation;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -79,8 +79,8 @@ if __name__ == '__main__':
     robot_description = cumotion.load_robot_from_file(xrdf_path, urdf_path)
 
     # Print some basic information about the robot to console.
-    print('Number of C-space coordinates: {}'.format(robot_description.num_cspace_coords()))
-    print('Joint names: ')
+    print('Number of c-space coordinates: {}'.format(robot_description.num_cspace_coords()))
+    print('C-space names: ')
     for i in range(0, robot_description.num_cspace_coords()):
         print('  [{}] {}'.format(i, robot_description.cspace_coord_name(i)))
 
@@ -91,7 +91,6 @@ if __name__ == '__main__':
     # Create RMPflow configuration.
     rmpflow_config = cumotion.create_rmpflow_config_from_file(rmpflow_config_path,
                                                               robot_description,
-                                                              end_effector_frame_name,
                                                               world_view)
 
     # Create RMPflow policy.
@@ -116,13 +115,14 @@ if __name__ == '__main__':
     world_view.update()
 
     # Set end effector position target.
+    rmpflow.add_target_frame(end_effector_frame_name)
     end_effector_position_target = np.array([0.8, 0.0, 0.35])
-    rmpflow.set_end_effector_position_attractor(end_effector_position_target)
+    rmpflow.set_position_target(end_effector_frame_name, end_effector_position_target)
 
     # Set initial state and acceleration for robot.
-    joint_position = np.zeros(7)
-    joint_velocity = np.zeros(7)
-    joint_accel = np.zeros(7)
+    cspace_position = np.zeros(7)
+    cspace_velocity = np.zeros(7)
+    cspace_accel = np.zeros(7)
 
     # Set timing for policy execution.
     total_time = 60.0  # seconds
@@ -136,7 +136,7 @@ if __name__ == '__main__':
         # Add robot arm visualization to scene
         mesh_folder = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka', 'meshes')
         franka_visualization = FrankaVisualization(
-            robot_description, mesh_folder, visualizer, joint_position)
+            robot_description, mesh_folder, visualizer, cspace_position)
 
         # Add visualization marker for end effector target position to scene.
         # Note: The visualization handle is saved so that the position can be updated later.
@@ -176,35 +176,35 @@ if __name__ == '__main__':
     while time < total_time:
         # Update target position.
         end_effector_position_target[1] = 0.5 * np.sin(0.5 * time)
-        rmpflow.set_end_effector_position_attractor(end_effector_position_target)
+        rmpflow.set_position_target(end_effector_frame_name, end_effector_position_target)
 
-        # Evaluate acceleration from joint state.
-        rmpflow.eval_accel(joint_position, joint_velocity, joint_accel)
+        # Evaluate acceleration from c-space state.
+        rmpflow.eval_accel(cspace_position, cspace_velocity, cspace_accel)
 
         # Update world view to reflect any changes to obstacles. For cases where obstacles have NOT
         # changed, this call is very low overhead.
         world_view.update()
 
         # Update position and velocity with Euler integration.
-        joint_position += timestep * joint_velocity
-        joint_velocity += timestep * joint_accel
+        cspace_position += timestep * cspace_velocity
+        cspace_velocity += timestep * cspace_accel
 
         # If the visualization window has not been manually closed, update visualization and add
         # delay to approximate real-time visualization.
         if ENABLE_VIS and visualizer.is_active():
             visualizer.set_position(target_handle, end_effector_position_target)
-            franka_visualization.set_joint_positions(joint_position)
+            franka_visualization.set_joint_positions(cspace_position)
             visualizer.update()
             sleep(timestep)
 
         if verbose:
-            print("position: ", joint_position)
+            print("c-space position: ", cspace_position)
 
         time += timestep
 
     np.set_printoptions(linewidth=200)
-    expected_final_position = np.array(
+    expected_final_cspace_position = np.array(
         [-0.45364672, 1.21257119, -0.34068849, -0.60333264, -0.35049334, 2.9215992, 0.7503792])
-    print("Final position: ", joint_position)
-    success = np.allclose(joint_position, expected_final_position, atol=1e-6)
+    print("Final c-space position: ", cspace_position)
+    success = np.allclose(cspace_position, expected_final_cspace_position, atol=1e-6)
     cumotion_print_status(success)

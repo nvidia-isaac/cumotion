@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2019-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2019-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -19,6 +19,7 @@
 #include <ostream>
 #include <string>
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/version.h"
 
 namespace cumotion {
@@ -28,10 +29,18 @@ namespace cumotion {
 //! Also see the `CUMOTION_VERSION_STRING` macro, which serves a similar purpose.  The two should
 //! always agree.  If they don't, it indicates a mismatch between the installed cuMotion headers
 //! and installed cuMotion libraries.
-std::string VersionString();
+CUMO_EXPORT std::string VersionString();
+
+// On Windows, `wingdi.h` (included transitively via `windows.h` and certain CUDA headers)
+// contains a `#define ERROR 0` that collides with the `LogLevel::ERROR` enum value.
+// The following temporarily undefines the macro.
+#ifdef _WIN32
+#  pragma push_macro("ERROR")
+#  undef ERROR
+#endif
 
 //! @brief Logging levels, ordered from least to most verbose.
-enum class LogLevel {
+enum class CUMO_EXPORT LogLevel {
   FATAL,    //!< Logging level for nonrecoverable errors (minimum level, so always enabled).
   ERROR,    //!< Logging level for recoverable errors.
   WARNING,  //!< Logging level for warnings, indicating possible cause for concern.
@@ -39,11 +48,15 @@ enum class LogLevel {
   VERBOSE   //!< Logging level for highly verbose informational messages.
 };
 
+#ifdef _WIN32
+#  pragma pop_macro("ERROR")
+#endif
+
 //! @brief Base class for user-defined logger that allows custom handling of log messages, warnings,
 //! and errors.
 //!
 //! Such a custom logger may be installed via `SetLogger()`.
-class Logger {
+class CUMO_EXPORT Logger {
  public:
   virtual ~Logger() = default;
 
@@ -67,10 +80,11 @@ class Logger {
 //!
 //! This is the only exception thrown by cuMotion, so clients may avoid exceptions completely by
 //! installing a custom logger.
-class FatalException : public std::exception {
+class CUMO_EXPORT FatalException : public std::exception {
  public:
-  explicit FatalException(const std::string& message) : message_(message) {}
-  [[nodiscard]] const char* what() const noexcept override { return message_.c_str(); }
+  explicit FatalException(const std::string &message) : message_(message) {}
+
+  [[nodiscard]] const char *what() const noexcept override { return message_.c_str(); }
 
  private:
   std::string message_;
@@ -83,13 +97,13 @@ class FatalException : public std::exception {
 //!
 //! Until `SetLogLevel()` is called, the default log level is `WARNING`.  The lowest supported
 //! `log_level` is `FATAL`, since it is not possible to supress fatal errors.
-void SetLogLevel(LogLevel log_level);
+CUMO_EXPORT void SetLogLevel(LogLevel log_level);
 
 //! @brief Install a custom logger, derived from the above `Logger` class.
 //!
 //! If `logger` is a null pointer, then the default logger is reenabled.  The default logger
 //! directs all output to stdout and throws a `FatalException` in the event of a fatal error.
-void SetLogger(std::shared_ptr<Logger> logger = nullptr);
+CUMO_EXPORT void SetLogger(std::shared_ptr<Logger> logger = nullptr);
 
 //! Set color/style used by the default logger for messages of a given `log_level`.  The `style`
 //! string may contain one or more ANSI control sequences (e.g., enabling fatal error messages to
@@ -97,13 +111,13 @@ void SetLogger(std::shared_ptr<Logger> logger = nullptr);
 //!
 //! For convenience, a selection of common control sequences is provided in
 //! include/cumotion/text_style.h
-void SetDefaultLoggerTextStyle(LogLevel log_level, const std::string &style);
+CUMO_EXPORT void SetDefaultLoggerTextStyle(LogLevel log_level, const std::string &style);
 
 //! Set prefix used by the default logger for all messages. The `prefix` string is logged after
 //! the `style` string set for each `log_level` by `SetDefaultLoggerTextStyle()` and prior to the
 //! content of the logged message.
 //!
 //! The default prefix is an empty string.
-void SetDefaultLoggerPrefix(const std::string &prefix);
+CUMO_EXPORT void SetDefaultLoggerPrefix(const std::string &prefix);
 
 }  // namespace cumotion

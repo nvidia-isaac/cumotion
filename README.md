@@ -51,19 +51,18 @@ See the [documentation](https://nvidia-isaac.github.io/cumotion/) for a full ove
 # System Requirements
 
 The current release of the cuMotion library is provided as a set of shared object files and Python wheel files
-for the following platform configurations.
+for both Linux and Windows on x86-based computers, as well Jetson Orin, Jetson Thor, and DGX Spark.
 
-| Platform                              | Python | CUDA | Tested OS     | Download |
-|---------------------------------------|--------|------|---------------|----------|
-| Jetson Orin                           | 3.10   | 12.6 | JetPack 6.2.1 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.10-cuda12.6-aarch64.tar.gz) |
-| Jetson Thor                           | 3.12   | 13.0 | JetPack 7.0   | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.12-cuda13.0-aarch64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 3.10   | 12.6 | Ubuntu 22.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.10-cuda12.6-x86_64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 3.12   | 13.0 | Ubuntu 24.04  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.0.0/cumotion-1.0.0-python3.12-cuda13.0-x86_64.tar.gz) |
-
-Only Linux-based operating systems are supported in the current release.
+* Under Linux, the library is compatible with GCC 11.4 and later (corresponding to `libstdc++` symbol version
+  `GLIBCXX_3.4.30`).  It has been tested on Ubuntu 22.04 and 24.04.
+* Under Windows, the library is compatible with the Visual Studio 2019 toolchain and later.
+* On both platforms, Python wheel files are provided for all
+  [actively-supported Python versions](https://devguide.python.org/versions/) at the time of release, currently
+  consisting of Python 3.10 through 3.14, inclusive.
 
 The software has been tested on Jetson AGX Orin and Jetson AGX Thor but is expected to work on other Jetson
-Orin configurations (e.g., Jetson Orin NX).
+Orin configurations (e.g., Jetson Orin NX).  The Jetson Thor (CUDA 13.0) package has also been optimized for
+and tested on DGX Spark.
 
 On x86-based computers, an NVIDIA GPU of the Turing generation (e.g., GeForce RTX 2080) or later is required.
 For optimal performance on Blackwell GPUs (e.g., RTX PRO 6000, GeForce RTX 5080), the CUDA 13 variant of the
@@ -71,17 +70,33 @@ cuMotion package is recommended.  See the
 [CUDA Toolkit Release Notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/#cuda-driver)
 for details on the minimum GPU driver version required for a given CUDA version.
 
+## Linux
+
+| Platform                              | CUDA | Tested OS                | Download |
+|---------------------------------------|------|--------------------------|----------|
+| Jetson Orin                           | 12.6 | JetPack 6.2.1            | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda12.6-aarch64.tar.gz) |
+| Jetson Thor <br>DGX Spark             | 13.0 | JetPack 7.0 <br>DGX OS 7 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-aarch64.tar.gz) |
+| x86_64 + NVIDIA GPU (Turing or later) | 12.6 | Ubuntu 22.04             | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda12.6-x86_64.tar.gz) |
+| x86_64 + NVIDIA GPU (Turing or later) | 13.0 | Ubuntu 24.04             | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-x86_64.tar.gz) |
+
+## Microsoft Windows
+
+| Platform                              | CUDA | Tested OS                | Download |
+|---------------------------------------|------|--------------------------|----------|
+| x86_64 + NVIDIA GPU (Turing or later) | 13.0 | Microsoft Windows 10/11  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-windows-x86_64.zip) |
+
 # Installation
 
 Download the cuMotion package for your desired platform from
-[Releases](https://github.com/nvidia-isaac/cumotion/releases) and extract the contents:
+[Releases](https://github.com/nvidia-isaac/cumotion/releases) and extract the contents,
+for example on Linux,
 
 ```
-tar xzvf cumotion-<version>-<python_version>-<cuda_version>-<arch>.tar.gz && \
+tar xzvf cumotion-<version>-<cuda_version>-<arch>.tar.gz && \
     cd cumotion-<version>-<python_version>-<cuda_version>-<arch>
 ```
 
 See [Getting Started](https://nvidia-isaac.github.io/cumotion/getting_started.html) for more details.
 
 ___
-Copyright &copy; 2019-2025 NVIDIA Corporation & Affiliates
+Copyright &copy; 2019-2026 NVIDIA Corporation & Affiliates

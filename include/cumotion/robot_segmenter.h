@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2024-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2024-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -23,6 +23,7 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/pose3.h"
 #include "cumotion/robot_description.h"
 #include "cumotion/vision.h"
@@ -30,7 +31,7 @@
 namespace cumotion {
 
 //! Interface class for segmenting (masking) out the contribution of a robot from a depth image.
-class RobotSegmenter {
+class CUMO_EXPORT RobotSegmenter {
  public:
   enum class RobotGeometryKind {
     SELF_COLLISION_SPHERES,   //!< Use self-collision spheres for robot segmentation.
@@ -107,7 +108,7 @@ class RobotSegmenter {
 //!
 //! A fatal error will be logged if the `camera_intrinsics` are not in the four-parameter "pinhole"
 //! format (with zero skew).
-std::unique_ptr<RobotSegmenter>
+CUMO_EXPORT std::unique_ptr<RobotSegmenter>
 CreateRobotSegmenter(const RobotDescription &robot_description,
                      const CameraIntrinsics &camera_intrinsics,
                      double additional_buffer_distance = 0.0,

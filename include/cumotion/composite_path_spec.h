@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -13,14 +13,17 @@
 
 #include <memory>
 
+#include "Eigen/Core"
+
 #include "cumotion/cspace_path_spec.h"
+#include "cumotion/cumotion_export.h"
 #include "cumotion/task_space_path_spec.h"
 
 namespace cumotion {
 
 //! The `CompositePathSpec` is used to procedurally composite `CSpacePathSpec` and
 //! `TaskSpacePathSpec` segments into a single path specification.
-class CompositePathSpec {
+class CUMO_EXPORT CompositePathSpec {
  public:
   virtual ~CompositePathSpec() = default;
 
@@ -118,7 +121,7 @@ class CompositePathSpec {
 };
 
 //! Create a `CompositePathSpec` with the specified `initial_cspace_position`.
-std::unique_ptr<CompositePathSpec>
-CreateCompositePathSpec(const Eigen::VectorXd &initial_cspace_position);
+CUMO_EXPORT std::unique_ptr<CompositePathSpec> CreateCompositePathSpec(
+    const Eigen::VectorXd &initial_cspace_position);
 
 }  // namespace cumotion

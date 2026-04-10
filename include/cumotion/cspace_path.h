@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -13,13 +13,15 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Represent a path through configuration space (i.e., c-space or "joint space").
 //!
 //! This path is parameterized by independent variable `s` and is generally expected to be
 //! continuous, but not necessarily smooth.
-class CSpacePath {
+class CUMO_EXPORT CSpacePath {
  public:
   virtual ~CSpacePath() = default;
 
@@ -27,7 +29,7 @@ class CSpacePath {
   virtual int numCSpaceCoords() const = 0;
 
   //! Indicates continuous range of independent values, `s`, for which the path is defined.
-  struct Domain {
+  struct CUMO_EXPORT Domain {
     //! Minimum value of `s` defining domain.
     double lower;
 

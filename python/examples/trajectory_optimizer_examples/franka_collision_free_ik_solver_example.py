@@ -137,6 +137,10 @@ def main():
                                                                      end_effector_frame_name,
                                                                      world_view)
 
+    # Increase the number of seeds so that statistics help ensure the check that there are more
+    # solutions in an empty world than one with an obstacle.
+    config.set_param("num_seeds", 36)
+
     # Create a collision-free IK solver.
     ik_solver = cumotion.create_collision_free_ik_solver(config)
 
@@ -156,7 +160,12 @@ def main():
     # Solve IK, expecting multiple distinct c-space solutions.
     results = ik_solver.solve(task_space_target)
     success = results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-    print("Found {} distinct IK solutions.".format(len(results.cspace_positions())))
+    print("Collision-free IK with no obstacles:")
+    print("  - Found {} distinct IK solutions.".format(len(results.cspace_positions())))
+    print("  - Static visualization will remain open until manually closed.")
+
+    # Visualize c-space solutions with no cuboid obstacle added.
+    visualize_franka_ik_solutions(robot_description, results.cspace_positions(), target_pose)
 
     # Add a cuboid obstacle to the `world`.
     cuboid_side_lengths = np.array([0.5, 0.35, 0.8])
@@ -173,10 +182,9 @@ def main():
     results_with_cuboid = ik_solver.solve(task_space_target)
     if results_with_cuboid.status() != cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS:
         success = False
-    print("Found {} distinct IK solutions.".format(len(results_with_cuboid.cspace_positions())))
-
-    # Visualize c-space solutions with no cuboid obstacle added.
-    visualize_franka_ik_solutions(robot_description, results.cspace_positions(), target_pose)
+    print("Collision-free IK with cuboid obstacle:")
+    print("  - Found {} distinct IK solutions.".format(len(results_with_cuboid.cspace_positions())))
+    print("  - Static visualization will remain open until manually closed.")
 
     # Visualize c-space solutions with cuboid obstacle added.
     visualize_franka_ik_solutions(robot_description,

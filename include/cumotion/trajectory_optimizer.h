@@ -1,4 +1,5 @@
-// SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+// SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES.
+//                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
 // NVIDIA CORPORATION, its affiliates and licensors retain all intellectual
@@ -17,6 +18,7 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/robot_description.h"
 #include "cumotion/rotation3.h"
 #include "cumotion/trajectory.h"
@@ -25,7 +27,7 @@
 namespace cumotion {
 
 //! Configuration parameters for a `TrajectoryOptimizer`.
-class TrajectoryOptimizerConfig {
+class CUMO_EXPORT TrajectoryOptimizerConfig {
  public:
   virtual ~TrajectoryOptimizerConfig() = default;
 
@@ -33,7 +35,7 @@ class TrajectoryOptimizerConfig {
   //!
   //! The required `ParamValue` constructor for each param is detailed in the
   //! documentation for `setParam()`.
-  struct ParamValue {
+  struct CUMO_EXPORT ParamValue {
     //! Create `ParamValue` from `int`.
     ParamValue(int value);  // NOLINT Allow implicit conversion
     //! Create `ParamValue` from `double`.
@@ -96,7 +98,7 @@ class TrajectoryOptimizerConfig {
   //!     optimizes them to find diverse collision-free configurations for the desired tool pose.
   //!     Higher values increase the likelihood of finding valid solutions but increase
   //!     computational cost.
-  //!   - A default value of 25 is recommended for most use-cases.
+  //!   - A default value of 32 is recommended for most use-cases.
   //!   - Must be positive.
   //!
   //! `ik/max_reattempts` [`int`]
@@ -119,7 +121,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space position error violations at tool-frame constraints
   //!     during PBO IK optimization.
   //!   - Higher values more strongly enforce exact position matching at goal targets.
-  //!   - A default value of `100.0` is recommended for most use-cases.
+  //!   - A default value of `10000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/tool_frame_position_error_penalty/activation_distance` [`double`]
@@ -142,7 +144,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space orientation error violations at tool-frame
   //!     constraints during PBO IK optimization.
   //!   - Higher values more strongly enforce exact orientation matching at goal targets.
-  //!   - A default value of `10.0` is recommended for most use-cases.
+  //!   - A default value of `5000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/tool_frame_orientation_error_penalty/activation_distance` [`double`]
@@ -165,14 +167,14 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied when IK solutions violate c-space position limits, minus the
   //!     activation distance, during Particle-Based Optimizer (PBO) IK optimization.
   //!   - Higher values more strongly discourage solutions near joint limits.
-  //!   - A default value of 10.0 is recommended for most use-cases.
+  //!   - A default value of 5000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/cspace_position_limit_penalty/activation_distance` [`double`]
   //!   - Distance threshold from c-space position limits at which the position limit penalty
   //!     activates, during PBO IK optimization.
   //!   - Units correspond to rad for revolute joints, m for prismatic joints.
-  //!   - A default value equivalent to 5 degrees is recommended for most use-cases.
+  //!   - A default value of 0.05 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/enable_cspace_position_limit` [`bool`]
@@ -186,7 +188,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in self-colliding robot configurations during PBO IK optimization.
   //!   - Higher values more strongly discourage self-colliding configurations.
   //!   - This parameter is only used when `enable_self_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 500.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/self_collision_penalty/activation_distance` [`double`]
@@ -202,7 +204,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in world-colliding robot configurations during PBO IK optimization.
   //!   - Higher values more strongly discourage configurations that collide with obstacles.
   //!   - This parameter is only used when `enable_world_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 500.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/pbo/cost/world_collision_penalty/activation_distance` [`double`]
@@ -211,14 +213,14 @@ class TrajectoryOptimizerConfig {
   //!   - The penalty becomes non-zero when robot collision geometries are within this distance of
   //!     obstacles.
   //!   - Units are in meters.
-  //!   - A default value of 0.01 m (1 cm) is recommended for most use-cases.
+  //!   - A default value of 0.035 m is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/lbfgs/cost/tool_frame_position_error_penalty/weight` [`double`]
   //!   - Penalty weight applied in task-space position error violations at tool-frame constraints
   //!     during L-BFGS IK optimization.
   //!   - Higher values more strongly enforce exact position matching at goal targets.
-  //!   - A default value of `100.0` is recommended for most use-cases.
+  //!   - A default value of `10000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/lbfgs/cost/tool_frame_position_error_penalty/activation_distance` [`double`]
@@ -241,7 +243,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space orientation error violations at tool-frame
   //!     constraints during L-BFGS IK optimization.
   //!   - Higher values more strongly enforce exact orientation matching at goal targets.
-  //!   - A default value of `10.0` is recommended for most use-cases.
+  //!   - A default value of `5000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/lbfgs/cost/tool_frame_orientation_error_penalty/activation_distance` [`double`]
@@ -264,7 +266,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied when IK solutions violate c-space position limits, minus the
   //!     activation distance, during L-BFGS IK optimization.
   //!   - Higher values more strongly discourage solutions near joint limits.
-  //!   - A default value of 10.0 is recommended for most use-cases.
+  //!   - A default value of 100.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `ik/lbfgs/cost/cspace_position_limit_penalty/activation_distance` [`double`]
@@ -312,8 +314,15 @@ class TrajectoryOptimizerConfig {
   //!   - The penalty becomes non-zero when robot collision geometries are within this distance of
   //!     obstacles.
   //!   - Units are in meters.
-  //!   - A default value of 0.01 m (1 cm) is recommended for most use-cases.
+  //!   - A default value of 0.001 m (1 mm) is recommended for most use-cases.
   //!   - Must be non-negative.
+  //!
+  //! `ik/lbfgs/max_iterations` [`int`]
+  //!   - Maximum number of L-BFGS iterations for the inverse kinematics solver.
+  //!   - Higher values allow the IK solver to converge more precisely but increase computational
+  //!     cost per IK attempt.
+  //!   - A default value of 100 is recommended for most use-cases.
+  //!   - Must be positive.
   //!
   //! `trajopt/num_seeds` [`int`]
   //!   - Number of seeds used to solve the trajectory optimization problem.
@@ -328,7 +337,7 @@ class TrajectoryOptimizerConfig {
   //!   - This parameter controls the temporal resolution of the optimized trajectory, where higher
   //!     values provide finer temporal resolution but increase computational cost.
   //!   - A default value of 32 is recommended for most use-cases.
-  //!   - Must be positive.
+  //!   - Must be greater than or equal to 4.
   //!
   //! `trajopt/pbo/enabled` [`bool`]
   //!   - Enable or disable Particle-Based Optimizer (PBO) for the trajectory optimization problem.
@@ -363,7 +372,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space position error violations at tool-frame path
   //!     constraints during PBO trajectory optimization for non-terminal knot points.
   //!   - Higher values more strongly enforce exact position matching at goal targets.
-  //!   - A default value of `100.0` is recommended for most use-cases.
+  //!   - A default value of `600.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/pbo/cost/path_position_error_penalty/activation_distance` [`double`]
@@ -475,7 +484,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in self-colliding robot configurations during PBO trajectory
   //!     optimization.
   //!   - This parameter is only used when `enable_self_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 100000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/pbo/cost/self_collision_penalty/activation_distance` [`double`]
@@ -491,7 +500,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in world-colliding robot configurations during PBO trajectory
   //!     optimization.
   //!   - This parameter is only used when `enable_world_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 5000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/pbo/cost/world_collision_penalty/activation_distance` [`double`]
@@ -500,7 +509,7 @@ class TrajectoryOptimizerConfig {
   //!   - The penalty becomes non-zero when robot collision geometries are within this distance of
   //!     obstacles.
   //!   - Units are in meters.
-  //!   - A default value of 0.01m (1cm) is recommended for most use-cases.
+  //!   - A default value of 0.025 m is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/pbo/cost/world_collision_max_sweep_steps` [`int`]
@@ -517,7 +526,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space position error violations at tool-frame path
   //!     constraints during L-BFGS trajectory optimization for non-terminal knot points.
   //!   - Higher values more strongly enforce exact position matching at goal targets.
-  //!   - A default value of `100.0` is recommended for most use-cases.
+  //!   - A default value of `50000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/path_position_error_penalty/activation_distance` [`double`]
@@ -540,7 +549,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in task-space path orientation error violations at tool-frame path
   //!     constraints during L-BFGS trajectory optimization.
   //!   - Higher values more strongly enforce exact orientation matching at goal targets.
-  //!   - A default value of `100.0` is recommended for most use-cases.
+  //!   - A default value of `10000.0` is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/path_orientation_error_penalty/activation_distance` [`double`]
@@ -563,7 +572,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in c-space position limit violations during L-BFGS trajectory
   //!     optimization.
   //!   - Higher values more strongly discourage trajectories that violate joint limits.
-  //!   - A default value of 10.0 is recommended for most use-cases.
+  //!   - A default value of 50000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/cspace_position_limit_penalty/activation_distance` [`double`]
@@ -577,7 +586,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in c-space velocity limit violations during L-BFGS trajectory
   //!     optimization.
   //!   - Higher values more strongly discourage trajectories with excessive joint velocities.
-  //!   - A default value of 10.0 is recommended for most use-cases.
+  //!   - A default value of 1000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/cspace_velocity_limit_penalty/activation_distance` [`double`]
@@ -590,7 +599,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in c-space acceleration limit violations during L-BFGS trajectory
   //!     optimization.
   //!   - Higher values more strongly discourage trajectories with excessive joint accelerations.
-  //!   - A default value of 10.0 is recommended for most use-cases.
+  //!   - A default value of 1000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/cspace_acceleration_limit_penalty/activation_distance` [`double`]
@@ -616,7 +625,7 @@ class TrajectoryOptimizerConfig {
   //!   - Weight applied to minimize c-space acceleration (smoothness regularization) during L-BFGS
   //!     trajectory optimization.
   //!   - Higher values encourage smoother trajectories by penalizing large accelerations.
-  //!   - A default value of 0.1 is recommended for most use-cases.
+  //!   - A default value of 10.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/cspace_jerk_smoothing_cost` [`double`]
@@ -630,7 +639,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in self-colliding robot configurations during L-BFGS trajectory
   //!     optimization.
   //!   - This parameter is only used when `enable_self_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 100000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/self_collision_penalty/activation_distance` [`double`]
@@ -646,7 +655,7 @@ class TrajectoryOptimizerConfig {
   //!   - Penalty weight applied in world-colliding robot configurations during L-BFGS trajectory
   //!     optimization.
   //!   - This parameter is only used when `enable_world_collision` is `true`.
-  //!   - A default value of 1000.0 is recommended for most use-cases.
+  //!   - A default value of 1000000.0 is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/world_collision_penalty/activation_distance` [`double`]
@@ -655,7 +664,7 @@ class TrajectoryOptimizerConfig {
   //!   - The penalty becomes non-zero when robot collision geometries are within this distance of
   //!     obstacles.
   //!   - Units are in meters.
-  //!   - A default value of 0.01 m (1 cm) is recommended for most use-cases.
+  //!   - A default value of 0.015 m is recommended for most use-cases.
   //!   - Must be non-negative.
   //!
   //! `trajopt/lbfgs/cost/world_collision_max_sweep_steps` [`int`]
@@ -667,6 +676,20 @@ class TrajectoryOptimizerConfig {
   //!   - This parameter is only used when `enable_world_collision` is `true`.
   //!   - A default value of 5 is recommended for most use-cases.
   //!   - Must be non-negative.
+  //!
+  //! `trajopt/lbfgs/history_length` [`int`]
+  //!   - Number of past iterations stored by the L-BFGS algorithm to approximate the inverse
+  //!     Hessian during trajectory optimization.
+  //!   - Larger values may improve convergence quality but increase memory usage and per-iteration
+  //!     computational cost.
+  //!   - A default value of 5 is recommended for most use-cases.
+  //!   - Must be less than or equal to the number of optimization variables in the trajectory
+  //!     optimization problem, calculated as
+  //!     `RobotDescription::numCSpaceCoords() * ('trajopt/num_knots_per_trajectory' - 2)`.
+  //!     This value is automatically clamped to not exceed the number of optimization variables, if
+  //!     setting any other parameter (e.g., 'trajopt/num_knots_per_trajectory') reduces the upper
+  //!     bound.
+  //!   - Must be positive.
   //!
   //! `trajopt/lbfgs/initial_iterations` [`int`]
   //! - Number of L-BFGS iterations used to solve the initial trajectory optimization problem.
@@ -778,7 +801,8 @@ class TrajectoryOptimizerConfig {
 //!   5. `tool_frame_name` is not a valid frame in `robot_description`.
 //!
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-[[nodiscard]] std::unique_ptr<TrajectoryOptimizerConfig> CreateTrajectoryOptimizerConfigFromFile(
+[[nodiscard]] CUMO_EXPORT std::unique_ptr<TrajectoryOptimizerConfig>
+CreateTrajectoryOptimizerConfigFromFile(
     const std::filesystem::path &trajectory_optimizer_config_file,
     const RobotDescription &robot_description,
     const std::string &tool_frame_name,
@@ -794,17 +818,17 @@ class TrajectoryOptimizerConfig {
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //!
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-[[nodiscard]] std::unique_ptr<TrajectoryOptimizerConfig> CreateDefaultTrajectoryOptimizerConfig(
-    const RobotDescription &robot_description,
-    const std::string &tool_frame_name,
-    const WorldViewHandle &world_view);
+[[nodiscard]] CUMO_EXPORT std::unique_ptr<TrajectoryOptimizerConfig>
+CreateDefaultTrajectoryOptimizerConfig(const RobotDescription &robot_description,
+                                       const std::string &tool_frame_name,
+                                       const WorldViewHandle &world_view);
 
 //! Interface for using numerical optimization to generate collision-free trajectories for a robot.
 //!
 //! \rst
 //! See documentation for corresponding :py:class:`Python class <cumotion.TrajectoryOptimizer>`.
 //! \endrst
-class TrajectoryOptimizer {
+class CUMO_EXPORT TrajectoryOptimizer {
  public:
   virtual ~TrajectoryOptimizer() = default;
 
@@ -812,7 +836,7 @@ class TrajectoryOptimizer {
   //!
   //! These constraints are always active at the terminal point of the trajectory; partial
   //! constraints may be active along the path.
-  class TranslationConstraint {
+  class CUMO_EXPORT TranslationConstraint {
    public:
     //! Create a `TranslationConstraint` such that a `translation_target` is specified at
     //! termination, but no translation constraints are active along the path.
@@ -884,7 +908,7 @@ class TrajectoryOptimizer {
   //! For goalset planning, a set of `TranslationConstraint`s are considered concurrently. Each
   //! `TranslationConstraint` in the goalset must have the same mode (e.g., "terminal target
   //! with linear path constraint") but may have different data for each `TranslationConstraint`.
-  class TranslationConstraintGoalset {
+  class CUMO_EXPORT TranslationConstraintGoalset {
    public:
     //! Create a `TranslationConstraintGoalset` such that `translation_targets` are specified at
     //! termination, but no translation constraints are active along the path.
@@ -895,8 +919,8 @@ class TrajectoryOptimizer {
     //!   1. Any condition of `TranslationConstraint::Target()` is not met, *OR*
     //!   2. `translation_targets` is empty.
     static TranslationConstraintGoalset Target(
-      const std::vector<Eigen::Vector3d> &translation_targets,
-      const double *terminal_deviation_limit = nullptr);
+        const std::vector<Eigen::Vector3d> &translation_targets,
+        const double *terminal_deviation_limit = nullptr);
 
     //! Create a `TranslationConstraintGoalset` such that `translation_targets` are specified at
     //! termination *AND* linear translation constraints are active along the path.
@@ -919,7 +943,7 @@ class TrajectoryOptimizer {
   //!
   //! These constraints may be active at the terminal point of the trajectory and/or along the path.
   //! Each constraint may fully or partially constrain the orientation.
-  class OrientationConstraint {
+  class CUMO_EXPORT OrientationConstraint {
    public:
     //! Create an `OrientationConstraint` such that no tool frame orientation constraints are
     //! active along the path *OR* at termination.
@@ -1112,10 +1136,10 @@ class TrajectoryOptimizer {
     //!
     //! NOTE: `tool_frame_axis` and `world_target_axis` inputs will be normalized.
     static OrientationConstraint TerminalAndPathAxis(
-       const Eigen::Vector3d &tool_frame_axis,
-       const Eigen::Vector3d &world_target_axis,
-       const double *path_axis_deviation_limit = nullptr,
-       const double *terminal_axis_deviation_limit = nullptr);
+        const Eigen::Vector3d &tool_frame_axis,
+        const Eigen::Vector3d &world_target_axis,
+        const double *path_axis_deviation_limit = nullptr,
+        const double *terminal_axis_deviation_limit = nullptr);
 
     //! Create an `OrientationConstraint` such that a tool frame `terminal_orientation_target` is
     //! specified at termination, *AND* the tool frame orientation is constrained to rotate
@@ -1185,7 +1209,7 @@ class TrajectoryOptimizer {
   //! `OrientationConstraint` in the goalset must have the same mode (e.g., "full terminal target
   //! with free axis path constraint"), but may have different data for each
   //! `OrientationConstraint`.
-  class OrientationConstraintGoalset {
+  class CUMO_EXPORT OrientationConstraintGoalset {
    public:
     //! Create an `OrientationConstraintGoalset` such that no tool frame orientation constraints
     //! are active along the path *OR* at termination.
@@ -1223,9 +1247,9 @@ class TrajectoryOptimizer {
     //!   1. Any condition of `OrientationConstraint::TerminalAndPathTarget()` is not met, *OR*
     //!   2. `orientation_targets` is empty.
     static OrientationConstraintGoalset TerminalAndPathTarget(
-       const std::vector<Rotation3> &orientation_targets,
-       const double *path_deviation_limit = nullptr,
-       const double *terminal_deviation_limit = nullptr);
+        const std::vector<Rotation3> &orientation_targets,
+        const double *path_deviation_limit = nullptr,
+        const double *terminal_deviation_limit = nullptr);
 
     //! Create an `OrientationConstraintGoalset` such that the terminal tool frame orientation is
     //! constrained to rotate about a "free axis", but no orientation constraints are active along
@@ -1281,11 +1305,11 @@ class TrajectoryOptimizer {
 
   //! Task-space targets restrict the position and (optionally) orientation of the tool frame at the
   //! termination of a trajectory and (optionally) along the path.
-  struct TaskSpaceTarget {
+  struct CUMO_EXPORT TaskSpaceTarget {
     //! Create a task-space target.
-    explicit TaskSpaceTarget(const TranslationConstraint &translation_constraint,
-                             const OrientationConstraint &orientation_constraint =
-                                 OrientationConstraint::None());
+    explicit TaskSpaceTarget(
+        const TranslationConstraint &translation_constraint,
+        const OrientationConstraint &orientation_constraint = OrientationConstraint::None());
 
     struct Impl;
     std::shared_ptr<Impl> impl;
@@ -1297,7 +1321,7 @@ class TrajectoryOptimizer {
   //! constraint in the goalset must have the same mode (e.g., "terminal target
   //! with linear path constraint and no orientation constraints") but may have different data for
   //! each constraint.
-  struct TaskSpaceTargetGoalset {
+  struct CUMO_EXPORT TaskSpaceTargetGoalset {
     //! Create a task-space target goalset.
     //!
     //! A fatal error will be logged if:
@@ -1313,11 +1337,11 @@ class TrajectoryOptimizer {
 
   //! C-space targets fully restrict the c-space configuration at the termination of the trajectory
   //! while allowing (optional) task-space constraints along the path.
-  class CSpaceTarget {
+  class CUMO_EXPORT CSpaceTarget {
    public:
     //! Translation path constraints restrict the position of the origin of a tool frame along the
     //! path.
-    class TranslationPathConstraint {
+    class CUMO_EXPORT TranslationPathConstraint {
      public:
       //! Create a `TranslationPathConstraint` such that the position of the tool frame is not
       //! restricted along the path.
@@ -1354,7 +1378,7 @@ class TrajectoryOptimizer {
     };
 
     //! Orientation path constraints restrict the orientation of a tool frame along the path.
-    class OrientationPathConstraint {
+    class CUMO_EXPORT OrientationPathConstraint {
      public:
       //! Create a `OrientationPathConstraint` such that the orientation of the tool frame is not
       //! restricted along the path.
@@ -1448,7 +1472,7 @@ class TrajectoryOptimizer {
   };
 
   //! Results from a trajectory optimization.
-  class Results {
+  class CUMO_EXPORT Results {
    public:
     //! Indicate the success or failure of the trajectory optimization.
     enum class Status {
@@ -1460,6 +1484,14 @@ class TrajectoryOptimizer {
       //! NOTE: The `RobotWorldInspector` can be used to determine if this invalid state is
       //!       due to world-collision, self-collision, c-space position limit violations, etc.
       INVALID_INITIAL_CSPACE_POSITION,
+
+      //! Invalid target c-space position.
+      //!
+      //! Only applicable when planning to c-space targets.
+      //!
+      //! NOTE: The `RobotWorldInspector` can be used to determine if this invalid state is
+      //!       due to world-collision, self-collision, c-space position limit violations, etc.
+      INVALID_TARGET_CSPACE_POSITION,
 
       //! The c-space or task-space target specification is invalid.
       INVALID_TARGET_SPECIFICATION,
@@ -1484,8 +1516,9 @@ class TrajectoryOptimizer {
 
     //! If `status()` returns `SUCCESS`, then `trajectory()` returns a valid `Trajectory`.
     //!
-    //! If `status()` returns `INVALID_INITIAL_CSPACE_POSITION`, `INVALID_TARGET_SPECIFICATION`,
-    //! or `INVERSE_KINEMATICS_FAILURE`, then `nullptr` will be returned.
+    //! If `status()` returns `INVALID_INITIAL_CSPACE_POSITION`,
+    //! `INVALID_TARGET_CSPACE_POSITION`, `INVALID_TARGET_SPECIFICATION`, or
+    //! `INVERSE_KINEMATICS_FAILURE`, then `nullptr` will be returned.
     //!
     //! If `status()` returns `GEOMETRIC_PLANNING_FAILURE` or `TRAJECTORY_OPTIMIZATION_FAILURE`,
     //! then the lowest-cost (but *invalid*) `Trajectory` will be returned.
@@ -1520,7 +1553,7 @@ class TrajectoryOptimizer {
 };
 
 //! Create a `TrajectoryOptimizer` with the given `config`.
-std::unique_ptr<TrajectoryOptimizer>
-CreateTrajectoryOptimizer(const TrajectoryOptimizerConfig &config);
+CUMO_EXPORT std::unique_ptr<TrajectoryOptimizer> CreateTrajectoryOptimizer(
+    const TrajectoryOptimizerConfig &config);
 
 }  // namespace cumotion

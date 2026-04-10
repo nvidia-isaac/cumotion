@@ -99,8 +99,8 @@ def test_rotation3():
     rotation_a = cumotion.Rotation3.identity()
     rotation_b = cumotion.Rotation3.from_axis_angle(np.array([1.0, 0.0, 0.0]), angle)
     # Expect the same angle regardless of order in which rotations are passed in.
-    assert angle == cumotion.Rotation3.distance(rotation_a, rotation_b)
-    assert angle == cumotion.Rotation3.distance(rotation_b, rotation_a)
+    assert angle == pytest.approx(cumotion.Rotation3.distance(rotation_a, rotation_b))
+    assert angle == pytest.approx(cumotion.Rotation3.distance(rotation_b, rotation_a))
     # Expect the angle between a rotations and itself to be zero.
     assert 0.0 == cumotion.Rotation3.distance(rotation_a, rotation_a)
     assert 0.0 == cumotion.Rotation3.distance(rotation_b, rotation_b)

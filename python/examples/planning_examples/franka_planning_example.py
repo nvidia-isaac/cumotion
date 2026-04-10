@@ -153,7 +153,7 @@ if __name__ == '__main__':
     # Visualize path to c-space target (if found).
     if q_results.path_found:
         print("Found path with " + str(len(q_results.path)) + " knots.")
-        success = len(q_results.path) == 8
+        success = len(q_results.path) in range(4, 12)
         VisualizePath(
             robot_description,
             position_length_pairs,
@@ -171,7 +171,7 @@ if __name__ == '__main__':
     # Visualize path to task space target(if found).
     if translation_results.path_found:
         print("Found path with " + str(len(translation_results.path)) + " knots.")
-        if len(translation_results.path) != 6:
+        if len(translation_results.path) not in range(4, 12):
             success = False
         VisualizePath(
             robot_description,

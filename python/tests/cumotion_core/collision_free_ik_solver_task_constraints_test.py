@@ -1,4 +1,5 @@
-# SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES.
+#                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -75,9 +76,71 @@ def test_translation_constraint_goalset_target():
         cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target([])
 
 
+def test_translation_constraint_array_target():
+    """Test construction of a `TranslationConstraintArray` using `target()`."""
+    # Set arbitrary targets in 2D array format: [[problem_0], ... [problem_n]].
+    single_target = [[np.array([3.0, 7.0, -9.0])]]
+    goalset_targets = [[np.array([3.0, 7.0, -9.0]), np.array([2.0, 1.0, 8.0])]]
+    batch_targets = [[np.array([3.0, 7.0, -9.0])], [np.array([2.0, 1.0, 8.0])]]
+    targets_choices = [single_target, goalset_targets, batch_targets]
+
+    # Set deviation limits for testing.
+    no_limit = None
+    zero_limit = 0.0
+    positive_limit = 10.0
+    deviation_limits_choices = [no_limit, zero_limit, positive_limit]
+
+    for targets in targets_choices:
+        # Expect that translation constraints can be created with no deviation limit, zero deviation
+        # limit, and positive deviation limit.
+        for deviation_limit in deviation_limits_choices:
+            constraints = cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(
+                targets, deviation_limit)
+            # Verify `num_problems()` and `num_constraints()`.
+            assert constraints.num_problems() == len(targets)
+            for problem_index in range(constraints.num_problems()):
+                assert constraints.num_constraints(problem_index) == len(targets[problem_index])
+
+            # Expect *failure* for out-of-bounds problem index.
+            with pytest.raises(Exception):
+                constraints.num_constraints(-1)
+            with pytest.raises(Exception):
+                constraints.num_constraints(constraints.num_problems())
+
+    # Expect *failure* to create translation constraints with a negative deviation limit.
+    negative_limit = -10.0
+    for targets in targets_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(targets,
+                                                                             negative_limit)
+
+    # Expect *failure* to create translation constraints with invalid input vectors.
+    empty_outer_vector = []
+    empty_inner_vector = [[]]
+    batch_of_goalset_targets = [
+        [np.array([3.0, 7.0, -9.0]), np.array([2.0, 1.0, 8.0])],  # Problem 0: 2 targets (invalid).
+        [np.array([-1.0, 4.0, 5.0])]]                             # Problem 1: 1 target.
+    invalid_targets_choices = [empty_outer_vector, empty_inner_vector, batch_of_goalset_targets]
+    for invalid_targets in invalid_targets_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.TranslationConstraintArray.target(invalid_targets)
+
+
 def test_orientation_constraint_none():
     """Test construction of an `OrientationConstraint` using `none()`."""
     cumotion.CollisionFreeIkSolver.OrientationConstraint.none()
+
+
+def test_orientation_constraint_array_none():
+    """Test construction of an `OrientationConstraintArray` using `none()`."""
+    constraints = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.none()
+
+    # Expect `num_problems()` to return `None`.
+    assert constraints.num_problems() is None
+
+    # Expect `num_constraints()` to return `None` for any problem index.
+    for problem_index in [-1, 0, 100]:
+        assert constraints.num_constraints(problem_index) is None
 
 
 def test_orientation_constraint_target():
@@ -107,6 +170,60 @@ def test_orientation_constraint_target():
     # Expect *warning* when creating a target orientation constraint with a deviation limit
     # greater than pi.
     cumotion.CollisionFreeIkSolver.OrientationConstraint.target(target, large_positive_limit)
+
+
+def test_orientation_constraint_array_target():
+    """Test construction of an `OrientationConstraintArray` using `target()`."""
+    # Set arbitrary orientation targets in 2D array format: [[problem_0], ... [problem_n]].
+    single_target = [[cumotion.Rotation3.identity()]]
+    goalset_targets = [[cumotion.Rotation3.identity(), cumotion.Rotation3.identity()]]
+    batch_targets = [[cumotion.Rotation3.identity()], [cumotion.Rotation3.identity()]]
+    targets_choices = [single_target, goalset_targets, batch_targets]
+
+    # Set deviation limits for testing.
+    no_limit = None
+    zero_limit = 0.0
+    positive_limit = 10.0
+    deviation_limits_choices = [no_limit, zero_limit, positive_limit]
+
+    for targets in targets_choices:
+        for deviation_limit in deviation_limits_choices:
+            constraints = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(
+                targets, deviation_limit)
+            # Verify `num_problems()` and `num_constraints()`.
+            assert constraints.num_problems() == len(targets)
+            for problem_index in range(constraints.num_problems()):
+                assert constraints.num_constraints(problem_index) == len(targets[problem_index])
+
+            # Expect *failure* for out-of-bounds problem index.
+            with pytest.raises(Exception):
+                constraints.num_constraints(-1)
+            with pytest.raises(Exception):
+                constraints.num_constraints(constraints.num_problems())
+
+    # Expect *failure* to create orientation constraints with a negative deviation limit.
+    negative_limit = -10.0
+    for targets in targets_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(targets,
+                                                                             negative_limit)
+
+    # Expect *warning* when creating orientation constraints with a deviation limit greater than pi.
+    large_positive_limit = 6.0
+    for targets in targets_choices:
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(targets,
+                                                                         large_positive_limit)
+
+    # Expect *failure* to create orientation constraints with invalid input vectors.
+    empty_outer_vector = []
+    empty_inner_vector = [[]]
+    batch_of_goalset_targets = [
+        [cumotion.Rotation3.identity(), cumotion.Rotation3.identity()],  # 2 targets (invalid).
+        [cumotion.Rotation3.identity()]]                                 # 1 target.
+    invalid_targets_choices = [empty_outer_vector, empty_inner_vector, batch_of_goalset_targets]
+    for invalid_targets in invalid_targets_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.OrientationConstraintArray.target(invalid_targets)
 
 
 def test_orientation_constraint_axis():
@@ -159,6 +276,110 @@ def test_orientation_constraint_axis():
     with pytest.raises(Exception):
         cumotion.CollisionFreeIkSolver.OrientationConstraint.axis(
             tool_frame_axis, 1e-10 * np.array([1.0, 0.0, 0.0]))
+
+
+def test_orientation_constraint_array_axis():
+    """Test construction of an `OrientationConstraintArray` using `axis()`."""
+    # Set arbitrary, non-normalized target axes.
+    tool_axis_1 = np.array([5.0, 0.0, 0.0])
+    tool_axis_2 = np.array([0.0, 0.0, 7.0])
+    world_axis_1 = np.array([0.0, 3.0, 0.0])
+    world_axis_2 = np.array([0.0, -2.0, 0.0])
+
+    # Define arbitrary axes for the main use cases in 2D array format: [[problem_0], ...].
+    # Single-problem single-target planning.
+    single_tool_axes = [[tool_axis_1]]
+    single_world_axes = [[world_axis_1]]
+    # Single-problem goalset planning.
+    goalset_tool_axes = [[tool_axis_1, tool_axis_2]]
+    goalset_world_axes = [[world_axis_1, world_axis_2]]
+    # Single-target batch planning.
+    batch_tool_axes = [[tool_axis_1], [tool_axis_2]]
+    batch_world_axes = [[world_axis_1], [world_axis_2]]
+    axes_choices = [
+        (single_tool_axes, single_world_axes),
+        (goalset_tool_axes, goalset_world_axes),
+        (batch_tool_axes, batch_world_axes),
+    ]
+
+    # Set deviation limits for testing.
+    no_limit = None
+    zero_limit = 0.0
+    positive_limit = 1.0
+    deviation_limits_choices = [no_limit, zero_limit, positive_limit]
+
+    for tool_axes, world_axes in axes_choices:
+        for deviation_limit in deviation_limits_choices:
+            constraints = cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+                tool_axes, world_axes, deviation_limit)
+            # Verify `num_problems()` and `num_constraints()`.
+            assert constraints.num_problems() == len(tool_axes)
+            for problem_index in range(constraints.num_problems()):
+                assert constraints.num_constraints(problem_index) == len(tool_axes[problem_index])
+
+            # Expect *failure* for out-of-bounds problem index.
+            with pytest.raises(Exception):
+                constraints.num_constraints(-1)
+            with pytest.raises(Exception):
+                constraints.num_constraints(constraints.num_problems())
+
+    # Expect *failure* to create axis orientation constraints with a negative deviation limit.
+    negative_limit = -1.0
+    for tool_axes, world_axes in axes_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+                tool_axes, world_axes, negative_limit)
+
+    # Expect *warning* when creating axis orientation constraints with a deviation limit greater
+    # than pi.
+    large_positive_limit = 6.0
+    for tool_axes, world_axes in axes_choices:
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            tool_axes, world_axes, large_positive_limit)
+
+    # Expect *failure* to create axis orientation constraints with invalid input vectors.
+    empty_outer_vector = []
+    empty_inner_vector = [[]]
+    batch_of_goalset_tool_axes = [
+        [tool_axis_1, tool_axis_2],  # Problem 0: 2 axes (invalid).
+        [tool_axis_1]]               # Problem 1: 1 axis.
+    batch_of_goalset_world_axes = [
+        [world_axis_1, world_axis_2],  # Problem 0: 2 axes (invalid).
+        [world_axis_1]]                # Problem 1: 1 axis.
+    invalid_choices = [
+        (empty_outer_vector, empty_outer_vector),
+        (empty_inner_vector, empty_inner_vector),
+        (batch_of_goalset_tool_axes, batch_of_goalset_world_axes),
+    ]
+    for invalid_tool_axes, invalid_world_axes in invalid_choices:
+        with pytest.raises(Exception):
+            cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+                invalid_tool_axes, invalid_world_axes)
+
+    # Expect *failure* to create axis orientation constraints with mismatched numbers of tool frame
+    # axes and world target axes.
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            single_tool_axes, batch_world_axes)  # 1 problem vs 2 problems.
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            goalset_tool_axes, single_world_axes)  # 2 axes vs 1 axis per problem.
+
+    # Expect *failure* to create axis orientation constraints with zero or nearly zero axes.
+    zero_axes = [[np.array([0.0, 0.0, 0.0])]]
+    nearly_zero_axes = [[1e-10 * np.array([1.0, 0.0, 0.0])]]
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            zero_axes, single_world_axes)
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            nearly_zero_axes, single_world_axes)
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            single_tool_axes, zero_axes)
+    with pytest.raises(Exception):
+        cumotion.CollisionFreeIkSolver.OrientationConstraintArray.axis(
+            single_tool_axes, nearly_zero_axes)
 
 
 def test_orientation_constraint_goalset_none():

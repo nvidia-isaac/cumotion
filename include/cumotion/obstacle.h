@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -15,12 +15,14 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Obstacles represent 3d geometries that can be added to `cumotion::World`.
 //!
 //! See `cumotion/world.h` for usage.
-class Obstacle {
+class CUMO_EXPORT Obstacle {
  public:
   //! Indicates what geometric primitive the obstacle represents.
   //!
@@ -112,7 +114,7 @@ class Obstacle {
   //! `World::setGridValuesFromDevice()` will be interpreted.  An `Attribute::GRID` specifies a grid
   //! of voxels that each contain a scalar value.  Each voxel has a fixed workspace position
   //! associated with its value that is implicitly defined by the parameters in `Grid`.
-  struct Grid {
+  struct CUMO_EXPORT Grid {
     //! Floating-point precision of grid data.
     //!
     //! Underlying integer values correspond to the size of each floating-point type in bytes.
@@ -179,7 +181,7 @@ class Obstacle {
   //!
   //! The required `AttributeValue` constructor for each `Attribute` is detailed in the
   //! documentation for `Attribute`.
-  struct AttributeValue {
+  struct CUMO_EXPORT AttributeValue {
     //! Create `AttributeValue` from `double`.
     AttributeValue(double value);  // NOLINT Allow implicit conversion
 
@@ -213,6 +215,6 @@ class Obstacle {
 //!
 //! Available attributes and default attribute values for the given `type` are included in the
 //! documentation for `Obstacle::Type`.
-std::unique_ptr<Obstacle> CreateObstacle(Obstacle::Type type);
+CUMO_EXPORT std::unique_ptr<Obstacle> CreateObstacle(Obstacle::Type type);
 
 }  // namespace cumotion

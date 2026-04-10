@@ -27,11 +27,13 @@ import numpy as np
 import yaml
 
 try:
-    import open3d as o3d
+    import cumotion_vis  # noqa: F401 import is unused.
 except ImportError:
-    print("Open3D not installed. Cannot run robot collision sphere example.")
+    print("'cumotion_vis' not installed. Cannot run robot collision sphere example.")
     print("CUMOTION EXAMPLE SKIPPED")
     exit(0)
+
+import open3d as o3d  # Guaranteed to be installed if `cumotion_vis` is instealled.
 
 # cuMotion
 import cumotion

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -21,13 +21,15 @@
 
 #include "Eigen/Core"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Forward declaration of Kinematics from `cumotion/kinematics.h`.
 class Kinematics;
 
 //! Class encapsulating all semantic and kinematic properties of a robot
-class RobotDescription {
+class CUMO_EXPORT RobotDescription {
  public:
   virtual ~RobotDescription() = default;
 
@@ -62,17 +64,17 @@ class RobotDescription {
 //! - `robot_urdf` is not a valid file path,
 //! - `robot_xrdf` cannot be successfully parsed, *OR*
 //! - `robot_urdf` cannot be successfully parsed.
-[[nodiscard]]
-std::unique_ptr<RobotDescription> LoadRobotFromFile(const std::filesystem::path &robot_xrdf,
-                                                    const std::filesystem::path &robot_urdf);
+[[nodiscard]] CUMO_EXPORT std::unique_ptr<RobotDescription> LoadRobotFromFile(
+    const std::filesystem::path &robot_xrdf,
+    const std::filesystem::path &robot_urdf);
 
 //! Load a robot description from the contents of an XRDF ("robot_xrdf") and the contents
 //! of a URDF ("robot_urdf").
 //!
 //! The "Extended Robot Description Format" (XRDF) is documented at:
 //! https://nvidia-isaac-ros.github.io/v/release-3.2/concepts/manipulation/xrdf.html
-[[nodiscard]]
-std::unique_ptr<RobotDescription> LoadRobotFromMemory(const std::string &robot_xrdf,
-                                                      const std::string &robot_urdf);
+[[nodiscard]] CUMO_EXPORT std::unique_ptr<RobotDescription> LoadRobotFromMemory(
+    const std::string &robot_xrdf,
+    const std::string &robot_urdf);
 
 }  // namespace cumotion

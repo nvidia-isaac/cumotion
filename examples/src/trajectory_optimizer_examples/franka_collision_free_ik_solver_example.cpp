@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2025-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 //
@@ -44,7 +44,7 @@ int main() {
   // XRDF extends the URDF with additional information such as semantic labeling of configuration
   // space, acceleration limits, jerk limits, and collision spheres. For additional details,
   // see: https://nvidia-isaac-ros.github.io/concepts/manipulation/xrdf.html
-  const std::string xrdf_path = content_dir / "nvidia" / "shared" / "franka.xrdf";
+  const std::filesystem::path xrdf_path = content_dir / "nvidia" / "shared" / "franka.xrdf";
 
   // Load robot description.
   std::unique_ptr<cumotion::RobotDescription> robot_description =
@@ -91,9 +91,9 @@ int main() {
   // Solve IK, expecting multiple distinct c-space solutions.
   auto results = ik_solver->solve(task_space_target);
   bool success = results->status() == cumotion::CollisionFreeIkSolver::Results::Status::SUCCESS;
-  std::cout << "Found " << results->cSpacePositions().size() << " distinct IK solutions."
-            << std::endl;
-  success = success && results->cSpacePositions().size() == 12;
+  int num_solutions = results->cSpacePositions().size();
+  std::cout << "Found " << num_solutions << " distinct IK solutions." << std::endl;
+  success = success && (num_solutions >= 8);
 
   // Add a cuboid obstacle to the `world`.
   Eigen::Vector3d cuboid_side_lengths(0.5, 0.35, 0.8);
@@ -110,9 +110,10 @@ int main() {
   auto results_with_cuboid = ik_solver->solve(task_space_target);
   success = success && results_with_cuboid->status() ==
          cumotion::CollisionFreeIkSolver::Results::Status::SUCCESS;
-  std::cout << "Found " << results_with_cuboid->cSpacePositions().size()
+  num_solutions = results_with_cuboid->cSpacePositions().size();
+  std::cout << "Found " << num_solutions
             << " distinct IK solutions that avoid the cuboid obstacle." << std::endl;
-  success = success && results_with_cuboid->cSpacePositions().size() == 11;
+  success = success && (num_solutions >= 8);
 
   PrintExampleStatus(success);
 

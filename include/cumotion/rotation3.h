@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -17,10 +17,12 @@
 #include "Eigen/Core"
 #include "Eigen/Geometry"
 
+#include "cumotion/cumotion_export.h"
+
 namespace cumotion {
 
 //! Class representing a 3d rotation.
-class Rotation3 {
+class CUMO_EXPORT Rotation3 {
  public:
   //! Construct rotation from a quaternion.
   //!
@@ -63,10 +65,13 @@ class Rotation3 {
 
   //! Return `w` component of the quaternion representation of the rotation.
   [[nodiscard]] double w() const { return quaternion_.w(); }
+
   //! Return `x` component of the quaternion representation of the rotation.
   [[nodiscard]] double x() const { return quaternion_.x(); }
+
   //! Return `y` component of the quaternion representation of the rotation.
   [[nodiscard]] double y() const { return quaternion_.y(); }
+
   //! Return `z` component of the quaternion representation of the rotation.
   [[nodiscard]] double z() const { return quaternion_.z(); }
 
@@ -93,10 +98,11 @@ class Rotation3 {
   static Rotation3 Slerp(const Rotation3 &rotation0, const Rotation3 &rotation1, double t);
 
   //! Compose rotations via * operator.
-  friend Rotation3 operator*(const Rotation3 &lhs, const Rotation3 &rhs);
+  friend CUMO_EXPORT Rotation3 operator*(const Rotation3 &lhs, const Rotation3 &rhs);
 
   //! Rotates a vector by the given rotation.
-  friend Eigen::Vector3d operator*(const Rotation3 &rotation, const Eigen::Vector3d &vector);
+  friend CUMO_EXPORT Eigen::Vector3d operator*(const Rotation3 &rotation,
+                                               const Eigen::Vector3d &vector);
 
   //! See https://eigen.tuxfamily.org/dox/group__TopicStructHavingEigenMembers.html
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

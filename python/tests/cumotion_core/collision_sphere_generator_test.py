@@ -287,7 +287,9 @@ def test_generate_collision_spheres():
     # Create collision spheres
     max_overshoot = 0.1
     spheres = cumotion.generate_collision_spheres(vertices, indices, max_overshoot)
-    assert 58 == len(spheres)
+    # The number of generated spheres is slightly different with MSVC on Windows than with GCC
+    # on linux, presumably due to differences in floating-point rounding.
+    assert len(spheres) == pytest.approx(58, abs=2)
 
     # Expect spheres to overshoot the original cube by approximately `max_overshoot`.
     spheres_min, spheres_max = compute_bounds(spheres)
@@ -299,7 +301,7 @@ def test_generate_collision_spheres():
     spheres2 = cumotion.generate_collision_spheres(vertices, indices, smaller_max_overshoot)
 
     # Expect more spheres to be needed to cover the surface with less overshoot.
-    assert 828 == len(spheres2)
+    assert len(spheres2) == pytest.approx(828, abs=8)
 
     # Expect new spheres to overshoot the original cube by approximately `smaller_max_overshoot`.
     spheres2_min, spheres2_max = compute_bounds(spheres2)

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -13,6 +13,7 @@
 
 #include <memory>
 
+#include "cumotion/cumotion_export.h"
 #include "cumotion/task_space_path.h"
 
 namespace cumotion {
@@ -34,7 +35,7 @@ namespace cumotion {
 //! The "tangent orientation" specification is only relevant for path segments for which position is
 //! defined by an arc (since for linear position paths, the "tangent orientation" specification
 //! would reduce to a constant orientation w.r.t. the fixed global frame).
-class TaskSpacePathSpec {
+class CUMO_EXPORT TaskSpacePathSpec {
  public:
   virtual ~TaskSpacePathSpec() = default;
 
@@ -161,6 +162,6 @@ class TaskSpacePathSpec {
 };
 
 //! Create a `TaskSpacePathSpec` with the specified `initial_pose`.
-std::unique_ptr<TaskSpacePathSpec> CreateTaskSpacePathSpec(const Pose3 &initial_pose);
+CUMO_EXPORT std::unique_ptr<TaskSpacePathSpec> CreateTaskSpacePathSpec(const Pose3 &initial_pose);
 
 }  // namespace cumotion

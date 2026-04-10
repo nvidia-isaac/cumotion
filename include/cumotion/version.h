@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -12,8 +12,8 @@
 #pragma once
 
 #define CUMOTION_VERSION_MAJOR 1
-#define CUMOTION_VERSION_MINOR 0
+#define CUMOTION_VERSION_MINOR 1
 #define CUMOTION_VERSION_PATCH 0
 #define CUMOTION_VERSION_SUFFIX ""
 
-#define CUMOTION_VERSION_STRING "1.0.0"
+#define CUMOTION_VERSION_STRING "1.1.0"

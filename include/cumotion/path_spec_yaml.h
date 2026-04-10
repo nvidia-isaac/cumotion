@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -17,6 +17,7 @@
 
 #include "cumotion/composite_path_spec.h"
 #include "cumotion/cspace_path_spec.h"
+#include "cumotion/cumotion_export.h"
 #include "cumotion/task_space_path_spec.h"
 
 namespace cumotion {
@@ -172,20 +173,21 @@ namespace cumotion {
 //! If "initial pose" or "path specs" are unable to be parsed, `nullptr` will be returned. If any
 //! "path specs" fail to be parsed, they will be discarded and a warning will be logged, but any
 //! other valid "path specs" will continue to be added to the returned `TaskSpacePathSpec`.
-std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromFile(
+CUMO_EXPORT std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromFile(
     const std::filesystem::path &task_space_path_spec_file);
 
 //! Load a `TaskSpacePathSpec` from the contents of a YAML file (`task_space_path_spec_yaml`).
 //!
-//! See `LoadTaskSpacePathFromFile()` documentation for detailed description of required YAML
+//! See `LoadTaskSpacePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
-std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromMemory(
+CUMO_EXPORT std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromMemory(
     const std::string &task_space_path_spec_yaml);
 
 //! Export `task_space_path_spec` as a string.
 //!
 //! The returned string will be in YAML format as documented in `LoadTaskSpacePathSpecFromFile()`.
-std::string ExportTaskSpacePathSpecToMemory(const TaskSpacePathSpec &task_space_path_spec);
+CUMO_EXPORT std::string ExportTaskSpacePathSpecToMemory(
+    const TaskSpacePathSpec &task_space_path_spec);
 
 //! Load a `CSpacePathSpec` from file with absolute path `cspace_path_spec_file`.
 //!
@@ -218,20 +220,20 @@ std::string ExportTaskSpacePathSpecToMemory(const TaskSpacePathSpec &task_space_
 //! returned. If any "waypoints" fail to be parsed, they will be discarded and a warning will be
 //! logged, but any other valid "waypoints" will continue to be added to the returned
 //! `CSpacePathSpec`.
-std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromFile(
+CUMO_EXPORT std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromFile(
     const std::filesystem::path &cspace_path_spec_file);
 
 //! Load a `CSpacePathSpec` from the contents of a YAML file (`cspace_path_spec_yaml`).
 //!
-//! See `LoadCSpacePathFromFile()` documentation for detailed description of required YAML
+//! See `LoadCSpacePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
-std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromMemory(
+CUMO_EXPORT std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromMemory(
     const std::string &cspace_path_spec_yaml);
 
 //! Export `cspace_path_spec` as a string.
 //!
 //! The returned string will be in YAML format as documented in `LoadCSpacePathSpecFromFile()`.
-std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspace_path_spec);
+CUMO_EXPORT std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspace_path_spec);
 
 //! Load a `CompositePathSpec` from file with absolute path `composite_path_spec_file`.
 //!
@@ -289,19 +291,20 @@ std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspace_path_spec)
 //! returned. If any "path specs" fail to be parsed, they will be discarded and a warning will be
 //! logged, but any other valid "path specs" will continue to be added to the returned
 //! `CompositePathSpec`.
-std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromFile(
+CUMO_EXPORT std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromFile(
     const std::filesystem::path &composite_path_spec_file);
 
 //! Load a `CompositePathSpec` from the contents of a YAML file (`composite_path_spec_yaml`).
 //!
-//! See `LoadCompositePathFromFile()` documentation for detailed description of required YAML
+//! See `LoadCompositePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
-std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromMemory(
+CUMO_EXPORT std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromMemory(
     const std::string &composite_path_spec_yaml);
 
 //! Export `composite_path_spec` as a string.
 //!
 //! The returned string will be in YAML format as documented in `LoadCompositePathSpecFromFile()`.
-std::string ExportCompositePathSpecToMemory(const CompositePathSpec &composite_path_spec);
+CUMO_EXPORT std::string ExportCompositePathSpecToMemory(
+    const CompositePathSpec &composite_path_spec);
 
 }  // namespace cumotion

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+// SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 //                         All rights reserved.
 // SPDX-License-Identifier: LicenseRef-NvidiaProprietary
 //
@@ -14,6 +14,7 @@
 #include <memory>
 
 #include "cumotion/composite_path_spec.h"
+#include "cumotion/cumotion_export.h"
 #include "cumotion/ik_solver.h"
 #include "cumotion/kinematics.h"
 #include "cumotion/linear_cspace_path.h"
@@ -22,7 +23,7 @@ namespace cumotion {
 
 //! Configuration parameters for converting a `TaskSpacePathSpec` into a series of c-space
 //! configurations.
-struct TaskSpacePathConversionConfig {
+struct CUMO_EXPORT TaskSpacePathConversionConfig {
   //! Create default set of configuration parameters for converting a `TaskSpacePathSpec` into a
   //! series of c-space configurations.
   //!
@@ -142,11 +143,11 @@ struct TaskSpacePathConversionConfig {
 //! The mapping from c-space to task space is defined by `kinematics` for the given `control_frame`.
 //!
 //! If non-default configuration parameters for the path conversion process are desired, then
-//! `task_space_conversion_config` can (optionally) be specified.
+//! `task_space_path_conversion_config` can (optionally) be specified.
 //!
 //! If non-default configuration parameters for the inverse kinematics (IK) solver are desired,
 //! then `ik_config` can optionally be specified.
-std::unique_ptr<LinearCSpacePath> ConvertCompositePathSpecToCSpace(
+CUMO_EXPORT std::unique_ptr<LinearCSpacePath> ConvertCompositePathSpecToCSpace(
     const CompositePathSpec &composite_path_spec,
     const Kinematics &kinematics,
     const Kinematics::FrameHandle &control_frame,
@@ -165,11 +166,11 @@ std::unique_ptr<LinearCSpacePath> ConvertCompositePathSpecToCSpace(
 //! The mapping from c-space to task space is defined by `kinematics` for the given `control_frame`.
 //!
 //! If non-default configuration parameters for the path conversion process are desired, then
-//! `task_space_conversion_config` can (optionally) be specified.
+//! `task_space_path_conversion_config` can (optionally) be specified.
 //!
 //! If non-default configuration parameters for the inverse kinematics (IK) solver are desired,
 //! then `ik_config` can optionally be specified.
-std::unique_ptr<LinearCSpacePath> ConvertTaskSpacePathSpecToCSpace(
+CUMO_EXPORT std::unique_ptr<LinearCSpacePath> ConvertTaskSpacePathSpecToCSpace(
     const TaskSpacePathSpec &task_space_path_spec,
     const Kinematics &kinematics,
     const Kinematics::FrameHandle &control_frame,

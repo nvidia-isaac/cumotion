@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +17,9 @@ seed: 1234
 step_size: 0.05
 max_iterations: 50000
 max_sampling: 10000
-distance_metric_weights: [3.0, 2.0, 1.0]
+distance_metric_weights: [1.0, 1.0, 1.0]
 task_space_limits: [[-3.0, 3.0], [-3.0, 3.0], [-0.001, 0.001]]
 cuda_tree_params:
-  max_num_nodes: 10000
   max_buffer_size: 30
   num_nodes_cpu_gpu_crossover: 3000
 cspace_planning_params:
