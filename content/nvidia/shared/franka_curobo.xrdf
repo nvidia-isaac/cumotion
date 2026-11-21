@@ -16,15 +16,9 @@
 format: xrdf
 format_version: 1.0
 
-modifiers:
-  - add_frame:
-      frame_name: "attached_object"
-      parent_frame_name: "panda_hand"
-      joint_name: "attach_joint"
-      joint_type: FIXED
-      fixed_transform:
-        position: [0.0, 0.0, 0.0]
-        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+# NOTE: The version used by cuRobo added an `attached_object` frame with collision spheres
+#       set to negative radii (which disabled them).
+
 
 default_joint_positions:
   panda_joint1: 0.0
@@ -65,7 +59,6 @@ collision:
     panda_hand: 0.004
     panda_leftfinger: 0.004
     panda_rightfinger: 0.004
-    attached_object: 0.004
 
 self_collision:
   geometry: "franka_collision_spheres"
@@ -102,23 +95,17 @@ self_collision:
     panda_link6:
       - "panda_link7"
       - "panda_hand"
-      - "attached_object"
       - "panda_leftfinger"
       - "panda_rightfinger"
     panda_link7:
       - "panda_hand"
-      - "attached_object"
       - "panda_leftfinger"
       - "panda_rightfinger"
     panda_hand:
       - "panda_leftfinger"
       - "panda_rightfinger"
-      - "attached_object"
     panda_leftfinger:
       - "panda_rightfinger"
-      - "attached_object"
-    panda_rightfinger:
-      - "attached_object"
 
 geometry:
   franka_collision_spheres:
@@ -256,12 +243,3 @@ geometry:
           radius: 0.011
         - center: [0.0, -0.01, 0.015]
           radius: 0.011
-      attached_object:
-        - center: [0.0, 0.0, 0.0]
-          radius: -10.0
-        - center: [0.0, 0.0, 0.0]
-          radius: -10.0
-        - center: [0.0, 0.0, 0.0]
-          radius: -10.0
-        - center: [0.0, 0.0, 0.0]
-          radius: -10.0

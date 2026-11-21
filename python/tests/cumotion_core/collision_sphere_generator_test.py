@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2022-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2022-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -307,3 +307,29 @@ def test_generate_collision_spheres():
     spheres2_min, spheres2_max = compute_bounds(spheres2)
     assert -smaller_max_overshoot * np.ones(3) == pytest.approx(spheres2_min, abs=1e-12)
     assert (1.0 + smaller_max_overshoot) * np.ones(3) == pytest.approx(spheres2_max, abs=1e-12)
+
+    # Expect a triangle with out-of-range or repeated vertex indices to be culled, generating the
+    # same number of spheres as without it.  A reduced `max_num_spheres` and `surface_point_density`
+    # make these checks faster.
+    reduced_max_num_spheres = 125
+    reduced_surface_point_density = 500.0
+    expected_spheres = cumotion.generate_collision_spheres(
+        vertices, indices, max_overshoot, reduced_max_num_spheres, reduced_surface_point_density)
+    for invalid_triangle in [np.array([0, 1, len(vertices)]), np.array([0, 1, 1])]:
+        with warnings_disabled:
+            culled_spheres = cumotion.generate_collision_spheres(
+                vertices, indices + [invalid_triangle], max_overshoot, reduced_max_num_spheres,
+                reduced_surface_point_density)
+        assert len(expected_spheres) == len(culled_spheres)
+
+    # Expect a fatal error if all triangles are discarded due to invalid vertex indices.
+    out_of_bounds_indices = [np.array([0, 1, len(vertices)])]
+    with pytest.raises(RuntimeError):
+        with errors_disabled:
+            cumotion.generate_collision_spheres(vertices, out_of_bounds_indices)
+
+    # Expect a fatal error if all triangles are discarded for having insufficient surface area.
+    min_triangle_area_above_cube_faces = 1.0
+    with pytest.raises(RuntimeError):
+        cumotion.generate_collision_spheres(
+            vertices, indices, min_triangle_area=min_triangle_area_above_cube_faces)

@@ -26,15 +26,25 @@
 namespace cumotion {
 
 //! Interface for querying properties and spatial relationships within a world.
+//!
+//! A `WorldInspector` sees the current view of the world: the `World` as it was when its world
+//! view was created or last updated (see `WorldViewHandle::update()`). Queries that take an
+//! obstacle handle log a fatal error if the obstacle is not in this view. In particular:
+//! - After `World::addObstacle()`, the new obstacle cannot be queried until the view is updated.
+//! - After `World::removeObstacle()`, the obstacle can still be queried until the view is updated.
 class CUMO_EXPORT WorldInspector {
  public:
   virtual ~WorldInspector() = default;
 
   //! Return whether the obstacle specified by `obstacle` is enabled in the current view of the
   //! world.
+  //!
+  //! A fatal error will be logged if `obstacle` is not in the current view of the world.
   [[nodiscard]] virtual bool isEnabled(const World::ObstacleHandle &obstacle) const = 0;
 
   //! Return the pose of the obstacle specified by `obstacle`.
+  //!
+  //! A fatal error will be logged if `obstacle` is not in the current view of the world.
   [[nodiscard]] virtual Pose3 pose(const World::ObstacleHandle &obstacle) const = 0;
 
   //! Test whether a sphere defined by `center` and `radius` is in collision with ANY enabled
@@ -43,6 +53,8 @@ class CUMO_EXPORT WorldInspector {
 
   //! Test whether a sphere defined by `center` and `radius` is in collision with the obstacle
   //! specified by `obstacle`.
+  //!
+  //! A fatal error will be logged if `obstacle` is not in the current view of the world.
   [[nodiscard]] virtual bool inCollision(const World::ObstacleHandle &obstacle,
                                          const Eigen::Vector3d &center,
                                          double radius) const = 0;
@@ -51,6 +63,10 @@ class CUMO_EXPORT WorldInspector {
   //!
   //! Returns distance between the `point` and `obstacle`. If the `point` intersects `obstacle`, a
   //! negative distance is returned.  The distance gradient is written to `gradient` if provided.
+  //!
+  //! A fatal error will be logged if:
+  //!   1. `obstacle` is not in the current view of the world, *OR*
+  //!   2. `obstacle` is an SDF obstacle without grid values in the current view of the world.
   virtual double distanceTo(const World::ObstacleHandle &obstacle,
                             const Eigen::Vector3d &point,
                             Eigen::Vector3d *gradient = nullptr) const = 0;
@@ -73,39 +89,15 @@ class CUMO_EXPORT WorldInspector {
                           std::vector<double> &distances,
                           std::vector<Eigen::Vector3d> *distance_gradients = nullptr) const = 0;
 
-  //! Compute distances from `point` to all enabled obstacles.
-  //!
-  //! Distances between the `point` and each enabled obstacle are written to `distances`, which must
-  //! not be `nullptr`.
-  //! If the `point` intersects an obstacle, the resulting distance will be negative. The distance
-  //! gradients are written to `distance_gradients` if provided.
-  //!
-  //! The number of `distances` and/or `distance_gradients` that are written (i.e., the number of
-  //! enabled obstacles) is returned.
-  //!
-  //! If the length of `distances` is less than the number of enabled obstacles, it will be resized
-  //! to the number of enabled obstacles. The same applies to `distance_gradients` if provided. If
-  //! the vectors lengths are larger than the number of enabled obstacles, the vectors will NOT be
-  //! resized. Only the first N elements will be written to, where N is the number of enabled
-  //! obstacles. The values of extra elements at the end of the input vectors will NOT be changed.
-  //!
-  //! A fatal error will be logged if `distances` is `nullptr`.
-  //!
-  //! DEPRECATED: This function overload is deprecated and will be removed in a future version. Use
-  //!             the reference overload (`WorldInspector::distancesTo(const Eigen::Vector3d &point,
-  //!             std::vector<double> &distances, std::vector<Eigen::Vector3d> *distance_gradients =
-  //!             nullptr) const`) instead.
-  virtual CUMO_DEPRECATED int distancesTo(
-      const Eigen::Vector3d &point,
-      std::vector<double> *distances,
-      std::vector<Eigen::Vector3d> *distance_gradients = nullptr) const = 0;
-
   //! Compute the minimum distance from `point` to ANY enabled obstacle in the current
   //! view of the world.
   //!
   //! Returns distance between the `point` and the nearest obstacle. If the `point` is inside an
   //! obstacle, a negative distance is returned. The distance gradient is written to `gradient` if
   //! provided.
+  //!
+  //! If no obstacles are enabled, `std::numeric_limits<double>::max()` is returned and `gradient`
+  //! (if provided) is set to zero.
   virtual double minDistance(const Eigen::Vector3d &point,
                              Eigen::Vector3d *gradient = nullptr) const = 0;
 

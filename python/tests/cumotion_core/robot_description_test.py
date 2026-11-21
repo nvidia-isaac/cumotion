@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -94,3 +94,55 @@ def test_franka_robot_description(configure_robot_description):
 
     assert 1 == len(robot_description.tool_frame_names())
     assert "panda_leftfingertip" == robot_description.tool_frame_names()[0]
+
+
+def test_invalid_xrdf_path():
+    """Test that an XRDF path that does not exist results in a fatal error."""
+    # Set absolute path to an XRDF that does not exist.
+    config_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared')
+    bad_xrdf_path = os.path.join(config_path, 'bad_franka.xrdf')
+
+    # Set absolute path to URDF file for Franka.
+    urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka', 'franka.urdf')
+    assert os.path.isfile(urdf_path)
+
+    with pytest.raises(RuntimeError):
+        cumotion.load_robot_from_file(bad_xrdf_path, urdf_path)
+
+
+def test_invalid_urdf_path():
+    """Test that a URDF path that does not exist results in a fatal error."""
+    # Set absolute path to the XRDF for Franka.
+    xrdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared', 'franka.xrdf')
+    assert os.path.isfile(xrdf_path)
+
+    # Set absolute path to a URDF that does not exist.
+    franka_dir = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka')
+    bad_urdf_path = os.path.join(franka_dir, 'bad_franka.urdf')
+
+    with pytest.raises(RuntimeError):
+        cumotion.load_robot_from_file(xrdf_path, bad_urdf_path)
+
+
+def test_invalid_file_contents():
+    """Test that invalid XRDF or URDF contents result in a fatal error."""
+    # Load string containing the XRDF for Franka.
+    xrdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared', 'franka.xrdf')
+    with open(xrdf_path, 'r') as file:
+        xrdf_contents = file.read()
+
+    # Load string containing URDF file for Franka.
+    urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka', 'franka.urdf')
+    with open(urdf_path, 'r') as file:
+        urdf_contents = file.read()
+
+    # Expect success from valid XRDF and URDF contents.
+    assert cumotion.load_robot_from_memory(xrdf_contents, urdf_contents) is not None
+
+    # Expect a fatal error from XRDF contents that are not valid YAML.
+    with pytest.raises(RuntimeError):
+        cumotion.load_robot_from_memory('cspace: [', urdf_contents)
+
+    # Expect a fatal error from URDF contents that are not valid XML.
+    with pytest.raises(RuntimeError):
+        cumotion.load_robot_from_memory(xrdf_contents, '<robot')

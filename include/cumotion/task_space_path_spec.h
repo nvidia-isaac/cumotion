@@ -19,7 +19,7 @@
 namespace cumotion {
 
 //! The `TaskSpacePathSpec` is used to procedurally specify a `TaskSpacePath` from a series of
-//! continuous task space segments.
+//! continuous task-space segments.
 //!
 //! Each segment can have position that is:
 //!   [1] constant,
@@ -29,7 +29,7 @@ namespace cumotion {
 //! points, or by two endpoints and a constraint that the arc be tangent to the previous segment.
 //!
 //! Each segment may have orientation that is:
-//!   [1] constant (w.r.t. to the fixed global frame),
+//!   [1] constant (w.r.t. the fixed global frame),
 //!   [2] smoothly blended via spherical linear interpolation (i.e., "slerp"), or
 //!   [3] constant w.r.t. the tangent direction of the position path (i.e., "tangent orientation").
 //! The "tangent orientation" specification is only relevant for path segments for which position is
@@ -113,7 +113,7 @@ class CUMO_EXPORT TaskSpacePathSpec {
       const Eigen::Vector3d &intermediate_position) = 0;
 
   //! Add a path to connect the previous pose to the `target_position` along a circular arc that
-  //! is tangent to the previous segment
+  //! is tangent to the previous segment.
   //!
   //! Position will follow a "tangent arc" where the previous position and `target_position` are
   //! endpoints and the arc is tangent to the previous segment.
@@ -154,10 +154,10 @@ class CUMO_EXPORT TaskSpacePathSpec {
   //! error is logged.
   virtual bool addTangentArcWithOrientationTarget(const Pose3 &target_pose) = 0;
 
-  //! Generate a continuous path between all of the procedurally added task space path segments.
+  //! Generate a continuous path between all of the procedurally added task-space path segments.
   //!
   //! The lower bound of the domain of the generated path will be zero and the upper bound will be
-  //! determined by task space distance.
+  //! determined by task-space distance.
   [[nodiscard]] virtual std::unique_ptr<TaskSpacePath> generatePath() const = 0;
 };
 

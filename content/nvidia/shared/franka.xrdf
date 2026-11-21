@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2019-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2019-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -178,10 +178,18 @@ geometry:
         - center: [ 0.0, 0.075, 0.05 ]
           radius: 0.024
       panda_leftfingertip:
-        - center: [ 0.0, 0.0075, 0.0 ]
+        - center: [ 0.0, -0.02, -0.03]
+          radius: 0.012
+        - center: [ 0.0, -0.015, -0.015]
+          radius: 0.01
+        - center: [ 0.0, -0.0075, 0.0 ]
           radius: 0.0108
       panda_rightfingertip:
-        - center: [ 0.0, -0.0075, 0.0 ]
+        - center: [ 0.0, 0.02, -0.03]
+          radius: 0.012
+        - center: [ 0.0, 0.015, -0.015]
+          radius: 0.01
+        - center: [ 0.0, 0.0075, 0.0 ]
           radius: 0.0108
   franka_self_only_collision_spheres:
     spheres:

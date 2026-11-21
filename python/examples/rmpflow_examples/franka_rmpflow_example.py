@@ -203,8 +203,9 @@ if __name__ == '__main__':
         time += timestep
 
     np.set_printoptions(linewidth=200)
-    expected_final_cspace_position = np.array(
-        [-0.45364672, 1.21257119, -0.34068849, -0.60333264, -0.35049334, 2.9215992, 0.7503792])
+    expected_final_cspace_position = np.array([
+        -0.453644218887, 1.212570393471, -0.340691641264, -0.60333697728, -0.350460302253,
+        2.921603093951, 0.750475421309])
     print("Final c-space position: ", cspace_position)
     success = np.allclose(cspace_position, expected_final_cspace_position, atol=1e-6)
     cumotion_print_status(success)

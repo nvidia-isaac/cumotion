@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -254,6 +254,7 @@ def test_world_inspector_pose_and_is_enabled():
     sphere = cumotion.create_obstacle(cumotion.Obstacle.Type.SPHERE)
     sphere.set_attribute(cumotion.Obstacle.Attribute.RADIUS, 1.0)
     handle = world.add_obstacle(sphere)
+
     world_view = world.add_world_view()
     inspector = cumotion.create_world_inspector(world_view)
 
@@ -368,6 +369,16 @@ def test_worldview_distance_gradients():
     # Create a view of `world` and a world inspector using that view.
     world_view = world.add_world_view()
     world_inspector = cumotion.create_world_inspector(world_view)
+
+    # Test signed distances from a point inside obstacle 0.
+    inside_point = np.array([0.5 * sphere_radius, 0.0, 0.0])
+    expected_inside_distance = -0.5 * sphere_radius
+    assert expected_inside_distance == world_inspector.distance_to(handle0, inside_point)
+
+    inside_distances, inside_gradients = world_inspector.distances_to(inside_point, False)
+    assert expected_inside_distance == min(inside_distances)
+    assert inside_gradients is None
+    assert expected_inside_distance == world_inspector.min_distance(inside_point)
 
     # Test distance to each obstacle from a point in the center of obstacles.
     point = np.array([0.5 * offset, 0.5 * offset, 0.0])
@@ -632,15 +643,19 @@ def test_inspect_sdf_error_cases():
     """Test `World.inspect_sdf()` error cases."""
     world = cumotion.create_world()
 
-    # Error case 1: Attempting to inspect a non-SDF obstacle should raise an exception.
+    # Attempting to set grid values for and inspect a non-SDF obstacle should raise an exception.
     sphere = cumotion.create_obstacle(cumotion.Obstacle.Type.SPHERE)
     sphere.set_attribute(cumotion.Obstacle.Attribute.RADIUS, 1.0)
     sphere_handle = world.add_obstacle(sphere)
 
+    invalid_sdf_data = np.zeros((1, 1, 1), dtype=np.float32)
+    with pytest.raises(RuntimeError):
+        world.set_sdf_grid_values_from_host(sphere_handle, invalid_sdf_data)
+
     with pytest.raises(RuntimeError):
         world.inspect_sdf(sphere_handle)
 
-    # Error case 2: Attempting to inspect an unpopulated SDF should raise an exception.
+    # Attempting to inspect an unpopulated SDF should raise an exception.
     num_voxels_x = 10
     num_voxels_y = 10
     num_voxels_z = 10
@@ -653,6 +668,11 @@ def test_inspect_sdf_error_cases():
                       cumotion.Obstacle.Grid(num_voxels_x, num_voxels_y, num_voxels_z,
                                              voxel_size, host_precision, device_precision))
     sdf_handle = world.add_obstacle(sdf)
+
+    # Verify that setting SDF data from a non-3D NumPy array raises an error.
+    invalid_sdf_data = np.zeros((num_voxels_x, num_voxels_y), dtype=np.float32)
+    with pytest.raises(RuntimeError):
+        world.set_sdf_grid_values_from_host(sdf_handle, invalid_sdf_data)
 
     with pytest.raises(RuntimeError):
         world.inspect_sdf(sdf_handle)

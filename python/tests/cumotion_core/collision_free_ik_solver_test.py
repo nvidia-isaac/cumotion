@@ -291,37 +291,6 @@ def test_franka_position_only_constraints(configure_franka_with_obstacles):
                              POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
     expect_unique_solutions(solutions_array)
 
-    # DEPRECATED section. --------------------------------------------------------------------------
-    # Test goalset with position-only constraints using `solve_goalset()`.
-    translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-        translation_targets)
-    orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.none()
-    task_space_target_goalset = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset, orientation_goalset)
-
-    goalset_results = ik_solver.solve_goalset(task_space_target_goalset)
-
-    assert goalset_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-    goalset_solutions = goalset_results.cspace_positions()
-    assert len(goalset_solutions) > 0
-
-    goalset_target_indices = goalset_results.target_indices()
-
-    # Validate each solution
-    for solution, target_idx in zip(goalset_solutions, goalset_target_indices):
-        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
-                             translation_targets[target_idx], None, False,
-                             POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
-
-    # Verify solutions are unique
-    expect_unique_solutions(goalset_solutions)
-
-    # Validate that the goalset results match the goalset array results.
-    assert goalset_results.status() == first_result_array.status()
-    assert len(goalset_solutions) == len(solutions_array)
-    assert list(goalset_target_indices) == list(goalset_array_target_indices)
-    # End of DEPRECATED section.  ------------------------------------------------------------------
-
     # Test single target
     reached_target_idx = compute_mode(goalset_array_target_indices)
     reached_pose = poses[reached_target_idx]
@@ -473,38 +442,6 @@ def test_franka_axis_alignment_constraints(configure_franka_with_obstacles):
                              translation_targets[target_idx], rotation_targets[target_idx],
                              True, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
     expect_unique_solutions(solutions_array)
-
-    # DEPRECATED section. --------------------------------------------------------------------------
-    # Test goalset with axis alignment constraints using `solve_goalset()`.
-    translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-        translation_targets)
-    orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.axis(
-        tool_frame_axes, world_target_axes)
-    task_space_target_goalset = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset, orientation_goalset)
-
-    goalset_results = ik_solver.solve_goalset(task_space_target_goalset)
-
-    assert goalset_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-    goalset_solutions = goalset_results.cspace_positions()
-    assert len(goalset_solutions) > 0
-
-    goalset_target_indices = goalset_results.target_indices()
-
-    # Validate each solution
-    for solution, target_idx in zip(goalset_solutions, goalset_target_indices):
-        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
-                             translation_targets[target_idx], rotation_targets[target_idx],
-                             True, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
-
-    # Verify solutions are unique
-    expect_unique_solutions(goalset_solutions)
-
-    # Validate that the goalset results match the goalset array results.
-    assert goalset_results.status() == first_result_array.status()
-    assert len(goalset_solutions) == len(solutions_array)
-    assert list(goalset_target_indices) == list(goalset_array_target_indices)
-    # End of DEPRECATED section.  ------------------------------------------------------------------
 
     # Test single target
     reached_target_idx = compute_mode(goalset_array_target_indices)
@@ -658,38 +595,6 @@ def test_franka_full_orientation_constraints(configure_franka_with_obstacles):
                              translation_targets[target_idx], rotation_targets[target_idx],
                              False, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
     expect_unique_solutions(solutions_array)
-
-    # DEPRECATED section. --------------------------------------------------------------------------
-    # Test goalset with full orientation constraints using `solve_goalset()`.
-    translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-        translation_targets)
-    orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
-        rotation_targets)
-    task_space_target_goalset = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset, orientation_goalset)
-
-    goalset_results = ik_solver.solve_goalset(task_space_target_goalset)
-
-    assert goalset_results.status() == cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-    goalset_solutions = goalset_results.cspace_positions()
-    assert len(goalset_solutions) > 0
-
-    goalset_target_indices = goalset_results.target_indices()
-
-    # Validate each solution
-    for solution, target_idx in zip(goalset_solutions, goalset_target_indices):
-        validate_ik_solution(kinematics, inspector, solution, tool_frame_name,
-                             translation_targets[target_idx], rotation_targets[target_idx],
-                             False, POSITION_TOLERANCE, ORIENTATION_TOLERANCE)
-
-    # Verify solutions are unique
-    expect_unique_solutions(goalset_solutions)
-
-    # Validate that the goalset results match the goalset array results.
-    assert goalset_results.status() == first_result_array.status()
-    assert len(goalset_solutions) == len(solutions_array)
-    assert list(goalset_target_indices) == list(goalset_array_target_indices)
-    # End of DEPRECATED section.  ------------------------------------------------------------------
 
     # Test single target
     reached_target_idx = compute_mode(goalset_array_target_indices)
@@ -877,43 +782,6 @@ def test_franka_custom_seeds(configure_franka_with_obstacles):
     assert len(first_result_with_seeds_array.cspace_positions()) != \
         len(first_result_array.cspace_positions())
 
-    # DEPRECATED section. --------------------------------------------------------------------------
-    # Test goalset with custom seeds using `solve_goalset()`.
-    translation_goalset = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-        translation_targets)
-    orientation_goalset = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
-        rotation_targets)
-    task_space_target_goalset = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset, orientation_goalset)
-
-    # Solve without custom seeds
-    goalset_results_no_seeds = ik_solver.solve_goalset(task_space_target_goalset)
-    assert goalset_results_no_seeds.status() == \
-        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-
-    # Find the easiest target and create custom seeds from it
-    easiest_target_idx = compute_mode(goalset_results_no_seeds.target_indices())
-    custom_seeds = [cspace_samples[easiest_target_idx] for _ in range(num_custom_seeds)]
-
-    # Solve with custom seeds
-    goalset_results_with_seeds = ik_solver.solve_goalset(task_space_target_goalset, custom_seeds)
-    assert goalset_results_with_seeds.status() == \
-        cumotion.CollisionFreeIkSolver.Results.Status.SUCCESS
-
-    # Custom seeds affect the optimization, so we expect different results
-    # (The number of solutions can be higher or lower depending on the seed quality)
-    assert len(goalset_results_with_seeds.cspace_positions()) != \
-        len(goalset_results_no_seeds.cspace_positions())
-
-    # Validate that the goalset results match the goalset array results.
-    assert goalset_results_with_seeds.status() == \
-        first_result_with_seeds_array.status()
-    assert len(goalset_results_with_seeds.cspace_positions()) == \
-        len(first_result_with_seeds_array.cspace_positions())
-    assert list(goalset_results_with_seeds.target_indices()) == \
-        list(first_result_with_seeds_array.target_indices())
-    # End of DEPRECATED section.  ------------------------------------------------------------------
-
 
 def test_franka_with_deviation_limits(configure_franka_with_obstacles):
     """Test IK solver with deviation limits."""
@@ -1019,65 +887,6 @@ def test_franka_with_deviation_limits(configure_franka_with_obstacles):
 
     # Expect more or equal solutions with both deviation limits
     assert num_solutions_goalset_both_dev_array > num_solutions_goalset_orient_no_dev_array
-
-    # DEPRECATED section. --------------------------------------------------------------------------
-    # Test goalset with position-only constraints using `solve_goalset()`.
-    # 1a. No deviation limit
-    translation_goalset_no_dev = cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-        translation_targets)
-    orientation_goalset_none = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.none()
-    task_space_goalset_no_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset_no_dev, orientation_goalset_none)
-
-    results_goalset_no_dev = ik_solver.solve_goalset(task_space_goalset_no_dev)
-    num_solutions_goalset_no_dev = len(results_goalset_no_dev.cspace_positions())
-
-    # 1b. With position deviation limit
-    translation_goalset_with_dev = \
-        cumotion.CollisionFreeIkSolver.TranslationConstraintGoalset.target(
-            translation_targets, position_deviation_limit)
-    task_space_goalset_with_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset_with_dev, orientation_goalset_none)
-
-    results_goalset_with_dev = ik_solver.solve_goalset(task_space_goalset_with_dev)
-    num_solutions_goalset_with_dev = len(results_goalset_with_dev.cspace_positions())
-
-    # Expect more or equal solutions with deviation limits
-    assert num_solutions_goalset_with_dev > num_solutions_goalset_no_dev
-
-    # Test goalset with full orientation constraints
-    # 2a. No deviation limit
-    orientation_goalset_no_dev = cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
-        rotation_targets)
-    task_space_goalset_orient_no_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset_no_dev, orientation_goalset_no_dev)
-
-    results_goalset_orient_no_dev = ik_solver.solve_goalset(task_space_goalset_orient_no_dev)
-    num_solutions_goalset_orient_no_dev = len(results_goalset_orient_no_dev.cspace_positions())
-
-    # 2b. With orientation deviation limit only
-    orientation_goalset_with_dev = \
-        cumotion.CollisionFreeIkSolver.OrientationConstraintGoalset.target(
-            rotation_targets, orientation_deviation_limit)
-    task_space_goalset_orient_with_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset_no_dev, orientation_goalset_with_dev)
-
-    results_goalset_orient_with_dev = ik_solver.solve_goalset(task_space_goalset_orient_with_dev)
-    num_solutions_goalset_orient_with_dev = len(results_goalset_orient_with_dev.cspace_positions())
-
-    # Expect more or equal solutions with deviation limits
-    assert num_solutions_goalset_orient_with_dev > num_solutions_goalset_orient_no_dev
-
-    # 2c. With both position and orientation deviation limits
-    task_space_goalset_both_dev = cumotion.CollisionFreeIkSolver.TaskSpaceTargetGoalset(
-        translation_goalset_with_dev, orientation_goalset_with_dev)
-
-    results_goalset_both_dev = ik_solver.solve_goalset(task_space_goalset_both_dev)
-    num_solutions_goalset_both_dev = len(results_goalset_both_dev.cspace_positions())
-
-    # Expect more or equal solutions with both deviation limits
-    assert num_solutions_goalset_both_dev > num_solutions_goalset_orient_no_dev
-    # End of DEPRECATED section.  ------------------------------------------------------------------
 
     # Test single target with deviation limits
     reached_target_idx = compute_mode(first_result_goalset_orient_no_dev_array.target_indices())

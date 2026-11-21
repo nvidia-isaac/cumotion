@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2021-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2021-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -259,3 +259,52 @@ def test_cart_pole_inverse_kinematics(configure_cart_pole_robot_description):
 
     # Expect very few descents needed, usually only 1.
     assert 1.87603305 == pytest.approx(accumulated_results.mean_num_descents())
+
+
+def test_cspace_seeds_edits(configure_franka_robot_description):
+    """Test that in-place edits to `IkConfig.cspace_seeds` change the config."""
+    config = cumotion.IkConfig()
+    seed_0 = np.zeros(7)
+    seed_1 = np.ones(7)
+    seed_2 = np.full(7, 2.0)
+
+    # Expect each in-place edit to change the seeds of the config.
+    config.cspace_seeds.append(seed_0)
+    config.cspace_seeds.extend([seed_1, seed_2])
+    config.cspace_seeds.insert(0, seed_2)
+    config.cspace_seeds[1] = seed_1
+    del config.cspace_seeds[2]
+    assert np.array_equal(seed_2, config.cspace_seeds.pop())
+    config.cspace_seeds += [seed_0]
+    assert np.array_equal([seed_2, seed_1, seed_0], np.array(config.cspace_seeds))
+    config.cspace_seeds.clear()
+    assert 0 == len(config.cspace_seeds)
+
+    # Expect each seed to be a read-only copy that later edits leave unchanged.
+    config.cspace_seeds = [seed_0, seed_1]
+    seed = config.cspace_seeds[-1]
+    with pytest.raises(ValueError):
+        seed[0] = 5.0
+    config.cspace_seeds = []
+    assert np.array_equal(seed_1, seed)
+
+    # Expect an out-of-range index to raise `IndexError`.
+    with pytest.raises(IndexError):
+        _ = config.cspace_seeds[0]
+
+    # Expect a view to keep its config alive.
+    seeds = cumotion.IkConfig().cspace_seeds
+    seeds.append(seed_0)
+    assert 1 == len(seeds)
+
+    # Expect the solver to use a seed added in place. A single descent from a seed that already
+    # reaches the target returns that seed.
+    robot_description = configure_franka_robot_description()
+    kinematics = robot_description.kinematics()
+    default_position = robot_description.default_cspace_configuration()
+    target_pose = kinematics.pose(default_position, "right_gripper")
+    config.max_num_descents = 1
+    config.cspace_seeds.append(default_position)
+    results = cumotion.solve_ik(kinematics, target_pose, "right_gripper", config)
+    assert results.success
+    assert np.allclose(default_position, results.cspace_position, atol=1e-6)

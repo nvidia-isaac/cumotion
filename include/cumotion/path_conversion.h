@@ -147,6 +147,8 @@ struct CUMO_EXPORT TaskSpacePathConversionConfig {
 //!
 //! If non-default configuration parameters for the inverse kinematics (IK) solver are desired,
 //! then `ik_config` can optionally be specified.
+//!
+//! If path conversion fails, a warning will be logged and `nullptr` returned.
 CUMO_EXPORT std::unique_ptr<LinearCSpacePath> ConvertCompositePathSpecToCSpace(
     const CompositePathSpec &composite_path_spec,
     const Kinematics &kinematics,
@@ -170,6 +172,8 @@ CUMO_EXPORT std::unique_ptr<LinearCSpacePath> ConvertCompositePathSpecToCSpace(
 //!
 //! If non-default configuration parameters for the inverse kinematics (IK) solver are desired,
 //! then `ik_config` can optionally be specified.
+//!
+//! If path conversion fails, a warning will be logged and `nullptr` returned.
 CUMO_EXPORT std::unique_ptr<LinearCSpacePath> ConvertTaskSpacePathSpecToCSpace(
     const TaskSpacePathSpec &task_space_path_spec,
     const Kinematics &kinematics,

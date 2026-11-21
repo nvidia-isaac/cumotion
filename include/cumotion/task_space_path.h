@@ -24,7 +24,7 @@ class CUMO_EXPORT TaskSpacePath {
  public:
   virtual ~TaskSpacePath() = default;
 
-  //! Indicates continuous range of independent values, `s`, for which the path is defined.
+  //! Indicates the continuous range of independent values, `s`, for which the path is defined.
   struct CUMO_EXPORT Domain {
     //! Minimum value of `s` defining domain.
     double lower;

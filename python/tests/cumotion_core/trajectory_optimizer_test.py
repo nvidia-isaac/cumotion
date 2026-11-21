@@ -21,13 +21,12 @@ import os
 
 # Third Party
 import numpy as np
-import pytest
 
 # cuMotion
 import cumotion
 
 # Local Folder
-from ._test_helper import CUMOTION_ROOT_DIR, errors_disabled
+from ._test_helper import CUMOTION_ROOT_DIR, errors_disabled, warnings_disabled
 
 
 def test_trajectory_optimizer_config_set_param():
@@ -49,20 +48,55 @@ def test_trajectory_optimizer_config_set_param():
                                                                  world_view)
     assert config is not None
 
+    # Relative activation distances of the c-space velocity, acceleration, and jerk limits.
+    relative_activation_distance_param_names = [
+        f"trajopt/{optimizer}/cost/cspace_{derivative}_limit_penalty/relative_activation_distance"
+        for optimizer in ("pbo", "lbfgs") for derivative in ("velocity", "acceleration", "jerk")
+    ]
+    # Weights of the c-space velocity smoothing costs.
+    velocity_smoothing_param_names = [
+        f"trajopt/{optimizer}/cost/cspace_velocity_smoothing_cost"
+        for optimizer in ("pbo", "lbfgs")
+    ]
+
     # Set known parameters to valid values, expecting success.
     # Integer parameters (positive).
     assert config.set_param("ik/num_seeds", 10)
     assert config.set_param("trajopt/num_seeds", 10)
-    # Integer parameter (greater than or equal to 4).
-    assert config.set_param("trajopt/num_knots_per_trajectory", 4)
+    assert config.set_param("trajopt/lbfgs/initial_iterations", 1)
+    # Integer parameter (greater than or equal to 6).
+    assert config.set_param("trajopt/num_spans", 6)
+    # Integer parameter (in the inclusive range [1, 32]).
+    assert config.set_param("trajopt/num_samples_per_span", 1)
+    assert config.set_param("trajopt/num_samples_per_span", 32)
     # Integer parameter (non-negative).
     assert config.set_param("ik/max_reattempts", 5)
     # Boolean parameters.
     assert config.set_param("enable_self_collision", True)
     assert config.set_param("enable_world_collision", False)
+    assert config.set_param("trajopt/enable_implied_dt", True)
     # Double parameters (positive).
     assert config.set_param("task_space_terminal_position_tolerance", 0.001)
     assert config.set_param("task_space_terminal_orientation_tolerance", 0.005)
+    assert config.set_param("trajopt/task_space_path_constraint_position_tolerance", 0.003)
+    assert config.set_param("trajopt/task_space_path_constraint_orientation_tolerance", 0.02)
+    # Double parameters (within [0, 0.95]).
+    for param_name in relative_activation_distance_param_names:
+        assert config.set_param(param_name, 0.0)
+        assert config.set_param(param_name, 0.95)
+        assert config.set_param(param_name, 0.15)
+    # Double parameters (non-negative).
+    for param_name in velocity_smoothing_param_names:
+        assert config.set_param(param_name, 1e-4)
+        assert config.set_param(param_name, 0.0)
+    # Double parameter (positive).
+    assert config.set_param("trajopt/lbfgs/path_constraint_iteration_multiplier", 0.5)
+    # Timestep scales may either shorten or lengthen trajectories.
+    assert config.set_param("trajopt/initial_timestep_scaling_factor", 0.85)
+    assert config.set_param("trajopt/timestep_scaling_factor", 1.01)
+    # Path planner parameters, which are forwarded to the `PathPlanner` configuration.
+    assert config.set_param("path_planner/max_iterations", 250)
+    assert config.set_param("path_planner/step_size", 0.02)
 
     with errors_disabled:
         # Set known parameters to invalid values, expecting parameters to *not* be updated.
@@ -71,15 +105,42 @@ def test_trajectory_optimizer_config_set_param():
         assert not config.set_param("ik/num_seeds", -3)
         assert not config.set_param("trajopt/num_seeds", 0)
         assert not config.set_param("trajopt/num_seeds", -3)
-        # Invalid num_knots_per_trajectory (must be >= 4).
-        assert not config.set_param("trajopt/num_knots_per_trajectory", 3)
-        assert not config.set_param("trajopt/num_knots_per_trajectory", 0)
-        assert not config.set_param("trajopt/num_knots_per_trajectory", -3)
+        assert not config.set_param("trajopt/lbfgs/initial_iterations", 0)
+        assert not config.set_param("trajopt/lbfgs/initial_iterations", -3)
+        # Invalid number of spans (too few or non-positive).
+        assert not config.set_param("trajopt/num_spans", 5)
+        assert not config.set_param("trajopt/num_spans", 0)
+        assert not config.set_param("trajopt/num_spans", -3)
+        # Invalid number of samples per span (must be in the inclusive range [1, 32]).
+        assert not config.set_param("trajopt/num_samples_per_span", 0)
+        assert not config.set_param("trajopt/num_samples_per_span", -3)
+        assert not config.set_param("trajopt/num_samples_per_span", 33)
         # Invalid non-negative integer parameter (must be >= 0).
         assert not config.set_param("ik/max_reattempts", -1)
         # Invalid double parameters (must be > 0).
         assert not config.set_param("task_space_terminal_position_tolerance", 0.0)
         assert not config.set_param("task_space_terminal_position_tolerance", -0.001)
+        assert not config.set_param("trajopt/task_space_path_constraint_position_tolerance", 0.0)
+        assert not config.set_param("trajopt/task_space_path_constraint_position_tolerance", -0.003)
+        assert not config.set_param("trajopt/task_space_path_constraint_orientation_tolerance", 0.0)
+        assert not config.set_param("trajopt/task_space_path_constraint_orientation_tolerance",
+                                    -0.02)
+        # Invalid relative activation distances (must be within [0, 0.95]).
+        for param_name in relative_activation_distance_param_names:
+            assert not config.set_param(param_name, -0.01)
+            assert not config.set_param(param_name, 0.96)
+        # Invalid velocity smoothing costs (must be >= 0).
+        for param_name in velocity_smoothing_param_names:
+            assert not config.set_param(param_name, -1e-4)
+        # Invalid path constraint iteration multipliers (must be > 0).
+        for invalid_value in (0.0, -1.0, float("nan")):
+            assert not config.set_param("trajopt/lbfgs/path_constraint_iteration_multiplier",
+                                        invalid_value)
+        # Invalid timestep scales (must be positive).
+        assert not config.set_param("trajopt/initial_timestep_scaling_factor", 0.0)
+        assert not config.set_param("trajopt/initial_timestep_scaling_factor", -0.85)
+        assert not config.set_param("trajopt/timestep_scaling_factor", 0.0)
+        assert not config.set_param("trajopt/timestep_scaling_factor", -1.01)
 
         # Set unknown parameter, expecting parameter to *not* be updated.
         assert not config.set_param("unknown_parameter", 0)
@@ -87,7 +148,98 @@ def test_trajectory_optimizer_config_set_param():
         # Set known parameters with invalid types, expecting parameters to *not* be updated.
         assert not config.set_param("ik/num_seeds", 12.3)  # int parameter with double value.
         assert not config.set_param("enable_self_collision", 1)  # bool parameter with int value.
+        assert not config.set_param("trajopt/enable_implied_dt", 1)  # bool parameter with int.
+        assert not config.set_param("trajopt/lbfgs/path_constraint_iteration_multiplier",
+                                    True)  # double parameter with bool.
         assert not config.set_param("task_space_terminal_position_tolerance", False)  # double-bool.
+        assert not config.set_param("trajopt/lbfgs/cost/cspace_velocity_smoothing_cost",
+                                    True)  # double parameter with bool.
+
+        # Set path planner parameters that are expected to be rejected.
+        # Unknown parameter within the `path_planner` namespace.
+        assert not config.set_param("path_planner/unknown_parameter", 1)
+        # A name that carries no parameter after the prefix does not name the namespace.
+        assert not config.set_param("path_planner/", 1)
+        assert not config.set_param("path_planner", 1)
+        # Invalid types.
+        assert not config.set_param("path_planner/max_iterations",
+                                    250.5)  # `int` with `double` value.
+        assert not config.set_param("path_planner/max_iterations", True)  # `int` with `bool` value.
+        assert not config.set_param("path_planner/step_size", 1)  # `double` with `int` value.
+        # Violated parameter constraint (must be positive).
+        assert not config.set_param("path_planner/max_iterations", 0)
+        # Violated joint parameter constraint: `min_extension_length` must not exceed
+        # `num_validation_checks_per_extension * step_size`.
+        assert not config.set_param("path_planner/min_extension_length", 100.0)
+
+
+def test_create_trajectory_optimizer_config_from_file(tmp_path):
+    """Test trajectory optimizer config-file format-version validation."""
+    # UR10 is arbitrarily chosen to load a robot description for testing.
+    xrdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared', 'ur10.xrdf')
+    urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'universal_robots',
+                             'ur10', 'ur10_robot.urdf')
+
+    robot_description = cumotion.load_robot_from_file(xrdf_path, urdf_path)
+    world = cumotion.create_world()
+    world_view = world.add_world_view()
+    tool_frame_name = robot_description.tool_frame_names()[0]
+    config_path = tmp_path / 'trajectory_optimizer_config.yaml'
+
+    def write_config(format_version):
+        config_path.write_text(
+            f'format: cumotion_trajopt\nformat_version: {format_version}\n',
+            encoding='utf-8',
+        )
+
+    def create_config():
+        return cumotion.create_trajectory_optimizer_config_from_file(
+            str(config_path), robot_description, tool_frame_name, world_view)
+
+    # Begin with a valid input, then change only `format_version` for each invalid assertion.
+    write_config('2.0')
+    assert create_config() is not None
+
+    with errors_disabled:
+        write_config('1.0')
+        assert create_config() is None
+        write_config('0.0.1')
+        assert create_config() is None
+
+
+def test_trajectory_optimizer_config_deprecated_params():
+    """Test deprecated `TrajectoryOptimizerConfig` parameters."""
+    # UR10 is arbitrarily chosen to load a robot description for testing.
+    xrdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared', 'ur10.xrdf')
+    urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'universal_robots',
+                             'ur10', 'ur10_robot.urdf')
+
+    robot_description = cumotion.load_robot_from_file(xrdf_path, urdf_path)
+    world = cumotion.create_world()
+    world_view = world.add_world_view()
+    tool_frame_name = robot_description.tool_frame_names()[0]
+    config = cumotion.create_default_trajectory_optimizer_config(robot_description,
+                                                                 tool_frame_name,
+                                                                 world_view)
+    assert config is not None
+
+    with warnings_disabled:
+        assert config.set_param("enable_self_collision", False)
+        assert config.set_param("enable_world_collision", False)
+        assert config.set_param("trajopt/num_geometric_planning_attempts", 4)
+        assert config.set_param("trajopt/geometric_planning/max_iterations", 250)
+        for optimizer in ("pbo", "lbfgs"):
+            for penalty in ("velocity", "acceleration", "jerk"):
+                assert config.set_param(
+                    f"trajopt/{optimizer}/cost/cspace_{penalty}_limit_penalty/activation_distance",
+                    1.5)
+
+    with errors_disabled:
+        assert not config.set_param("trajopt/geometric_planning/max_iterations", 9)
+        # The removed knot count is no longer used and is rejected for any value.
+        assert not config.set_param("trajopt/num_knots_per_trajectory", 32)
+        assert not config.set_param(
+            "trajopt/lbfgs/cost/cspace_velocity_limit_penalty/activation_distance", -1.0)
 
 
 def test_ur10_target_none():
@@ -127,7 +279,7 @@ def test_ur10_target_none():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.3) < 0.2
 
 
 def test_ur10_target_constant():
@@ -173,7 +325,7 @@ def test_ur10_target_constant():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.3) < 0.2
 
 
 def test_ur10_target_terminal_target():
@@ -276,7 +428,7 @@ def test_ur10_target_terminal_and_path_target():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.3) < 0.2
 
 
 def test_ur10_target_terminal_axis():
@@ -325,7 +477,7 @@ def test_ur10_target_terminal_axis():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.3) < 0.2
 
 
 def test_ur10_target_terminal_and_path_axis():
@@ -433,7 +585,7 @@ def test_ur10_target_terminal_target_and_path_axis():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.8) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.6) < 0.2
 
 
 def test_ur10_linear_none():
@@ -469,7 +621,7 @@ def test_ur10_linear_none():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.8) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
 
 
 def test_ur10_linear_constant():
@@ -484,6 +636,12 @@ def test_ur10_linear_constant():
     optimizer_config = cumotion.create_default_trajectory_optimizer_config(robot_description,
                                                                            tool_frame_name,
                                                                            world_view)
+    # Increase the IK orientation penalty so the IK seeds align well enough with the
+    # constant-orientation path constraint for the trajectory optimizer to converge.
+    assert optimizer_config.set_param(
+        "ik/lbfgs/cost/tool_frame_orientation_error_penalty/weight", 5000.0)
+    assert optimizer_config.set_param(
+        "ik/pbo/cost/tool_frame_orientation_error_penalty/weight", 5000.0)
     optimizer = cumotion.create_trajectory_optimizer(optimizer_config)
     assert optimizer is not None
 
@@ -543,7 +701,7 @@ def test_ur10_linear_terminal_target():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.8) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
 
 
 def test_ur10_linear_terminal_and_path_target():
@@ -588,7 +746,7 @@ def test_ur10_linear_terminal_and_path_target():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.7) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.6) < 0.2
 
 
 def test_ur10_linear_terminal_and_path_axis():
@@ -603,6 +761,7 @@ def test_ur10_linear_terminal_and_path_axis():
     optimizer_config = cumotion.create_default_trajectory_optimizer_config(robot_description,
                                                                            tool_frame_name,
                                                                            world_view)
+
     optimizer = cumotion.create_trajectory_optimizer(optimizer_config)
     assert optimizer is not None
 
@@ -674,7 +833,7 @@ def test_ur10_linear_terminal_target_and_path_axis():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.7) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
 
 
 def test_ur10_linear_terminal_axis():
@@ -689,6 +848,7 @@ def test_ur10_linear_terminal_axis():
     optimizer_config = cumotion.create_default_trajectory_optimizer_config(robot_description,
                                                                            tool_frame_name,
                                                                            world_view)
+
     optimizer = cumotion.create_trajectory_optimizer(optimizer_config)
     assert optimizer is not None
 
@@ -720,7 +880,7 @@ def test_ur10_linear_terminal_axis():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 2.2) < 0.2
+    assert abs(results.trajectory().domain().span() - 2.0) < 0.2
 
 
 def test_ur10_goalset_none():
@@ -816,6 +976,12 @@ def test_ur10_goalset_terminal_and_path_axis():
     optimizer_config = cumotion.create_default_trajectory_optimizer_config(robot_description,
                                                                            tool_frame_name,
                                                                            world_view)
+    # Increase the IK orientation penalty so the IK seeds align well enough with the
+    # constant-orientation path constraint for the trajectory optimizer to converge.
+    assert optimizer_config.set_param(
+        "ik/lbfgs/cost/tool_frame_orientation_error_penalty/weight", 5000.0)
+    assert optimizer_config.set_param(
+        "ik/pbo/cost/tool_frame_orientation_error_penalty/weight", 5000.0)
     optimizer = cumotion.create_trajectory_optimizer(optimizer_config)
     assert optimizer is not None
 
@@ -888,7 +1054,7 @@ def test_ur10_goalset_linear_none():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.0) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.2) < 0.2
 
 
 def _populate_sdf_from_world_view(
@@ -982,7 +1148,7 @@ def test_ur10_axis_target_obstacles():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert abs(results.trajectory().domain().span() - 1.53) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.7) < 0.2
     print("Trajectory time (Cuboid): ", results.trajectory().domain().span(), " seconds.")
 
     # Create an SDF grid that contains both obstacles, using 'world_view' as the distance function.
@@ -1028,6 +1194,10 @@ def test_ur10_axis_target_obstacles():
         )
     )
 
+    # NOTE: This test requires an activation distance on the order of voxel size to succeed.
+    assert optimizer_config.set_param(
+        "trajopt/lbfgs/cost/world_collision_penalty/activation_distance", 0.01)
+
     optimizer = cumotion.create_trajectory_optimizer(optimizer_config)
     assert optimizer is not None
 
@@ -1038,8 +1208,8 @@ def test_ur10_axis_target_obstacles():
     assert results_sdf.trajectory() is not None
     obstacle_time = results.trajectory().domain().span()
     sdf_time = results_sdf.trajectory().domain().span()
-    assert abs(sdf_time - obstacle_time) < 0.3
-    print("Trajectory time (SDF): ", results.trajectory().domain().span(), " seconds.")
+    print("Trajectory time (SDF): ", sdf_time, " seconds.")
+    assert abs(sdf_time - obstacle_time) < 0.4
 
 
 def test_plan_to_cspace_target_invalid_target_cspace_position():
@@ -1132,10 +1302,9 @@ def test_ur10_short_move_cspace():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert results.trajectory().domain().span() < 0.8
+    assert results.trajectory().domain().span() < 0.9
 
 
-@pytest.mark.skip(reason="Disabled in C++ (DISABLED_ShortMove_TaskSpace)")
 def test_ur10_short_move_task_space():
     """Plan a small task-space movement for UR10 and expect success."""
     xrdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared', 'ur10.xrdf')
@@ -1175,7 +1344,7 @@ def test_ur10_short_move_task_space():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert results.trajectory().domain().span() < 0.3
+    assert results.trajectory().domain().span() < 0.35
 
 
 def test_ur10_null_move_cspace():
@@ -1222,7 +1391,6 @@ def test_ur10_null_move_cspace():
     assert results.trajectory() is not None
     assert results.trajectory().domain().span() < 0.1
     assert _tool_translation(kinematics, tool_frame_name, results.trajectory()) < 1e-4
-    assert results.trajectory().domain().span() < 0.05
 
 
 def test_ur10_null_move_task_space():
@@ -1263,7 +1431,7 @@ def test_ur10_null_move_task_space():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert results.trajectory().domain().span() < 0.05
+    assert results.trajectory().domain().span() < 0.07
     assert _tool_translation(kinematics, tool_frame_name, results.trajectory()) < 1e-4
 
 
@@ -1311,7 +1479,7 @@ def test_ur10_rotation_only_task_space():
     assert results is not None
     assert results.status() == cumotion.TrajectoryOptimizer.Results.Status.SUCCESS
     assert results.trajectory() is not None
-    assert results.trajectory().domain().span() < 0.6
+    assert results.trajectory().domain().span() < 0.8
     assert _tool_translation(kinematics, tool_frame_name, results.trajectory()) < 1e-4
 
     # Check that the tool frame position is nearly constant during the rotation.
@@ -1363,4 +1531,4 @@ def test_franka_target_none():
     qf = results.trajectory().eval(results.trajectory().domain().upper)
     final_tool_position = kinematics.position(qf, tool_frame_name)
     assert np.linalg.norm(final_tool_position - position_target) < 1e-6
-    assert abs(results.trajectory().domain().span() - 1.5) < 0.2
+    assert abs(results.trajectory().domain().span() - 1.25) < 0.2

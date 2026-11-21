@@ -26,13 +26,12 @@ namespace cumotion {
 //! Configure a trajectory generator that can compute smooth* trajectories. A trajectory generation
 //! problem is specified by:
 //!
-//!   1. Bound constraints (position, velocity, and acceleration),
-//!   2. Intermediate position waypoints, and
-//!   3. Limits on some combination of position, velocity, acceleration and jerk.
+//!   1. Position waypoints, and
+//!   2. Limits on some combination of position, velocity, acceleration and jerk.
 //!
-//! Times for domain bounds and intermediate waypoints are *not* specified. It is assumed that a
-//! time-optimal trajectory that respects the constraints (with the definition of time-optimality
-//! being implementation-specific) will be generated.
+//! Times for the waypoints are *not* specified. It is assumed that a time-optimal trajectory that
+//! respects the constraints (with the definition of time-optimality being implementation-specific)
+//! will be generated.
 //!
 //! * The definition of "smooth" is implementation-specific. Currently, `CSpaceTrajectoryGenerator`
 //!   uses a single implementation that interpolates through waypoints using a series of cubic
@@ -79,10 +78,18 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
   //! the specified constraints.
   //!
   //! If a trajectory cannot be generated, `nullptr` is returned.
+  //!
+  //! A fatal error is logged if:
+  //! 1. Any of the `waypoints` does not have the same number of c-space coordinates as the
+  //!    `CSpaceTrajectoryGenerator` (i.e., `numCSpaceCoords()`);
+  //! 2. Any c-space coordinate does not have a velocity limit;
+  //! 3. Any of the `waypoints` is outside the position limits; *OR*
+  //! 4. Both `max_segment_iterations` and `max_aggregate_iterations` are zero (see
+  //!    `setSolverParam()`).
   [[nodiscard]] virtual std::unique_ptr<Trajectory> generateTrajectory(
       const std::vector<Eigen::VectorXd> &waypoints) const = 0;
 
-  //! Interpolation modes used by `interpolateTrajectory()`.
+  //! Interpolation modes used by `generateTimeStampedTrajectory()`.
   enum class InterpolationMode {
     //! Linear interpolation between c-space positions.
     //!
@@ -101,16 +108,17 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
   //! `times`.
   //!
   //! Interpolation will fail if:
-  //! 1. The number of specified `positions` does not match the number of specified `times`;
-  //! 2. There is not at least one position specified for `LINEAR` interpolation mode or at least
-  //!    two positions specified for `CUBIC_SPLINE` interpolation mode;
-  //! 3. Not all `positions` have the same number of c-space coordinates;
-  //! 4. Not all `times` are strictly increasing; *OR*
-  //! 5. The interpolated trajectory does not satisfy specified limits on c-space position,
+  //! 1. The number of specified `waypoints` does not match the number of specified `times`;
+  //! 2. There is not at least one waypoint specified for `LINEAR` interpolation mode or at least
+  //!    two waypoints specified for `CUBIC_SPLINE` interpolation mode;
+  //! 3. Not all `times` are strictly increasing; *OR*
+  //! 4. The interpolated trajectory does not satisfy specified limits on c-space position,
   //!    velocity, acceleration, or jerk.
   //!
-  //! If a trajectory cannot be generated due to invalid input (items 1-4 above), a fatal error is
-  //! logged. If failure is due to c-space limits (item 5 above), then `nullptr` is returned.
+  //! If interpolation fails, an error is logged and `nullptr` is returned.
+  //!
+  //! A fatal error is logged if any of the `waypoints` does not have the same number of c-space
+  //! coordinates as the `CSpaceTrajectoryGenerator` (i.e., `numCSpaceCoords()`).
   [[nodiscard]] virtual std::unique_ptr<Trajectory> generateTimeStampedTrajectory(
       const std::vector<Eigen::VectorXd> &waypoints,
       const std::vector<double> &times,
@@ -127,7 +135,7 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
   struct CUMO_EXPORT SolverParamValue {
     //! Create `SolverParamValue` from `int`.
     SolverParamValue(int value);  // NOLINT Allow implicit conversion
-    //! Create `SolverValue` from `double`.
+    //! Create `SolverParamValue` from `double`.
     SolverParamValue(double value);  // NOLINT Allow implicit conversion
     //! Create `SolverParamValue` from `const char*`.
     SolverParamValue(const char *value);  // NOLINT Allow implicit conversion
@@ -158,7 +166,7 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
   //!   - The second step towards finding a time-optimal trajectory using a series of cubic splines
   //!     is to iteratively compute an optimal span for the entire trajectory.
   //!   - Relying more heavily on this second step (i.e., setting `max_segment_iterations` to a
-  //!     a relatively low value) will, in general, require less iterations (and thus less time) to
+  //!     relatively low value) will, in general, require less iterations (and thus less time) to
   //!     converge, but the generated trajectories will tend to have longer time spans.
   //!   - This step can be skipped completely by setting `max_aggregate_iterations` to zero.
   //!   - `max_aggregate_iterations` must be non-negative. Additionally at least one of
@@ -197,6 +205,12 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
   //!   - Specify the `TimeSplitMethod` for the initial distribution of time values that will be
   //!     used to iteratively search for time-optimal values.
   //!   - Valid settings are `uniform`, `chord_length` and `centripetal`.
+  //!   - Default value is `centripetal`.
+  //!
+  //! Return `true` if the parameter is set. If `param_name` is not one of the parameters above, or
+  //! if `value` is not a valid setting for it, a warning is logged, the parameter is not changed,
+  //! and `false` is returned. A fatal error is logged if `value` does not hold the type listed
+  //! for `param_name` (e.g., an `int` for a `double` parameter).
   [[nodiscard]]
   virtual bool setSolverParam(const std::string &param_name, SolverParamValue value) = 0;
 };
@@ -204,8 +218,7 @@ class CUMO_EXPORT CSpaceTrajectoryGenerator {
 //! Create a `CSpaceTrajectoryGenerator` with the specified number of configuration space
 //! coordinates.
 //!
-//! Position and derivative limits, bound constraints, and intermediate waypoints can be added
-//! after construction.
+//! Position and derivative limits can be added after construction.
 CUMO_EXPORT std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(
     int num_cspace_coords);
 
@@ -214,8 +227,7 @@ CUMO_EXPORT std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGen
 //! The `kinematics` will be used to specify the number of configuration space coordinates, position
 //! limits, and any available derivative limits.
 //!
-//! Position and derivative limits may be added or overwritten after construction. Bound
-//! constraints and intermediate waypoints can be added after construction.
+//! Position and derivative limits may be added or overwritten after construction.
 CUMO_EXPORT std::unique_ptr<CSpaceTrajectoryGenerator> CreateCSpaceTrajectoryGenerator(
     const Kinematics &kinematics);
 

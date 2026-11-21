@@ -85,14 +85,14 @@ class CUMO_EXPORT CollisionFreeIkSolverConfig {
   //!     memory usage and the maximum possible time to find a solution. A value of 0 means no
   //!     retries (i.e. only perform the initial attempt).
   //!   - A default value of 10 is recommended for most use-cases.
-  //!   - Must be non-negative.
+  //!   - Must be in the range [0, 50].
   //!   - NOTE: This parameter is not currently used for batch (multiple problems) planning.
   //!
   //! `lbfgs/max_iterations` [`int`]
   //!   - Maximum number of L-BFGS iterations for the inverse kinematics solver.
   //!   - Higher values allow the IK solver to converge more precisely but increase computational
   //!     cost per IK attempt.
-  //!   - A default value of 100 is recommended for most use-cases.
+  //!   - A default value of 150 is recommended for most use-cases.
   //!   - Must be positive.
   [[nodiscard]] virtual bool setParam(const std::string &param_name, ParamValue value) = 0;
 };
@@ -103,7 +103,7 @@ class CUMO_EXPORT CollisionFreeIkSolverConfig {
 //! `world_view`.
 //!
 //! A configuration will *NOT* be created if:
-//!   1. `robot_description` is invalid, *OR*
+//!   1. `robot_description` has zero c-space coordinates, *OR*
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //!
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
@@ -138,31 +138,6 @@ class CUMO_EXPORT CollisionFreeIkSolver {
     //! the base of the robot).
     static TranslationConstraint Target(const Eigen::Vector3d &translation_target,
                                         std::optional<double> deviation_limit = std::nullopt);
-
-    struct Impl;
-    std::shared_ptr<Impl> impl;
-  };
-
-  //! Variant of `TranslationConstraint` for "goalset" planning.
-  //!
-  //! For goalset planning, a set of `TranslationConstraint`s are considered concurrently. Each
-  //! `TranslationConstraint` in the goalset must have the same mode (e.g., "target") but may have
-  //! different data for each `TranslationConstraint`.
-  //!
-  //! DEPRECATED: This class is deprecated and will be removed in a future version. Use
-  //! `TranslationConstraintArray` instead.
-  class CUMO_EXPORT TranslationConstraintGoalset {
-   public:
-    //! Create a `TranslationConstraintGoalset` such that `translation_targets` are fully specified.
-    //!
-    //! See `TranslationConstraint::Target()` for details.
-    //!
-    //! A fatal error will be logged if:
-    //!   1. Any condition of `TranslationConstraint::Target()` is not met, *OR*
-    //!   2. `translation_targets` is empty.
-    static TranslationConstraintGoalset Target(
-      const std::vector<Eigen::Vector3d> &translation_targets,
-      std::optional<double> deviation_limit = std::nullopt);
 
     struct Impl;
     std::shared_ptr<Impl> impl;
@@ -275,50 +250,6 @@ class CUMO_EXPORT CollisionFreeIkSolver {
     std::shared_ptr<Impl> impl;
   };
 
-  //! Variant of `OrientationConstraint` for "goalset" planning.
-  //!
-  //! For goalset planning, a set of `OrientationConstraint`s are considered concurrently. Each
-  //! `OrientationConstraint` in the goalset must have the same mode (e.g., "full target") but
-  //! may have different data for each `OrientationConstraint`.
-  //!
-  //! DEPRECATED: This class is deprecated and will be removed in a future version. Use
-  //! `OrientationConstraintArray` instead.
-  class CUMO_EXPORT OrientationConstraintGoalset {
-   public:
-    //! Create an `OrientationConstraintGoalset` such that no tool frame orientation constraints
-    //! are active.
-    static OrientationConstraintGoalset None();
-
-    //! Create an `OrientationConstraintGoalset` such that tool frame `orientation_targets` are
-    //! fully specified.
-    //!
-    //! See `OrientationConstraint::Target()` for details.
-    //!
-    //! A fatal error will be logged if:
-    //!   1. Any condition of `OrientationConstraint::Target()` is not met, *OR*
-    //!   2. `orientation_targets` is empty.
-    static OrientationConstraintGoalset Target(
-        const std::vector<Rotation3> &orientation_targets,
-        std::optional<double> deviation_limit = std::nullopt);
-
-    //! Create an `OrientationConstraintGoalset` such that the tool frame orientation is constrained
-    //! to rotate about a "free axis".
-    //!
-    //! See `OrientationConstraint::Axis()` for details.
-    //!
-    //! A fatal error will be logged if:
-    //!   1. Any condition of `OrientationConstraint::Axis()` is not met,
-    //!   2. `tool_frame_axes` and `world_target_axes` do not have the same number of elements, *OR*
-    //!   3. `tool_frame_axes` and `world_target_axes` are empty.
-    static OrientationConstraintGoalset Axis(
-        const std::vector<Eigen::Vector3d> &tool_frame_axes,
-        const std::vector<Eigen::Vector3d> &world_target_axes,
-        std::optional<double> axis_deviation_limit = std::nullopt);
-
-    struct Impl;
-    std::shared_ptr<Impl> impl;
-  };
-
   //! Jagged 2D array of `OrientationConstraint`s for solving IK problem(s).
   //!
   //! The outer dimension of the array represents the number of problems to solve, and the inner
@@ -373,7 +304,6 @@ class CUMO_EXPORT CollisionFreeIkSolver {
     //!   6. The size of `tool_frame_axes` and `world_target_axes` are greater than `1`, and the
     //!      size of any of their inner vectors is greater than `1`. (This restriction will be
     //!      removed when support for "goalset batch IK" is added.)
-
     static OrientationConstraintArray Axis(
         const std::vector<std::vector<Eigen::Vector3d>> &tool_frame_axes,
         const std::vector<std::vector<Eigen::Vector3d>> &world_target_axes,
@@ -406,28 +336,6 @@ class CUMO_EXPORT CollisionFreeIkSolver {
     explicit TaskSpaceTarget(const TranslationConstraint &translation_constraint,
                              const OrientationConstraint &orientation_constraint =
                                  OrientationConstraint::None());
-
-    struct Impl;
-    std::shared_ptr<Impl> impl;
-  };
-
-  //! Variant of `TaskSpaceTarget` for "goalset" planning.
-  //!
-  //! For goalset planning, a set of pose constraints are considered concurrently. Each pose
-  //! constraint in the goalset must have the same mode (e.g., "position target and no orientation
-  //! constraints") but may have different data for each constraint.
-  //!
-  //! DEPRECATED: This class is deprecated and will be removed in a future version. Use
-  //! `TaskSpaceTargetArray` instead.
-  struct CUMO_EXPORT TaskSpaceTargetGoalset {
-    //! Create a task-space target goalset.
-    //!
-    //! A fatal error will be logged if:
-    //!   1. The number of `translation_constraints` does not match the number of
-    //!      `orientation_constraints`.
-    explicit TaskSpaceTargetGoalset(const TranslationConstraintGoalset &translation_constraints,
-                                    const OrientationConstraintGoalset &orientation_constraints =
-                                        OrientationConstraintGoalset::None());
 
     struct Impl;
     std::shared_ptr<Impl> impl;
@@ -500,8 +408,9 @@ class CUMO_EXPORT CollisionFreeIkSolver {
 
     //! Return the indices of the targets selected for each valid c-space position.
     //!
-    //! For goalset planning (e.g., `solveGoalset()`), returned values represent indices into
-    //! the constraint vectors used to create the goalset (e.g., `TaskSpaceTargetGoalset`).
+    //! For goalset planning (i.e., `solveArray()` with a single problem that has multiple
+    //! targets), returned values represent indices into the constraint vectors used to create the
+    //! `TaskSpaceTargetArray`.
     //!
     //! For single target planning (e.g., `solve()`), zero will be returned for each valid
     //! c-space position in `cSpacePositions()`.
@@ -538,6 +447,11 @@ class CUMO_EXPORT CollisionFreeIkSolver {
   //! NOTE: It is *not* required that the `cspace_seeds` represent valid c-space positions (i.e., be
   //!       within position limits, be collision-free, etc.).
   //!
+  //! Each attempt (the initial attempt and up to `max_reattempts` reattempts) uses the next
+  //! `num_seeds` of the `cspace_seeds` in order, where `num_seeds` and `max_reattempts` are set in
+  //! the `CollisionFreeIkSolverConfig`. Any `cspace_seeds` beyond
+  //! `num_seeds * (max_reattempts + 1)` are never used.
+  //!
   //! A fatal error will be logged if:
   //!   1. Any c-space position in `cspace_seeds` does not have the same number of c-space
   //!      coordinates as the `RobotDescription` used to configure the
@@ -546,39 +460,19 @@ class CUMO_EXPORT CollisionFreeIkSolver {
       const TaskSpaceTarget &task_space_target,
       const std::vector<Eigen::VectorXd> &cspace_seeds = {}) const = 0;
 
-  //! Attempt to find c-space solutions that satisfy the constraints specified in
-  //! `task_space_target_goalset`.
-  //!
-  //! To be considered a valid solution, a c-space position must satisfy the constraints of any
-  //! *one* of the targets specified in `task_space_target_goalset`.
-  //!
-  //! The `cspace_seeds` are optional inputs that can be used to "warm start" the IK optimization.
-  //! NOTE: It is *not* required that the `cspace_seeds` represent valid c-space positions (i.e., be
-  //!       within position limits, be collision-free, etc.).
-  //!
-  //! DEPRECATED: This function is deprecated and will be removed in a future version. Use
-  //! `solveArray()` instead. To achieve the same goalset planning functionality with
-  //! `solveArray()`, create a `TaskSpaceTargetArray` with a single problem (i.e., a single element
-  //! in the outer constraint vectors), and place the goalset data as the inner constraint vectors.
-  //! Then call `solveArray()` and inspect the results for the first problem.
-  //!
-  //! A fatal error will be logged if:
-  //!   1. Any c-space position in `cspace_seeds` does not have the same number of c-space
-  //!      coordinates as the `RobotDescription` used to configure the
-  //!      `CollisionFreeIkSolverConfig`.
-  [[nodiscard]] CUMO_DEPRECATED virtual std::unique_ptr<Results> solveGoalset(
-      const TaskSpaceTargetGoalset &task_space_target_goalset,
-      const std::vector<Eigen::VectorXd> &cspace_seeds = {}) const = 0;
-
   //! Attempt to find c-space solutions for each problem in `task_space_target_array`.
   //!
   //! The `cspace_seeds` are optional inputs that can be used to "warm start" each IK optimization.
   //! NOTE: It is *not* required that the `cspace_seeds` represent valid c-space positions (i.e., be
   //!       within position limits, be collision-free, etc.).
   //!
+  //! For a single problem, the `cspace_seeds` are used as described for `solve()`. For more than
+  //! one problem, each problem uses the first `num_seeds` of the `cspace_seeds`, since reattempts
+  //! are not performed.
+  //!
   //! Non-fatal warnings will be logged if:
-  //!   1. The number of `cspace_seeds` is larger than `num_seeds` in the
-  //!      `CollisionFreeIkSolverConfig`.
+  //!   1. `task_space_target_array` has more than one problem and the number of `cspace_seeds` is
+  //!      larger than `num_seeds` in the `CollisionFreeIkSolverConfig`.
   //!
   //! A fatal error will be logged if:
   //!   1. Any c-space position in `cspace_seeds` does not have the same number of c-space

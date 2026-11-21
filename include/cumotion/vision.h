@@ -155,8 +155,11 @@ class DepthImage : public DepthImageBase {
   //!
   //! A fatal error will be logged if:
   //!
-  //! 1. `width` or `height` is zero or negative, or
-  //! 2. `stride` is smaller than `width`.
+  //! 1. `width` or `height` is zero or negative,
+  //! 2. `stride` is smaller than `width`, or
+  //! 3. `meters_per_unit` is zero or negative.
+  //!
+  //! A warning will be logged if `meters_per_unit` is positive but less than 1e-12.
   template<typename U = T, typename = std::enable_if_t<!std::is_const_v<U>>>
   DepthImage(int width, int height,
              std::optional<int> stride = std::nullopt,
@@ -230,8 +233,8 @@ class DepthImage : public DepthImageBase {
 
   //! Return a reference to the depth value at pixel coordinates (x, y).
   //!
-  //! This function allows modification of the depth value and is only available for non-const
-  //! template instantiations. The `x` coordinate corresponds to the column index, and `y`
+  //! This function allows modification of the depth value, unless `T` is const, in which case the
+  //! returned reference is also const. The `x` coordinate corresponds to the column index, and `y`
   //! corresponds to the row index, with the origin at the top-left corner.
   //!
   //! @warning This accessor does not perform bounds checking and does not check that the data is
@@ -244,8 +247,8 @@ class DepthImage : public DepthImageBase {
   //! corresponds to the column index, and `y` corresponds to the row index, with the origin at
   //! the top-left corner.
   //!
-  //! A fatal error will be logged if the data is not resident on the host or if either `x` or `y`
-  //! is out of bounds.
+  //! A fatal error will be logged if `residency()` is `BufferResidency::DEVICE` or if either `x` or
+  //! `y` is out of bounds.
   [[nodiscard]] double depthInMeters(int x, int y) const override;
 
   struct Impl;
@@ -278,8 +281,11 @@ extern template class CUMO_EXTERN_TEMPLATE_EXPORT DepthImage<const uint16_t>;
 //! A fatal error will be logged if:
 //!
 //! 1. `data` is null,
-//! 2. `width` or `height` is zero or negative, or
-//! 3. `stride` is smaller than `width`.
+//! 2. `width` or `height` is zero or negative,
+//! 3. `stride` is smaller than `width`, or
+//! 4. `meters_per_unit` is zero or negative.
+//!
+//! A warning will be logged if `meters_per_unit` is positive but less than 1e-12.
 template<typename T>
 CUMO_EXPORT DepthImage<T> CreateDepthImageView(
   T *data,

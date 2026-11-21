@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2020-2025 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES.
 #                         All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -63,6 +63,31 @@ def test_three_link_arm_kinematics(configure_three_link_arm_kinematics):
         limits = kinematics.cspace_coord_limits(i)
         assert -3.0 == limits.lower
         assert 3.0 == limits.upper
+
+    # Check that a constructed Limits populates `lower` and `upper` in argument order
+    positional_limits = cumotion.Kinematics.Limits(-2.0, 3.0)
+    assert -2.0 == positional_limits.lower
+    assert 3.0 == positional_limits.upper
+
+    # Check that both limits are accepted by keyword
+    keyword_limits = cumotion.Kinematics.Limits(lower=-1.5, upper=0.5)
+    assert -1.5 == keyword_limits.lower
+    assert 0.5 == keyword_limits.upper
+
+    # Check that both limits are required
+    with pytest.raises(TypeError):
+        cumotion.Kinematics.Limits(-1.0)
+
+    # Check that the constructor is *NOT* responsible for validating the bounds, so an inverted or
+    # degenerate range is constructed as specified. Each consumer of a Limits is responsible for
+    # rejecting a range it considers invalid (e.g.,
+    # `RobotDescriptionBuilder.add_revolute_joint()`).
+    inverted_limits = cumotion.Kinematics.Limits(1.0, -1.0)
+    assert 1.0 == inverted_limits.lower
+    assert -1.0 == inverted_limits.upper
+    degenerate_limits = cumotion.Kinematics.Limits(2.0, 2.0)
+    assert 2.0 == degenerate_limits.lower
+    assert 2.0 == degenerate_limits.upper
 
     # Check C-space velocity, acceleration, and jerk limits
     for i in range(kinematics.num_cspace_coords()):

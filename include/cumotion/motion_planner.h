@@ -11,6 +11,16 @@
 
 //! @file
 //! @brief Public interface to cuMotion's global motion planning implementation.
+//!
+//! DEPRECATED: Everything declared in this header is deprecated and will be removed in a future
+//! release. Use `PathPlanner` (declared in `cumotion/path_planner.h`) instead. `PathPlanner` is
+//! fully GPU-accelerated and is typically between 10 and 100 times faster than `MotionPlanner`,
+//! depending on the problem and robot.
+//!
+//! `PathPlanner` drops support for task-space targets. The recommended flow for task-space
+//! targets is to use `CollisionFreeIkSolver` to generate a set of collision-free c-space positions
+//! that achieve the task-space constraints, and to pass all solutions to
+//! `PathPlanner::planToCSpaceTargets()`, which will plan to at least one c-space target.
 
 #pragma once
 
@@ -28,6 +38,9 @@
 namespace cumotion {
 
 //! Configuration parameters for a `MotionPlanner`.
+//!
+//! DEPRECATED: This class is deprecated and will be removed in a future release. Use `PathPlanner`
+//! and `PathPlannerConfig` instead.
 class CUMO_EXPORT MotionPlannerConfig {
  public:
   virtual ~MotionPlannerConfig() = default;
@@ -370,7 +383,11 @@ class CUMO_EXPORT MotionPlannerConfig {
 //!   1. `robot_description` is invalid, *OR*
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFile(
+//!
+//! DEPRECATED: This function is deprecated and will be removed in a future release. Use
+//! `PathPlanner` and `CreatePathPlannerConfigFromFile()` instead. A deprecation warning is logged
+//! on every call to this function.
+CUMO_EXPORT CUMO_DEPRECATED std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFile(
     const std::filesystem::path &motion_planner_config_file,
     const RobotDescription &robot_description,
     const std::string &tool_frame_name,
@@ -385,7 +402,11 @@ CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateMotionPlannerConfigFromFi
 //!   2. `tool_frame_name` is not a valid frame in `robot_description`.
 //!
 //! In the case of failure, a non-fatal error will be logged and a `nullptr` will be returned.
-CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfig(
+//!
+//! DEPRECATED: This function is deprecated and will be removed in a future release. Use
+//! `PathPlanner` and `CreateDefaultPathPlannerConfig()` instead. A deprecation warning is logged
+//! on every call to this function.
+CUMO_EXPORT CUMO_DEPRECATED std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfig(
     const RobotDescription &robot_description,
     const std::string &tool_frame_name,
     const WorldViewHandle &world_view);
@@ -393,6 +414,10 @@ CUMO_EXPORT std::unique_ptr<MotionPlannerConfig> CreateDefaultMotionPlannerConfi
 //! Interface class for planning collision-free paths for robotic manipulators.
 //! Supports both configuration space (i.e., joint position) targets and task space (e.g., end
 //! effector position) targets.
+//!
+//! DEPRECATED: This class is deprecated and will be removed in a future release. Use `PathPlanner`
+//! instead. See the documentation of the individual member functions for the recommended
+//! replacement for each planning call.
 class CUMO_EXPORT MotionPlanner {
  public:
   virtual ~MotionPlanner() = default;
@@ -422,6 +447,10 @@ class CUMO_EXPORT MotionPlanner {
   //! configuration space target (`q_target`).
   //! `generate_interpolated_path` determines whether `interpolated_path` will be populated in
   //! `Results`.
+  //!
+  //! DEPRECATED: This function is deprecated and will be removed in a future release. Use
+  //! `PathPlanner::planToCSpaceTargets()` instead, passing `q_target` as the only element of
+  //! `cspace_targets`.
   virtual Results planToCSpaceTarget(const Eigen::VectorXd &q_initial,
                                      const Eigen::VectorXd &q_target,
                                      bool generate_interpolated_path = false) = 0;
@@ -430,6 +459,12 @@ class CUMO_EXPORT MotionPlanner {
   //! space translation target (`translation_target`).
   //! `generate_interpolated_path` determines whether `interpolated_path` will be populated in
   //! `Results`.
+  //!
+  //! DEPRECATED: This function is deprecated and will be removed in a future release.
+  //! `PathPlanner` drops support for task-space targets. The recommended flow for task-space
+  //! targets is to use `CollisionFreeIkSolver` to generate a set of collision-free c-space
+  //! positions that achieve the task-space constraints, and to pass all solutions to
+  //! `PathPlanner::planToCSpaceTargets()`.
   virtual Results planToTranslationTarget(const Eigen::VectorXd &q_initial,
                                           const Eigen::Vector3d &translation_target,
                                           bool generate_interpolated_path = false) = 0;
@@ -438,16 +473,30 @@ class CUMO_EXPORT MotionPlanner {
   //! space pose target (`pose_target`).
   //! `generate_interpolated_path` determines whether `interpolated_path` will be populated in
   //! `Results`.
+  //!
+  //! DEPRECATED: This function is deprecated and will be removed in a future release.
+  //! `PathPlanner` drops support for task-space targets. The recommended flow for task-space
+  //! targets is to use `CollisionFreeIkSolver` to generate a set of collision-free c-space
+  //! positions that achieve the task-space constraints, and to pass all solutions to
+  //! `PathPlanner::planToCSpaceTargets()`.
   virtual Results planToPoseTarget(const Eigen::VectorXd &q_initial,
                                    const Pose3 &pose_target,
                                    bool generate_interpolated_path = false) = 0;
 
   //! Reset all internal state so that subsequent planning calls produce the same results as they
   //! did immediately after construction, given the same inputs.
+  //!
+  //! DEPRECATED: This function is deprecated and will be removed in a future release. Use
+  //! `PathPlanner` instead.
   virtual void reset() = 0;
 };
 
 //! Create a `MotionPlanner` with the given `config`.
-CUMO_EXPORT std::unique_ptr<MotionPlanner> CreateMotionPlanner(const MotionPlannerConfig &config);
+//!
+//! DEPRECATED: This function is deprecated and will be removed in a future release. Use
+//! `PathPlanner` and `CreatePathPlanner()` instead. A deprecation warning is logged on every call
+//! to this function.
+CUMO_EXPORT CUMO_DEPRECATED std::unique_ptr<MotionPlanner> CreateMotionPlanner(
+    const MotionPlannerConfig &config);
 
 }  // namespace cumotion
