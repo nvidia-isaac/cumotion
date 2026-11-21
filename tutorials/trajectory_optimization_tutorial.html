@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=decb6a4a" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -59,7 +59,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Concepts" href="../concepts.html" />
-    <link rel="prev" title="Inverse Kinematics Tutorial" href="inverse_kinematics_tutorial.html" />
+    <link rel="prev" title="Path Planning Tutorial" href="path_planning_tutorial.html" />
 
 
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -264,6 +264,7 @@
 <li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="path_planning_tutorial.html">Path Planning Tutorial</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Trajectory Optimization Tutorial</a></li>
 </ul>
 </details></li>
@@ -393,10 +394,16 @@ they are very hard to solve.) There are many approaches to simplifying these pro
 computationally feasible, but all will—at best—return merely approximations to the globally
 optimal solution. More typically, the true global optimal is completely unknown or intractable to
 find, and the algorithm will produce a “good enough” feasible solution.</p>
-<p>The current algorithm implemented by the cuMotion library starts with a particle-based optimization
-(PBO) method that helps identify coarse high-quality solutions. These coarse solutions are then
-optimized using a limited-memory quasi-Newton method (L-BFGS) that refines these coarse solutions
-to feasible trajectories that are time-optimized and smooth.</p>
+<p>The cuMotion library represents each trajectory as a uniform cubic B-spline. The optimization
+variables are the free control points of the spline. Costs and constraints are evaluated using the
+analytical derivatives of the spline at densely sampled points along the trajectory.</p>
+<p>The current algorithm implemented by the cuMotion library starts by generating initial trajectory
+seeds. For problems without task-space path constraints, these seeds come from the
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::PathPlanner</span></code></a>, which quickly finds collision-free paths. For problems with
+task-space path constraints, a particle-based optimization (PBO) method helps identify
+high-quality initial seeds. In both cases, the seeds are optimized using a limited-memory
+quasi-Newton method (L-BFGS) that refines them to feasible trajectories that are time-optimized and
+smooth.</p>
 </section>
 <section id="setting-up-the-robot-and-environment">
 <h2>Setting up the Robot and Environment<a class="headerlink" href="#setting-up-the-robot-and-environment" title="Link to this heading">#</a></h2>
@@ -449,7 +456,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 
 <span class="c1"># Create a world and add a world view.</span>
 <span class="n">world</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">World</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_world</span><span class="p">()</span>
-<span class="n">world_view</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">WorldView</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
+<span class="n">world_view</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">WorldViewHandle</span> <span class="o">=</span> <span class="n">world</span><span class="o">.</span><span class="n">add_world_view</span><span class="p">()</span>
 
 <span class="c1"># Create a cuboid obstacle near the end effector.</span>
 <span class="n">kinematics</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">kinematics</span><span class="p">()</span>
@@ -540,6 +547,11 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>As demonstrated above, it is recommended to capture the boolean output of <code class="docutils literal notranslate"><span class="pre">setParam()</span></code>
 and check that the parameter was successfully set. Non-fatal error messages will be logged
 if the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion8LogLevel5ERRORE" title="cumotion::LogLevel::ERROR"><code class="xref cpp cpp-enumerator docutils literal notranslate"><span class="pre">cumotion::LogLevel::ERROR</span></code></a> log level is enabled.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Another useful parameter is <code class="docutils literal notranslate"><span class="pre">trajopt/num_spans</span></code>, which sets the number of spans in each
+B-spline trajectory.</p>
+</div>
 <p>Currently, cuMotion does not provide an interface for querying the current value of a
 trajectory optimization solver parameter. This is likely to change in future versions.</p>
 </section>
@@ -678,7 +690,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Initial solve (with no obstacles in the world view):
   Trajectory optimization succeeded!
-  Trajectory time: 0.645759 seconds
+  Trajectory time: 0.639657 seconds
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -745,7 +757,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mid</span><span class="o">-</span><span class="n">trajectory</span> <span class="n">position</span><span class="p">:</span> <span class="p">[</span>  <span class="o">-</span><span class="mf">1.96899</span>   <span class="o">-</span><span class="mf">1.88544</span>   <span class="o">-</span><span class="mf">1.26998</span>   <span class="o">-</span><span class="mf">1.55027</span>    <span class="mf">1.56002</span> <span class="mf">0.00981941</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Mid</span><span class="o">-</span><span class="n">trajectory</span> <span class="n">position</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.97003</span>    <span class="o">-</span><span class="mf">1.87</span> <span class="o">-</span><span class="mf">1.27053</span>    <span class="o">-</span><span class="mf">1.57</span>     <span class="mf">1.57</span>        <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>We can also ask for the minimum and maximum c-space positions achieved (asynchronously) by each
@@ -783,9 +795,9 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Max</span> <span class="n">velocity</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span>  <span class="mf">2.15784</span>   <span class="mf">1.57412</span>   <span class="mf">1.55129</span>  <span class="mf">0.108781</span> <span class="mf">0.0561832</span> <span class="mf">0.0549447</span><span class="p">]</span>
-<span class="n">Max</span> <span class="n">acceleration</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span> <span class="mf">10.6658</span>  <span class="mf">10.0294</span>  <span class="mf">9.09374</span>  <span class="mf">1.35142</span>  <span class="mf">0.67106</span> <span class="mf">0.631026</span><span class="p">]</span>
-<span class="n">Max</span> <span class="n">jerk</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span><span class="mf">287.342</span> <span class="mf">266.967</span> <span class="mf">244.902</span> <span class="mf">33.7659</span> <span class="mf">17.2246</span> <span class="mf">16.1836</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Max</span> <span class="n">velocity</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span>   <span class="mf">2.15664</span>    <span class="mf">1.77685</span>    <span class="mf">1.81484</span> <span class="mf">6.5087e-15</span> <span class="mf">6.5087e-15</span>          <span class="mi">0</span><span class="p">]</span>
+<span class="n">Max</span> <span class="n">acceleration</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span>         <span class="mi">12</span>     <span class="mf">8.14944</span>     <span class="mf">8.12522</span> <span class="mf">5.08765e-13</span> <span class="mf">5.08765e-13</span>           <span class="mi">0</span><span class="p">]</span>
+<span class="n">Max</span> <span class="n">jerk</span> <span class="n">magnitude</span><span class="p">:</span> <span class="p">[</span>    <span class="mf">468.831</span>     <span class="mf">280.298</span>     <span class="mf">278.497</span> <span class="mf">1.98843e-11</span> <span class="mf">1.98843e-11</span>           <span class="mi">0</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -912,7 +924,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>After updating world view:
   Trajectory optimization succeeded!
-  Trajectory time: 0.745283 seconds
+  Trajectory time: 0.70397 seconds
 </pre></div>
 </div>
 <p>Now lets sanity-check that our new trajectory isn’t in collision with the environment:</p>
@@ -983,7 +995,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goal:
   Trajectory optimization succeeded!
-  Trajectory time: 0.65272 seconds
+  Trajectory time: 0.728003 seconds
 </pre></div>
 </div>
 <p>For these types of short moves, we typically want the tool to translation along a linear path,
@@ -1037,7 +1049,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <p>Output:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Change</span> <span class="ow">in</span> <span class="n">tool</span> <span class="n">orientation</span><span class="p">:</span> <span class="mf">71.8535</span> <span class="n">deg</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Change</span> <span class="ow">in</span> <span class="n">tool</span> <span class="n">orientation</span><span class="p">:</span> <span class="mf">59.3936</span> <span class="n">deg</span>
 </pre></div>
 </div>
 <p>Uh-oh! We’re seeing some significant orientation change. Since we’re allowing the orientation to be
@@ -1103,8 +1115,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goal with path constraints:
   Trajectory optimization succeeded!
-  Trajectory time: 0.396552 seconds
-  Change in tool orientation: 0.0485696 deg
+  Trajectory time: 0.425229 seconds
+  Change in tool orientation: 0.0759121 deg
 </pre></div>
 </div>
 <p>So not only did we get almost zero orientation change, it also resulted in a shorter trajectory!</p>
@@ -1198,7 +1210,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goalset:
   Trajectory optimization succeeded!
-  Trajectory time: 1.01994 seconds
+  Trajectory time: 0.899104 seconds
 </pre></div>
 </div>
 <p>We can query the <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer7Results6StatusE" title="cumotion::TrajectoryOptimizer::Results::Status"><code class="xref cpp cpp-enum docutils literal notranslate"><span class="pre">status</span></code></a> and solutions the
@@ -1268,7 +1280,7 @@ PYTHON</label><div class="sd-tab-content docutils">
 <p>Output:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Task-space goalset, after moving obstacle:
   Trajectory optimization succeeded!
-  Trajectory time: 0.729065 seconds
+  Trajectory time: 0.805627 seconds
   Goal index: 0
 </pre></div>
 </div>
@@ -1293,12 +1305,12 @@ intermediate tool poses. Here we summarize all the constraints currently support
 <p>Orientation Constraints:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint4NoneEv" title="cumotion::TrajectoryOptimizer::OrientationConstraint::None"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">None</span></code></a></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Constant</span></code></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTarget</span></code></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathTarget</span></code></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAxis</span></code></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathAxis</span></code></p></li>
-<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTargetAndPathAxis</span></code></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint8ConstantEPKdPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::Constant"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Constant</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint14TerminalTargetERK9Rotation3PKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::TerminalTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTarget</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint21TerminalAndPathTargetERK9Rotation3PKdPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::TerminalAndPathTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathTarget</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint12TerminalAxisERKN5Eigen8Vector3dERKN5Eigen8Vector3dEPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::TerminalAxis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAxis</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint19TerminalAndPathAxisERKN5Eigen8Vector3dERKN5Eigen8Vector3dEPKdPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::TerminalAndPathAxis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalAndPathAxis</span></code></a></p></li>
+<li><p><a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizer21OrientationConstraint25TerminalTargetAndPathAxisERK9Rotation3RKN5Eigen8Vector3dERKN5Eigen8Vector3dEPKdPKd" title="cumotion::TrajectoryOptimizer::OrientationConstraint::TerminalTargetAndPathAxis"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">TerminalTargetAndPathAxis</span></code></a></p></li>
 </ul>
 </section>
 <section id="c-space-targets">
@@ -1330,12 +1342,12 @@ intermediate tool poses. Here we summarize all the constraints currently support
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="inverse_kinematics_tutorial.html"
+       href="path_planning_tutorial.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Inverse Kinematics Tutorial</p>
+        <p class="prev-next-title">Path Planning Tutorial</p>
       </div>
     </a>
     <a class="right-next"

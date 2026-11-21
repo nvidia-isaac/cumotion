@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=3835c3f0" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=decb6a4a" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -264,6 +264,7 @@
 <li class="toctree-l2"><a class="reference internal" href="kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="path_planning_tutorial.html">Path Planning Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
 </ul>
 </details></li>
@@ -356,8 +357,7 @@
 </section>
 <section id="loading-a-robot-description-from-file">
 <h2>Loading a Robot Description From File<a class="headerlink" href="#loading-a-robot-description-from-file" title="Link to this heading">#</a></h2>
-<p>Currently, the cuMotion library does not support building robots programmatically. All robot
-descriptions are expected to be defined by two files:</p>
+<p>The most common way to define a robot is with two files:</p>
 <ol class="arabic simple">
 <li><p><a class="reference external" href="https://wiki.ros.org/urdf/XML">URDF</a></p></li>
 <li><p><a class="reference external" href="https://nvidia-isaac-ros.github.io/v/release-4.0/concepts/manipulation/xrdf.html">XRDF</a></p></li>
@@ -368,9 +368,8 @@ robot description can be loaded using:</p>
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-0">
 C++</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">ifstream</span><span class="w"> </span><span class="nf">xrdf_fstream</span><span class="p">(</span><span class="n">xrdf_file</span><span class="p">);</span>
-<span class="n">std</span><span class="o">::</span><span class="n">stringstream</span><span class="w"> </span><span class="n">xrdf_ss</span><span class="p">;</span>
-<span class="n">xrdf_ss</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">xrdf_fstream</span><span class="p">.</span><span class="n">rdbuf</span><span class="p">();</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescription</span><span class="o">&gt;</span><span class="w"> </span><span class="n">robot_description</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">LoadRobotFromFile</span><span class="p">(</span><span class="n">xrdf_file</span><span class="p">,</span><span class="w"> </span><span class="n">urdf_file</span><span class="p">);</span>
 </pre></div>
 </div>
 </div>
@@ -416,20 +415,106 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </section>
-<section id="querying-robot-metadata">
-<h2>Querying Robot Metadata<a class="headerlink" href="#querying-robot-metadata" title="Link to this heading">#</a></h2>
-<p>The robot description allows us to retrieve some useful metadata about the robot. We can get the
-number of c-space coordinates:</p>
+<section id="building-a-robot-description-programmatically">
+<h2>Building a Robot Description Programmatically<a class="headerlink" href="#building-a-robot-description-programmatically" title="Link to this heading">#</a></h2>
+<p>If the robot is not available as URDF and XRDF files (for example, when integrating with a custom
+robot model format), a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion16RobotDescriptionE" title="cumotion::RobotDescription"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::RobotDescription</span></code></a> can also be constructed directly
+using a <a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion23RobotDescriptionBuilderE" title="cumotion::RobotDescriptionBuilder"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::RobotDescriptionBuilder</span></code></a>. The builder is created with
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion29CreateRobotDescriptionBuilderERKNSt6stringE" title="cumotion::CreateRobotDescriptionBuilder"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::CreateRobotDescriptionBuilder()</span></code></a>, given the name of the root frame. We then add
+frames, the joints that connect them, and the c-space coordinates that control those joints
+(collision geometry can be added as well). Finally,
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4NK8cumotion23RobotDescriptionBuilder5buildEv" title="cumotion::RobotDescriptionBuilder::build"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::RobotDescriptionBuilder::build()</span></code></a> produces the robot description. For example,
+a two-link planar arm can be built as follows:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-4">
 C++</label><div class="sd-tab-content docutils">
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">numCSpaceCoords</span><span class="p">();</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a builder for a two-link planar arm. Each revolute joint rotates around the</span>
+<span class="c1">// z-axis, and each link extends one meter along its local x-axis. The root frame is named</span>
+<span class="c1">// &quot;base&quot;.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescriptionBuilder</span><span class="o">&gt;</span><span class="w"> </span><span class="n">builder</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">CreateRobotDescriptionBuilder</span><span class="p">(</span><span class="s">&quot;base&quot;</span><span class="p">);</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">::</span><span class="n">Limits</span><span class="w"> </span><span class="n">joint_limits</span><span class="p">{</span><span class="mf">-3.14159</span><span class="p">,</span><span class="w"> </span><span class="mf">3.14159</span><span class="p">};</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">velocity_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">acceleration_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">jerk_limit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">8.0</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="w"> </span><span class="n">link_offset</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="o">::</span><span class="n">FromTranslation</span><span class="p">(</span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">UnitX</span><span class="p">());</span>
+
+<span class="c1">// Add the frames, then the joints connecting them, and finally the c-space coordinates that</span>
+<span class="c1">// control the joints. Each item must be added after the items it refers to.</span>
+<span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">kIsToolFrame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">success</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addFrame</span><span class="p">(</span><span class="s">&quot;link_1&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addFrame</span><span class="p">(</span><span class="s">&quot;link_2&quot;</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addFrame</span><span class="p">(</span><span class="s">&quot;tool&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">kIsToolFrame</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addRevoluteJoint</span><span class="p">(</span><span class="s">&quot;joint_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;base&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;link_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">cumotion</span><span class="o">::</span><span class="n">Pose3</span><span class="o">::</span><span class="n">Identity</span><span class="p">(),</span>
+<span class="w">                              </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">UnitZ</span><span class="p">(),</span><span class="w"> </span><span class="n">joint_limits</span><span class="p">,</span><span class="w"> </span><span class="n">velocity_limit</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addRevoluteJoint</span><span class="p">(</span><span class="s">&quot;joint_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;link_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;link_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">link_offset</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">Eigen</span><span class="o">::</span><span class="n">Vector3d</span><span class="o">::</span><span class="n">UnitZ</span><span class="p">(),</span><span class="w"> </span><span class="n">joint_limits</span><span class="p">,</span><span class="w"> </span><span class="n">velocity_limit</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addFixedJoint</span><span class="p">(</span><span class="s">&quot;tool_joint&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;link_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;tool&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">link_offset</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addCSpaceCoord</span><span class="p">(</span><span class="s">&quot;joint_1&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;joint_1&quot;</span><span class="p">},</span><span class="w"> </span><span class="n">acceleration_limit</span><span class="p">,</span><span class="w"> </span><span class="n">jerk_limit</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+<span class="w">    </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">addCSpaceCoord</span><span class="p">(</span><span class="s">&quot;joint_2&quot;</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;joint_2&quot;</span><span class="p">},</span><span class="w"> </span><span class="n">acceleration_limit</span><span class="p">,</span><span class="w"> </span><span class="n">jerk_limit</span><span class="p">);</span>
+<span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">success</span><span class="p">)</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">EXIT_FAILURE</span><span class="p">;</span>
+
+<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">RobotDescription</span><span class="o">&gt;</span><span class="w"> </span><span class="n">built_robot_description</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">builder</span><span class="o">-&gt;</span><span class="n">build</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 <label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+PYTHON</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a builder for a two-link planar arm. Each revolute joint rotates around the z-axis,</span>
+<span class="c1"># and each link extends one meter along its local x-axis. The root frame is named &quot;base&quot;.</span>
+<span class="n">builder</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">create_robot_description_builder</span><span class="p">(</span><span class="s2">&quot;base&quot;</span><span class="p">)</span>
+
+<span class="n">joint_limits</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span><span class="o">.</span><span class="n">Limits</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">joint_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">velocity_limit</span> <span class="o">=</span> <span class="mf">2.0</span>
+<span class="n">acceleration_limit</span> <span class="o">=</span> <span class="mf">4.0</span>
+<span class="n">jerk_limit</span> <span class="o">=</span> <span class="mf">8.0</span>
+<span class="n">link_offset</span> <span class="o">=</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="o">.</span><span class="n">from_translation</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]))</span>
+
+<span class="c1"># Add the frames, then the joints connecting them, and finally the c-space coordinates that</span>
+<span class="c1"># control the joints. Each item must be added after the items it refers to.</span>
+<span class="n">success</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">builder</span><span class="o">.</span><span class="n">add_frame</span><span class="p">(</span><span class="s2">&quot;link_1&quot;</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_frame</span><span class="p">(</span><span class="s2">&quot;link_2&quot;</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_frame</span><span class="p">(</span><span class="s2">&quot;tool&quot;</span><span class="p">,</span> <span class="n">is_tool_frame</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_revolute_joint</span><span class="p">(</span><span class="s2">&quot;joint_1&quot;</span><span class="p">,</span> <span class="s2">&quot;base&quot;</span><span class="p">,</span> <span class="s2">&quot;link_1&quot;</span><span class="p">,</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Pose3</span><span class="o">.</span><span class="n">identity</span><span class="p">(),</span>
+                                   <span class="n">joint_axis</span><span class="p">,</span> <span class="n">joint_limits</span><span class="p">,</span> <span class="n">velocity_limit</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_revolute_joint</span><span class="p">(</span><span class="s2">&quot;joint_2&quot;</span><span class="p">,</span> <span class="s2">&quot;link_1&quot;</span><span class="p">,</span> <span class="s2">&quot;link_2&quot;</span><span class="p">,</span> <span class="n">link_offset</span><span class="p">,</span>
+                                   <span class="n">joint_axis</span><span class="p">,</span> <span class="n">joint_limits</span><span class="p">,</span> <span class="n">velocity_limit</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_fixed_joint</span><span class="p">(</span><span class="s2">&quot;tool_joint&quot;</span><span class="p">,</span> <span class="s2">&quot;link_2&quot;</span><span class="p">,</span> <span class="s2">&quot;tool&quot;</span><span class="p">,</span> <span class="n">link_offset</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_cspace_coord</span><span class="p">(</span><span class="s2">&quot;joint_1&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;joint_1&quot;</span><span class="p">],</span> <span class="n">acceleration_limit</span><span class="p">,</span> <span class="n">jerk_limit</span><span class="p">)</span>
+    <span class="ow">and</span> <span class="n">builder</span><span class="o">.</span><span class="n">add_cspace_coord</span><span class="p">(</span><span class="s2">&quot;joint_2&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;joint_2&quot;</span><span class="p">],</span> <span class="n">acceleration_limit</span><span class="p">,</span> <span class="n">jerk_limit</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="k">assert</span> <span class="n">success</span>
+
+<span class="n">built_robot_description</span> <span class="o">=</span> <span class="n">builder</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">add*()</span></code> method returns <code class="docutils literal notranslate"><span class="pre">false</span></code> (<code class="docutils literal notranslate"><span class="pre">False</span></code> in Python) and logs an error if its input is
+invalid, so it is important to check the result. See the
+<a class="reference internal" href="../api/cpp_api.html#_CPPv4N8cumotion23RobotDescriptionBuilderE" title="cumotion::RobotDescriptionBuilder"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">cumotion::RobotDescriptionBuilder</span></code></a> API documentation for details.</p>
+<p>The remainder of this tutorial uses a robot description loaded from files.</p>
+</section>
+<section id="querying-robot-metadata">
+<h2>Querying Robot Metadata<a class="headerlink" href="#querying-robot-metadata" title="Link to this heading">#</a></h2>
+<p>The robot description allows us to retrieve some useful metadata about the robot. We can get the
+number of c-space coordinates:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+C++</label><div class="sd-tab-content docutils">
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_coords</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">numCSpaceCoords</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">num_coords</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">num_cspace_coords</span><span class="p">()</span>
 </pre></div>
@@ -438,8 +523,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 <p>The name of each c-space coordinate:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-6">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">coord_names</span><span class="p">(</span><span class="n">num_coords</span><span class="p">);</span>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">coord_index</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_coords</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">coord_index</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
@@ -451,8 +536,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-7">
+<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coord_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">robot_description</span><span class="o">.</span><span class="n">cspace_coord_name</span><span class="p">(</span><span class="n">coord_index</span><span class="p">)</span> <span class="k">for</span> <span class="n">coord_index</span> <span class="ow">in</span>
                <span class="nb">range</span><span class="p">(</span><span class="n">num_coords</span><span class="p">)]</span>
@@ -474,16 +559,16 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 <p>The default c-space position:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Eigen</span><span class="o">::</span><span class="n">VectorXd</span><span class="w"> </span><span class="n">default_cspace_position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">defaultCSpaceConfiguration</span><span class="p">();</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Default position: [&quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">default_cspace_position</span><span class="p">.</span><span class="n">transpose</span><span class="p">()</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-9">
+<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">default_cspace_position</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">default_cspace_configuration</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Default position: &quot;</span><span class="p">,</span> <span class="n">default_cspace_position</span><span class="p">)</span>
@@ -497,8 +582,8 @@ PYTHON</label><div class="sd-tab-content docutils">
 </div>
 <p>And the tool frame names:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-10">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tool_frame_names</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">toolFrameNames</span><span class="p">();</span>
 <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;Tool frame names: [ &quot;</span><span class="p">;</span>
@@ -509,8 +594,8 @@ C++</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-11">
+<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">tool_frame_names</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">tool_frame_names</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Tool frame names: &quot;</span><span class="p">,</span> <span class="n">tool_frame_names</span><span class="p">)</span>
@@ -530,15 +615,15 @@ for querying the position and orientation of frames at each link, as a function 
 coordinates (i.e. forward kinematics).</p>
 <p>Creating the kinematics for the robot is done through the robot description:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-12">
+<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="cpp" for="sd-tab-item-14">
 C++</label><div class="sd-tab-content docutils">
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">cumotion</span><span class="o">::</span><span class="n">Kinematics</span><span class="o">&gt;</span><span class="w"> </span><span class="n">kinematics</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">robot_description</span><span class="o">-&gt;</span><span class="n">kinematics</span><span class="p">();</span>
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-13">
+<input id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-15">
 PYTHON</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kinematics</span><span class="p">:</span> <span class="n">cumotion</span><span class="o">.</span><span class="n">Kinematics</span> <span class="o">=</span> <span class="n">robot_description</span><span class="o">.</span><span class="n">kinematics</span><span class="p">()</span>
 </pre></div>
@@ -609,6 +694,7 @@ result.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-a-robot-description">What is a Robot Description?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-a-robot-description-from-file">Loading a Robot Description From File</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#building-a-robot-description-programmatically">Building a Robot Description Programmatically</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#querying-robot-metadata">Querying Robot Metadata</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-the-robot-kinematics">Create the Robot Kinematics</a></li>
 </ul>
