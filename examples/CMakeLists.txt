@@ -23,8 +23,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find CUDA.
 find_package(CUDAToolkit 12.2 REQUIRED)
-set(CMAKE_CUDA_COMPILER "/usr/local/cuda/bin/nvcc" CACHE FILEPATH
-  "Filepath to nvcc compiler, default installation path provided")
 if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
   # Enable Blackwell if supported by CUDA toolkit.
   set(ENABLE_BLACKWELL OFF)
@@ -39,7 +37,7 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
       list(APPEND CMAKE_CUDA_ARCHITECTURES 121)  # DGX Spark (GB10)
     endif()
   else()
-    set(CMAKE_CUDA_ARCHITECTURES "75;86;89")  # Turing (TU10x), Ampere (GA10x), and Ada (AD10x)
+    set(CMAKE_CUDA_ARCHITECTURES "80;86;89")  # Ampere (GA100, GA10x) and Ada (AD10x).
     if(${ENABLE_BLACKWELL})
       list(APPEND CMAKE_CUDA_ARCHITECTURES 120)  # Blackwell (GB20x)
     endif()
@@ -93,14 +91,14 @@ macro(add_example TARGET SRC)
   endif()
 endmacro()
 
-# Kinematics example
-add_example(kinematics_example src/kinematics_example.cpp)
+# Kinematics examples
+add_example(kinematics_example src/kinematics_examples/kinematics_example.cpp)
+add_example(robot_description_builder_example src/kinematics_examples/robot_description_builder_example.cpp)
 
-# Franka collision-free IK example
-add_example(franka_collision_free_ik_solver_example src/trajectory_optimizer_examples/franka_collision_free_ik_solver_example.cpp)
+# Path planning examples
+add_example(franka_path_planning_example src/path_planning_examples/franka_path_planning_example.cpp)
 
-# Franka trajectory optimization example (with no obstacles)
-add_example(franka_trajectory_optimizer_example src/trajectory_optimizer_examples/franka_trajectory_optimizer_example.cpp)
-
-# Franka collision-free trajectory optimization example (with cuboid obstacles)
-add_example(franka_trajectory_optimizer_obstacle_example src/trajectory_optimizer_examples/franka_trajectory_optimizer_obstacle_example.cpp)
+# Trajectory optimization examples
+add_example(franka_collision_free_ik_solver_example src/trajectory_optimization_examples/franka_collision_free_ik_solver_example.cpp)
+add_example(franka_trajectory_optimizer_example src/trajectory_optimization_examples/franka_trajectory_optimizer_example.cpp)
+add_example(franka_trajectory_optimizer_obstacle_example src/trajectory_optimization_examples/franka_trajectory_optimizer_obstacle_example.cpp)

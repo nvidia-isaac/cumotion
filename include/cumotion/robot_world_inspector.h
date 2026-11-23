@@ -96,7 +96,7 @@ class CUMO_EXPORT RobotWorldInspector {
   //! Compute positions of all world-collision spheres on the robot at the specified
   //! `cspace_position`.
   //!
-  //! The order of `sphere_positions` corresponds to order of `sphere_radii` returned by
+  //! The order of `sphere_positions` corresponds to the order of `sphere_radii` returned by
   //! `worldCollisionSphereRadii()`.
   //!
   //! If the length of `sphere_positions` is less than the number of world-collision spheres
@@ -111,7 +111,7 @@ class CUMO_EXPORT RobotWorldInspector {
   //! Compute positions of all self-collision spheres on the robot at the specified
   //! `cspace_position`.
   //!
-  //! The order of `sphere_positions` corresponds to order of `sphere_radii` returned by
+  //! The order of `sphere_positions` corresponds to the order of `sphere_radii` returned by
   //! `selfCollisionSphereRadii()`.
   //!
   //! If the length of `sphere_positions` is less than the number of self-collision spheres
@@ -130,25 +130,26 @@ class CUMO_EXPORT RobotWorldInspector {
   virtual bool inCollisionWithObstacle(const Eigen::VectorXd &cspace_position) const = 0;
 
   //! Compute the minimum pair-wise signed distance between the set of robot spheres and the set of
-  //! obstacles for the provided position in configuration space.  A positive distance implies that
-  //! the obstacle and the robot are *NOT* in collision.
+  //! obstacles for the provided position in configuration space.
+  //!
+  //! A positive distance implies that the obstacle and the robot are *NOT* in collision. A
+  //! non-positive distance implies collision; zero indicates that the closest surfaces are just
+  //! touching.
   //!
   //! A fatal error is logged if the `RobotWorldInspector` does not have a world view set.
-  //!
-  //! NOTE: A distance of zero implies that the closest robot sphere to any obstacle intersects the
-  //!       obstacle at a point.
   virtual double minDistanceToObstacle(const Eigen::VectorXd &cspace_position) const = 0;
 
   //! Compute the signed distance between a given obstacle and collision sphere for the provided
-  //! position in configuration space.  A positive distance implies that the obstacle and the sphere
-  //! are *NOT* in collision.
+  //! position in configuration space.
+  //!
+  //! A positive distance implies that the obstacle and the sphere are *NOT* in collision. A
+  //! non-positive distance implies collision; zero indicates that the closest surfaces are just
+  //! touching.
   //!
   //! A fatal error is logged if:
   //!  - `world_collision_sphere_index` is greater than or equal to the number of world-collision
   //!    spheres attached to the robot (i.e., `numWorldCollisionSpheres()`), or it is negative.
   //!  - The `RobotWorldInspector` does not have a world view set.
-  //!
-  //! NOTE: If the world-collision sphere intersects the `obstacle` a distance of zero is returned.
   virtual double distanceToObstacle(const World::ObstacleHandle &obstacle,
                                     int world_collision_sphere_index,
                                     const Eigen::VectorXd &cspace_position) const = 0;

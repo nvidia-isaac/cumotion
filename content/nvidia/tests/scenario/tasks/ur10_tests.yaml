@@ -1,0 +1,75 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+scene_file: content/nvidia/tests/scenario/scenes/ur10_test_scenes.yaml
+task_lists:
+  - name: ur10_no_obstacles
+    scene_name: empty_scene
+    tool_frame: "tool0"
+    tasks:
+      - name: "target_none"
+        initial_cspace_position:
+          shoulder_pan_joint: -1.571
+          shoulder_lift_joint: -1.571
+          elbow_joint: -1.571
+          wrist_1_joint: -1.571
+          wrist_2_joint: +1.571
+          wrist_3_joint: 0
+        task_space_target:
+          translation_constraint:
+            type: target
+            translation_target: [0.6, -0.5, 0.3]
+          orientation_constraint:
+            type: none
+      - name: "linear_terminaltargetpathaxis"
+        initial_cspace_position:
+          shoulder_pan_joint: -1.571
+          shoulder_lift_joint: -1.571
+          elbow_joint: -1.571
+          wrist_1_joint: -1.571
+          wrist_2_joint: +1.571
+          wrist_3_joint: 0
+        task_space_target:
+          translation_constraint:
+            type: linear_path_constraint
+            translation_target: [0.8, -0.5, 0.1]
+          orientation_constraint:
+            type: terminal_target_and_path_axis
+            terminal_orientation_target:
+              w: 0.478376718192
+              xyz: [0.878154541742, 0.000158342058937, 0.000539665117177]
+            tool_frame_axis: [1, 0, 0]
+            world_target_axis: [1, 0, 0]
+  - name: ur10_single_obstacle
+    scene_name: single_box
+    tool_frame: "tool0"
+    tasks:
+      - name: "linear_terminaltarget"
+        initial_cspace_position:
+          shoulder_pan_joint: -1.571
+          shoulder_lift_joint: -1.571
+          elbow_joint: -1.571
+          wrist_1_joint: -1.571
+          wrist_2_joint: +1.571
+          wrist_3_joint: 0
+        task_space_target:
+          translation_constraint:
+            type: linear_path_constraint
+            translation_target: [0.6, -0.5, 0.3]
+          orientation_constraint:
+            type: terminal_target
+            orientation_target:
+              w: 1.0
+              xyz: [0, 0, 0]

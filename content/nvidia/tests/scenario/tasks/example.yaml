@@ -1,0 +1,320 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# ================================================================================
+# SCENE FILE (Required - only one `scene_file` is allowed per Task Description File)
+# ================================================================================
+scene_file: content/nvidia/tests/scenario/scenes/valid_basic_scene.yaml
+
+# ==============================================================================================
+# TASK LIST (Required - multiple `task_list`s are allowed in the task_lists section)
+# ==============================================================================================
+task_lists:
+  # ==============================================================================================
+  # TASK LIST NAME (Required - multiple `task_list`s are allowed in the task_lists section).
+  # Each name in the `task_lists` section needs to be unique.
+  # ==============================================================================================
+  - name: task_list_1
+
+    # ================================================================================================
+    # WORLD TO ROBOT BASE TRANSFORM (Optional - only single `world_to_robot_base_transform` is allowed
+    # per task list).
+    # ================================================================================================
+    world_to_robot_base_transform:
+      translation: [0.0, 0.0, 0.0]
+      rotation: {w: 1.0, xyz: [0, 0, 0]}
+
+    # ==================================================================================
+    # SCENE NAME (Required - only one `scene_name` is allowed per Task Description File).
+    # ==================================================================================
+    scene_name: basic_scene
+
+    # ===============================================================================================
+    # TOOL FRAME (Optional - only one `tool_frame` is allowed per Task Description File, will be used
+    # for all task-space operations such as task-space goal specification and path constraints).
+    # ===============================================================================================
+    tool_frame: end_effector
+
+    # =========================================================================
+    # TASKS (Required - multiple `tasks` are allowed per Task Description File)
+    # =========================================================================
+    tasks:
+      # =======================================================
+      # TASK SPACE ORIENTATION CONSTRAINT OPTIONS (Options 1-7)
+      # =======================================================
+
+      # OPTION 1: Task Space Position Target with No Orientation Constraint
+
+      # ============================================================================================
+      # TASK NAME (Required - only one `name` is allowed per `task`). Each name in the `tasks`
+      # section needs to be unique. But the same name can be used across different task lists.
+      # ============================================================================================
+      - name: task_translation_target_orientation_none
+
+        # ============================================================================================
+        # INITIAL CSPACE POSITION (Required - only one `initial_cspace_position` is allowed per `task`
+        # and is also required to be specified in c-space).
+        # ============================================================================================
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint: # Required
+            # Options: `target`, `linear_path_constraint`.
+            type: target # Required
+            translation_target: [0.5, 0.3, 0.2] # Required
+          orientation_constraint: # Optional
+            # Options: `none`, `constant`, `terminal_target`, `terminal_and_path_target`,
+            # `terminal_axis`, `terminal_and_path_axis`, `terminal_target_and_path_axis`
+            # Defaults to `none` if not specified.
+            type: none # Required
+          task_space_target_in_robot_base_frame: true # Optional - defaults to `true` if not specified
+
+      # OPTION 2: Task Space Position Target with Constant Orientation Constraint
+      - name: task_translation_target_orientation_constant
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: target
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: constant
+            path_deviation_limit: 0.1 # Optional
+            terminal_deviation_limit: 0.05 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # OPTION 3: Task Space Target with Terminal Orientation Target
+      - name: task_translation_target_orientation_terminal_target
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: target
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: terminal_target
+            orientation_target: {w: 0.707, xyz: [0, 0, 0.707]} # Required
+            terminal_deviation_limit: 0.05 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # OPTION 4: Task Space Target with Terminal and Path Target Orientation
+      - name: task_translation_linear_path_orientation_terminal_and_path_target
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: linear_path_constraint
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: terminal_and_path_target
+            orientation_target: {w: 0.707, xyz: [0, 0, 0.707]} # Required
+            path_deviation_limit: 0.1 # Optional
+            terminal_deviation_limit: 0.05 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # OPTION 5: Task Space Target with Terminal Axis Orientation
+      - name: task_translation_target_orientation_terminal_axis
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: target
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: terminal_axis
+            tool_frame_axis: [0, 0, 1] # Required
+            world_target_axis: [0, 0, 1] # Required
+            terminal_axis_deviation_limit: 0.05 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # OPTION 6: Task Space Target with Terminal and Path Axis Orientation
+      - name: task_translation_target_orientation_terminal_and_path_axis
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: target
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: terminal_and_path_axis
+            tool_frame_axis: [0, 0, 1] # Required
+            world_target_axis: [0, 0, 1] # Required
+            path_axis_deviation_limit: 0.1 # Optional
+            terminal_axis_deviation_limit: 0.05 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # OPTION 7: Task Space Target with Terminal Target and Path Axis Orientation
+      - name: task_translation_linear_path_orientation_terminal_target_and_path_axis
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        task_space_target:
+          translation_constraint:
+            type: linear_path_constraint
+            translation_target: [0.5, 0.3, 0.2]
+          orientation_constraint:
+            type: terminal_target_and_path_axis
+            terminal_orientation_target: {w: 0.707, xyz: [0, 0, 0.707]} # Required
+            tool_frame_axis: [0, 0, 1] # Required
+            world_target_axis: [0, 0, 1] # Required
+            terminal_deviation_limit: 0.05 # Optional
+            path_axis_deviation_limit: 0.1 # Optional
+          task_space_target_in_robot_base_frame: true
+
+      # ========================================================================
+      # CSPACE ORIENTATION CONSTRAINT OPTIONS (Options 8-10)
+      # ========================================================================
+
+      # OPTION 8: CSpace Target with No Orientation Constraint
+      - name: task_cspace_target_translation_none_orientation_none
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        cspace_target:
+          cspace_position_terminal_target: # Required
+            panda_joint1: 0.1
+            panda_joint2: -1.57
+            panda_joint3: 0.4
+            panda_joint4: -1.57
+            panda_joint5: 0.5
+            panda_joint6: 2.0
+            panda_joint7: 0.0
+
+          translation_path_constraint: # Optional - `none` or `linear` is allowed.
+            # Defaults to `none` if not specified.
+            type: none # Required
+          orientation_path_constraint: # Optional - `none`, `constant`, `axis` is allowed.
+            # Defaults to `none` if not specified.
+            type: none # Required
+
+      # OPTION 9: CSpace Target with Constant Orientation Constraint
+      - name: task_cspace_target_translation_linear_orientation_constant
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        cspace_target:
+          cspace_position_terminal_target:
+            panda_joint1: 0.1
+            panda_joint2: -1.57
+            panda_joint3: 0.4
+            panda_joint4: -1.57
+            panda_joint5: 0.5
+            panda_joint6: 2.0
+            panda_joint7: 0.0
+
+          translation_path_constraint:
+            type: linear
+          orientation_path_constraint:
+            type: constant
+            path_deviation_limit: 0.1 # Optional
+            use_terminal_orientation: true # Optional
+
+      # OPTION 10: CSpace Target with Path Target Orientation Constraint
+      - name: task_cspace_target_translation_linear_orientation_axis
+
+        initial_cspace_position:
+          panda_joint1: 0.0
+          panda_joint2: -1.57
+          panda_joint3: 0.0
+          panda_joint4: -1.57
+          panda_joint5: 0.0
+          panda_joint6: 2.0
+          panda_joint7: 0.0
+
+        cspace_target:
+          cspace_position_terminal_target:
+            panda_joint1: 0.1
+            panda_joint2: -1.57
+            panda_joint3: 0.4
+            panda_joint4: -1.57
+            panda_joint5: 0.5
+            panda_joint6: 2.0
+            panda_joint7: 0.0
+
+          translation_path_constraint:
+            type: linear
+          orientation_path_constraint:
+            type: axis
+            tool_frame_axis: [0, 0, 1] # Required
+            world_target_axis: [0, 0, 1] # Required
+            path_deviation_limit: 0.1 # Optional

@@ -30,10 +30,10 @@ Capabilities include:
 Robots with any number of degrees of freedom are supported.
 
 cuMotion is implemented in C++ and provides a complete set of Python bindings.  Although developed as a
-standalone library, cuMotion will also soon serve as the motion generation backend for
+standalone library, cuMotion also serves as the motion generation backend for
 [Isaac ROS cuMotion](https://nvidia-isaac-ros.github.io/repositories_and_packages/isaac_ros_cumotion/index.html)
 and the manipulation
-[reference workflows](https://nvidia-isaac-ros.github.io/reference_workflows/isaac_for_manipulation/index.html)
+[reference workflows](https://nvidia-isaac-ros.github.io/manipulation/index.html)
 in [Isaac ROS](https://nvidia-isaac-ros.github.io/index.html).
 
 cuMotion is descended from two libraries:
@@ -50,40 +50,40 @@ See the [documentation](https://nvidia-isaac.github.io/cumotion/) for a full ove
 
 # System Requirements
 
-The current release of the cuMotion library is provided as a set of shared object files and Python wheel files
+The current release of the cuMotion library is provided as a shared library and Python wheel files
 for both Linux and Windows on x86-based computers, as well Jetson Orin, Jetson Thor, and DGX Spark.
 
-* Under Linux, the library is compatible with GCC 11.4 and later (corresponding to `libstdc++` symbol version
-  `GLIBCXX_3.4.30`).  It has been tested on Ubuntu 22.04 and 24.04.
+* Under Linux, the library is compatible with GCC 13 and later
+  (GCC 11.4 and later on Jetson Orin with JetPack 6).
+  It supports Ubuntu 24.04 on x86_64, Jetson Thor, and DGX Spark, and Ubuntu 22.04 through
+  JetPack 6.2.1 on Jetson Orin.
 * Under Windows, the library is compatible with the Visual Studio 2019 toolchain and later.
 * On both platforms, Python wheel files are provided for all
   [actively-supported Python versions](https://devguide.python.org/versions/) at the time of release, currently
   consisting of Python 3.10 through 3.14, inclusive.
 
 The software has been tested on Jetson AGX Orin and Jetson AGX Thor but is expected to work on other Jetson
-Orin configurations (e.g., Jetson Orin NX).  The Jetson Thor (CUDA 13.0) package has also been optimized for
-and tested on DGX Spark.
+Orin configurations (e.g., Jetson Orin NX).
 
-On x86-based computers, an NVIDIA GPU of the Turing generation (e.g., GeForce RTX 2080) or later is required.
-For optimal performance on Blackwell GPUs (e.g., RTX PRO 6000, GeForce RTX 5080), the CUDA 13 variant of the
-cuMotion package is recommended.  See the
+On x86-based computers, an NVIDIA GPU of the Ampere generation (e.g., GeForce RTX 3080) or later is required.
+See the
 [CUDA Toolkit Release Notes](https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/#cuda-driver)
 for details on the minimum GPU driver version required for a given CUDA version.
 
 ## Linux
 
-| Platform                              | CUDA | Tested OS                | Download |
-|---------------------------------------|------|--------------------------|----------|
-| Jetson Orin                           | 12.6 | JetPack 6.2.1            | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda12.6-aarch64.tar.gz) |
-| Jetson Thor <br>DGX Spark             | 13.0 | JetPack 7.0 <br>DGX OS 7 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-aarch64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 12.6 | Ubuntu 22.04             | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda12.6-x86_64.tar.gz) |
-| x86_64 + NVIDIA GPU (Turing or later) | 13.0 | Ubuntu 24.04             | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-x86_64.tar.gz) |
+| Platform                              | CUDA | Tested OS                  | Download |
+|---------------------------------------|------|----------------------------|----------|
+| Jetson Orin                           | 12.6 <br>13.2 | JetPack 6.2.1 <br>JetPack 7.2.1 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda12.6-aarch64.tar.gz) <br>[Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda13.2-aarch64.tar.gz) |
+| Jetson Thor                           | 13.2 | JetPack 7.2                | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda13.2-aarch64.tar.gz) |
+| DGX Spark                             | 13.0 | DGX OS 7.2                 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda13.0-aarch64.tar.gz) |
+| x86_64 + NVIDIA GPU (Ampere or later) | 13.2 | Ubuntu 24.04               | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda13.2-x86_64.tar.gz)  |
 
 ## Microsoft Windows
 
-| Platform                              | CUDA | Tested OS                | Download |
-|---------------------------------------|------|--------------------------|----------|
-| x86_64 + NVIDIA GPU (Turing or later) | 13.0 | Microsoft Windows 10/11  | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v1.1.0/cumotion-1.1.0-cuda13.0-windows-x86_64.zip) |
+| Platform                              | CUDA | Tested OS  | Download |
+|---------------------------------------|------|------------|----------|
+| x86_64 + NVIDIA GPU (Ampere or later) | 13.2 | Windows 11 | [Latest Release](https://github.com/nvidia-isaac/cumotion/releases/download/v2.0.0/cumotion-2.0.0-cuda13.2-windows-x86_64.zip) |
 
 # Installation
 

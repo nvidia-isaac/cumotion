@@ -1,4 +1,7 @@
 <?xml version="1.0" ?>
+<!--NOTE: The joint limits for `panda_joint1`, `panda_joint2`, `panda_joint3`, `panda_joint4`, `panda_joint5`,
+         `panda_joint6`, and `panda_joint7` have been expanded by 0.2 rad, matching what cuRobo does for
+         benchmarking. -->
 <robot name="panda" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <link name="base_link"/>
   <joint name="panda_fixed" type="fixed">
@@ -46,7 +49,7 @@
     <child link="panda_link1"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+    <limit effort="87" lower="-3.0973" upper="3.0973" velocity="2.1750"/>
   </joint>
   <link name="panda_link2">
     <visual>
@@ -72,7 +75,7 @@
     <child link="panda_link2"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="87" lower="-1.7628" upper="1.7628" velocity="2.1750"/>
+    <limit effort="87" lower="-1.9628" upper="1.9628" velocity="2.1750"/>
   </joint>
   <link name="panda_link3">
     <visual>
@@ -98,7 +101,7 @@
     <child link="panda_link3"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="87" lower="-2.8973" upper="2.8973" velocity="2.1750"/>
+    <limit effort="87" lower="-3.0973" upper="3.0973" velocity="2.1750"/>
   </joint>
   <link name="panda_link4">
     <visual>
@@ -124,7 +127,7 @@
     <child link="panda_link4"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="87" lower="-3.0718" upper="-0.0698" velocity="2.1750"/>
+    <limit effort="87" lower="-3.2718" upper="0.1302" velocity="2.1750"/>
     <!-- something is weird with this joint limit config
     <dynamics damping="10.0"/>
     <limit effort="87" lower="-3.0" upper="0.087" velocity="2.1750"/>  -->
@@ -153,7 +156,7 @@
     <child link="panda_link5"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+    <limit effort="12" lower="-3.0973" upper="3.0973" velocity="2.6100"/>
   </joint>
   <link name="panda_link6">
     <visual>
@@ -179,7 +182,7 @@
     <child link="panda_link6"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="12" lower="-0.0175" upper="3.7525" velocity="2.6100"/>
+    <limit effort="12" lower="-0.2175" upper="3.9525" velocity="2.6100"/>
     <!-- <dynamics damping="10.0"/>
     <limit effort="12" lower="-0.0873" upper="3.0" velocity="2.6100"/> -->
   </joint>
@@ -207,7 +210,7 @@
     <child link="panda_link7"/>
     <axis xyz="0 0 1"/>
     <dynamics damping="10.0"/>
-    <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100"/>
+    <limit effort="12" lower="-3.0973" upper="3.0973" velocity="2.6100"/>
   </joint>
 
   <link name="panda_link8"/>

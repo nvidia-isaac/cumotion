@@ -25,12 +25,13 @@ namespace cumotion {
 
 //! Configuration for solving inverse kinematics.
 struct CUMO_EXPORT IkConfig {
-  //! Construct configuration with default values likely to be appropriate for most 6- and 7-dof
+  //! Construct configuration with default values likely to be appropriate for most 6- and 7-DoF
   //! robotic arms.
   IkConfig() = default;
 
   //! The maximum number of c-space positions that will be used as seeds (i.e., initial positions)
-  //! for cyclic coordinate descent.
+  //! for IK descents (where each descent is a cyclic coordinate descent, if enabled, followed by
+  //! BFGS).
   //!
   //! The inverse kinematic solver will terminate when a valid c-space configuration is found OR
   //! the number of attempted descents reaches `max_num_descents`.
@@ -42,9 +43,8 @@ struct CUMO_EXPORT IkConfig {
 
   //! Optional parameter to set the initial c-space configurations for each descent.
   //!
-  //! These `cspace_seeds` will be used to attempt cyclic coordinate descent in the order
-  //! provided, terminating before all `cspace_seeds` are tried if a valid `cspace_position` is
-  //! found.
+  //! These `cspace_seeds` will be used to attempt IK descents in the order provided, terminating
+  //! before all `cspace_seeds` are tried if a valid `cspace_position` is found.
   //!
   //! If the number of attempted descents is greater than the number of provided `cspace_seeds`,
   //! random starting configurations will be generated (see `irwin_hall_sampling_order` for
@@ -59,15 +59,16 @@ struct CUMO_EXPORT IkConfig {
   //! sampled for each descent.
   //!
   //! Each c-space coordinate value will be sampled from an Irwin-Hall distribution spanning the
-  //! joint limits. The distribution mean will always be set to the midpoint between upper and
-  //! lower joint limits.
+  //! position limits. The distribution mean will always be set to the midpoint between upper and
+  //! lower c-space position limits.
   //!
   //! Setting `irwin_hall_sampling_order` to 1 corresponds to a uniform distribution, setting to
   //! 2 corresponds to a triangular distribution, and higher values approximate a normal
   //! distribution.
   //!
   //! See https://en.wikipedia.org/wiki/Irwin%E2%80%93Hall_distribution for reference, noting that
-  //! the internal distribution is scaled s.t. all sampled values will be within joint limits.
+  //! the internal distribution is scaled s.t. all sampled values will be within c-space position
+  //! limits.
   //!
   //! Must be positive.
   //!
@@ -81,14 +82,14 @@ struct CUMO_EXPORT IkConfig {
   //! Default: 123456
   int sampling_seed = 123456;
 
-  //! Maximum position error (L2-norm) of the task space pose for a successful IK solution.
+  //! Maximum position error (L2-norm) of the task-space pose for a successful IK solution.
   //!
   //! Must be positive.
   //!
   //! Default: 1e-3
   double position_tolerance = 1e-3;
 
-  //! Maximum orientation error of the task space pose for a successful IK solution.
+  //! Maximum orientation error of the task-space pose for a successful IK solution.
   //!
   //! For each axis in task space, error is defined as the L2-norm of the difference between the
   //! axis direction and the target pose axis direction.
@@ -112,8 +113,8 @@ struct CUMO_EXPORT IkConfig {
   //! Default: 10
   int ccd_max_iterations = 10;
 
-  //! Each descent can terminate early if the L2-norm of the change to c-space coordinates is less
-  //! than the `descent_termination_delta`.
+  //! Each cyclic coordinate descent can terminate early if the L2-norm of the change to c-space
+  //! coordinates during an iteration is less than the `ccd_descent_termination_delta`.
   //!
   //! Must be positive.
   //!
@@ -197,10 +198,10 @@ struct CUMO_EXPORT IkConfig {
   //! If set to `ENABLE`, this cost term will always be turned on. If set to `DISABLE`, this cost
   //! term will always be turned off. Setting to `AUTO` will turn this cost term on for systems
   //! with 7 or more degrees-of-freedom (DoF), while leaving it off for systems with 6 or fewer
-  //! DoF. NOTE: DoF is defined as the numer of c-space coordinates upstream from the target frame.
+  //! DoF. NOTE: DoF is defined as the number of c-space coordinates upstream from the target frame.
   //!
   //! Setting to `AUTO` is likely to provide desirable results for most common robots. Redundant
-  //! mechanisms with less than 7-DoF are a potential exception. E.g., a 4-Dof robot restricted to
+  //! mechanisms with less than 7-DoF are a potential exception. E.g., a 4-DoF robot restricted to
   //! planar motion may benefit from enabling a cost term to avoid position limits.
   enum class CSpaceLimitBiasing {
     AUTO,
@@ -218,14 +219,14 @@ struct CUMO_EXPORT IkConfig {
   //!
   //! The region is defined as a fraction of the c-space span for each c-space coordinate.
   //! For example, imagine a 2d system for which the limits of the first coordinate are [-5, 5] and
-  //! the limits of the second coordinate are [0, 2]. If the `cspace_limit_penalty_region` is set
-  //! to 0.1, then the size of each penalty region for first coordinate will be:
+  //! the limits of the second coordinate are [0, 2]. If the `bfgs_cspace_limit_penalty_region` is
+  //! set to 0.1, then the size of each penalty region for the first coordinate will be:
   //!   0.1 * (5 - (-5)) = 1
   //! Similarly, the size of each penalty region for the second coordinate will be:
   //!   0.1 * (2 - 0) = 0.2
   //! This means that for the first coordinate, c-space limit errors will be active from [-5, -4]
   //! and [4, 5]. For the second coordinate, c-space limit errors will be active from [0, 0.2] and
-  //! [1.8, 2]
+  //! [1.8, 2].
   //!
   //! Must be in the range [0, 0.5].
   //!
@@ -260,41 +261,41 @@ struct CUMO_EXPORT IkResults {
   //! `IkConfig` has been found.
   bool success;
 
-  //! If `success` is set to `true`, `cspace_position` will contain a valid joint configuration
+  //! If `success` is set to `true`, `cspace_position` will contain a valid c-space configuration
   //! that corresponds to the `target_pose` passed to the IK solver within the tolerances
   //! specified in the `IkConfig`.
   Eigen::VectorXd cspace_position;
 
-  //! Position error (L2-norm) of the task space pose corresponding to the returned
-  //! `cspace_position`
+  //! Position error (L2-norm) of the task-space pose corresponding to the returned
+  //! `cspace_position`.
   //!
   //! If `success` is set to `true`, the `position_error` will be less than or equal to the
   //! `position_tolerance` set in the `IkConfig`.
   double position_error;
 
-  //! X-axis orientation error (L2-norm) of the task space pose corresponding to the returned
-  //! `cspace_position`
+  //! X-axis orientation error (L2-norm) of the task-space pose corresponding to the returned
+  //! `cspace_position`.
   //!
   //! If `success` is set to `true`, the `x_axis_orientation_error` will be less than or equal to
   //! the `orientation_tolerance` set in the `IkConfig`.
   double x_axis_orientation_error;
 
-  //! Y-axis orientation error (L2-norm) of the task space pose corresponding to the returned
-  //! `cspace_position`
+  //! Y-axis orientation error (L2-norm) of the task-space pose corresponding to the returned
+  //! `cspace_position`.
   //!
   //! If `success` is set to `true`, the `y_axis_orientation_error` will be less than or equal to
   //! the `orientation_tolerance` set in the `IkConfig`.
   double y_axis_orientation_error;
 
-  //! Z-axis orientation error (L2-norm) of the task space pose corresponding to the returned
-  //! `cspace_position`
+  //! Z-axis orientation error (L2-norm) of the task-space pose corresponding to the returned
+  //! `cspace_position`.
   //!
   //! If `success` is set to `true`, the `z_axis_orientation_error` will be less than or equal to
   //! the `orientation_tolerance` set in the `IkConfig`.
   double z_axis_orientation_error;
 
-  //! The number of unique c-space positions that were used for attempting cyclic coordinate
-  //! descent prior to the IK solver terminating.
+  //! The number of IK descents (i.e., cyclic coordinate descent, if enabled, followed by BFGS)
+  //! that were attempted prior to the IK solver terminating.
   //!
   //! If `success` is set to `true`, this will be the number
   //! of descents that were attempted in order to get a `cspace_position` within the provided
@@ -305,10 +306,10 @@ struct CUMO_EXPORT IkResults {
 
 //! Attempt to solve inverse kinematics.
 //!
-//! A `target_pose` is provided for the task space `target_frame` and the solver attempts to find
+//! A `target_pose` is provided for the task-space `target_frame` and the solver attempts to find
 //! a corresponding set of c-space coordinates. A valid c-space configuration must not exceed
-//! joint limits set in the kinematic structure and must be the target pose tolerances specified
-//! within `config`.
+//! position limits set in the kinematic structure and must reach the target pose within the
+//! tolerances specified by `config`.
 //!
 //! If the `target_frame` is selected such that some of the c-space coordinates do not affect the
 //! pose of the target frame, these "downstream" coordinates will be ignored by the IK solver. For

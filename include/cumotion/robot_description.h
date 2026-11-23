@@ -10,7 +10,7 @@
 // its affiliates is strictly prohibited.
 
 //! @file
-//! @brief Public interface for loading and accessing a robot description
+//! @brief Public interface for loading and accessing a robot description.
 
 #pragma once
 
@@ -28,7 +28,7 @@ namespace cumotion {
 //! Forward declaration of Kinematics from `cumotion/kinematics.h`.
 class Kinematics;
 
-//! Class encapsulating all semantic and kinematic properties of a robot
+//! Class encapsulating all semantic and kinematic properties of a robot.
 class CUMO_EXPORT RobotDescription {
  public:
   virtual ~RobotDescription() = default;
@@ -68,11 +68,15 @@ class CUMO_EXPORT RobotDescription {
     const std::filesystem::path &robot_xrdf,
     const std::filesystem::path &robot_urdf);
 
-//! Load a robot description from the contents of an XRDF ("robot_xrdf") and the contents
-//! of a URDF ("robot_urdf").
+//! Load a robot description from the contents of an XRDF (`robot_xrdf`) and the contents of a URDF
+//! (`robot_urdf`).
 //!
 //! The "Extended Robot Description Format" (XRDF) is documented at:
 //! https://nvidia-isaac-ros.github.io/v/release-3.2/concepts/manipulation/xrdf.html
+//!
+//! A fatal error will be logged if:
+//! - `robot_xrdf` cannot be successfully parsed, *OR*
+//! - `robot_urdf` cannot be successfully parsed.
 [[nodiscard]] CUMO_EXPORT std::unique_ptr<RobotDescription> LoadRobotFromMemory(
     const std::string &robot_xrdf,
     const std::string &robot_urdf);

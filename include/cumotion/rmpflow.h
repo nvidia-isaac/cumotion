@@ -30,23 +30,30 @@
 namespace cumotion {
 
 //! Interface class for loading and manipulating RMPflow parameters.
-//! WARNING: This interface may change in a future release.
 class CUMO_EXPORT RmpFlowConfig {
  public:
   virtual ~RmpFlowConfig() = default;
 
-  //! Get the value of a parameter, given a "param_name" string of the form
-  //! "<rmp_name>/<parameter_name>"
+  //! Get the value of a parameter, given a `param_name` string of the form
+  //! `<rmp_name>/<parameter_name>`.
+  //!
+  //! A fatal error will be logged if `param_name` is not a valid parameter name.
   [[nodiscard]] virtual double getParam(const std::string &param_name) const = 0;
 
   //! Set the value of the parameter.
+  //!
+  //! A fatal error will be logged if `param_name` is not a valid parameter name.
   virtual void setParam(const std::string &param_name, double value) = 0;
 
   //! Get the names and values of all parameters.  The two vectors will be overwritten if not empty.
   virtual void getAllParams(std::vector<std::string> &names, std::vector<double> &values) const = 0;
 
-  //! Set all parameters at once.  The vectors "names" and "values" must have the same size.
-  //! The parameter corresponding to names[i] will be set to the value given by values[i].
+  //! Set all parameters at once.  The vectors `names` and `values` must have the same size.
+  //! The parameter corresponding to `names[i]` will be set to the value given by `values[i]`.
+  //!
+  //! A fatal error will be logged if `names` and `values` have different sizes, or if any entry of
+  //! `names` is not a valid parameter name. If an entry is invalid, the entries before it will
+  //! already have been applied.
   virtual void setAllParams(const std::vector<std::string> &names,
                             const std::vector<double> &values) = 0;
 
@@ -56,54 +63,28 @@ class CUMO_EXPORT RmpFlowConfig {
 };
 
 //! Load a set of RMPflow parameters from file, and combine with a robot description to create a
-//! configuration object for consumption by CreateRmpFlow().  The "end_effector_frame" should
-//! correspond to a link name as specified in the original URDF or added as a frame in the XRDF used
-//! to create the robot description. All enabled obstacles in `world_view` will be avoided by the
-//! RMPflow policy.
-//!
-//! DEPRECATED: This function is deprecated and will be removed in a future version.
-//!             Use the variant of `CreateRmpFlowConfigFromFile()` that does *not* include
-//!             `end_effector_frame` instead. The end effector frame can then be added using
-//!             `RmpFlow::addTargetFrame()`.
-CUMO_DEPRECATED_EXPORT std::unique_ptr<RmpFlowConfig> CreateRmpFlowConfigFromFile(
-    const std::filesystem::path &rmpflow_config_file,
-    const RobotDescription &robot_description,
-    const std::string &end_effector_frame,
-    const WorldViewHandle &world_view);
-
-//! Load a set of RMPflow parameters from file, and combine with a robot description to create a
 //! configuration object for consumption by CreateRmpFlow(). All enabled obstacles in `world_view`
 //! will be avoided by the RMPflow policy.
+//!
+//! A fatal error will be logged if `rmpflow_config_file` cannot be read, is not valid YAML, or
+//! contains an RMP parameter value that cannot be parsed.
 CUMO_EXPORT std::unique_ptr<RmpFlowConfig> CreateRmpFlowConfigFromFile(
     const std::filesystem::path &rmpflow_config_file,
     const RobotDescription &robot_description,
     const WorldViewHandle &world_view);
 
 //! Load a set of RMPflow parameters from string, and combine with a robot description to create a
-//! configuration object for consumption by CreateRmpFlow().  The "end_effector_frame" should
-//! correspond to a link name as specified in the original URDF or added as a frame in the XRDF used
-//! to create the robot description. All enabled obstacles in `world_view` will be avoided by the
-//! RMPflow policy.
-//!
-//! DEPRECATED: This function is deprecated and will be removed in a future version.
-//!             Use the variant of `CreateRmpFlowConfigFromMemory()` that does *not* include
-//!             `end_effector_frame` instead. The end effector frame can then be added using
-//!             `RmpFlow::addTargetFrame()`.
-CUMO_DEPRECATED_EXPORT std::unique_ptr<RmpFlowConfig> CreateRmpFlowConfigFromMemory(
-    const std::string &rmpflow_config,
-    const RobotDescription &robot_description,
-    const std::string &end_effector_frame,
-    const WorldViewHandle &world_view);
-
-//! Load a set of RMPflow parameters from string, and combine with a robot description to create a
 //! configuration object for consumption by CreateRmpFlow(). All enabled obstacles in `world_view`
 //! will be avoided by the RMPflow policy.
+//!
+//! A fatal error will be logged if `rmpflow_config` is not valid YAML or contains an RMP parameter
+//! value that cannot be parsed.
 CUMO_EXPORT std::unique_ptr<RmpFlowConfig> CreateRmpFlowConfigFromMemory(
     const std::string &rmpflow_config,
     const RobotDescription &robot_description,
     const WorldViewHandle &world_view);
 
-//! Interface class for building and evaluating a motion policy in the RMPflow framework
+//! Interface class for building and evaluating a motion policy in the RMPflow framework.
 class CUMO_EXPORT RmpFlow {
  public:
   virtual ~RmpFlow() = default;
@@ -120,6 +101,9 @@ class CUMO_EXPORT RmpFlow {
     TargetRmpConfig();
 
     //! Create a `TargetRmpConfig` using parameters from `rmpflow_config`.
+    //!
+    //! A fatal error will be logged if a target RMP parameter is missing from `rmpflow_config` or
+    //! cannot be parsed.
     explicit TargetRmpConfig(const RmpFlowConfig &rmpflow_config);
 
     //! Parameters to configure a task-space position RMP.
@@ -268,14 +252,17 @@ class CUMO_EXPORT RmpFlow {
   //! `RmpFlow` object.
   //!
   //! NOTE: The task-space target will not be active until a position and/or orientation target
-  //!       is set.
+  //!       is set. However, the frame's position damping RMP, configured by
+  //!       `TargetRmpConfig::damping_config`, is active as soon as the frame is added, so adding a
+  //!       frame changes the policy even before a target is set.
   //!
   //! A fatal error will be logged if:
   //!   1. `frame_name` is not a valid frame in the `RobotDescription` used to construct `RmpFlow`,
   //!   2. `frame_name` is already in use as a target frame (i.e., this frame has been added and
-  //!      not removed). This includes the `end_effector_frame` (optionally) used to construct the
-  //!      `RmpflowConfig` used create this `RmpFlow` instance, *OR*
-  //!   3. Any parameter in `config` is invalid.
+  //!      not removed),
+  //!   3. Any parameter in `config` is invalid, *OR*
+  //!   4. `config` is not provided and a target RMP parameter is missing from the `RmpFlowConfig`
+  //!      used to create `RmpFlow` or cannot be parsed.
   virtual void addTargetFrame(const std::string &frame_name,
                               std::optional<TargetRmpConfig> config = std::nullopt) = 0;
 
@@ -330,75 +317,44 @@ class CUMO_EXPORT RmpFlow {
   //!   1. `frame_name` does not correspond to a task-space target frame.
   virtual void clearOrientationTarget(const std::string &frame_name) = 0;
 
-  //! Set an end-effector position attractor.
-  //!
-  //! The origin of the end effector frame will be driven towards the specified position.
-  //!
-  //! The "end-effector" is defined as the first task-space target (i.e., the first frame name
-  //! returned from `targetFrameNames()`). A fatal error will be logged if there are no target
-  //! frames (i.e., `numTargetFrames()` == 0).
-  //!
-  //! DEPRECATED: This function is deprecated and will be removed in a future release.
-  //!             Use `setPositionTarget()` instead.
-  CUMO_DEPRECATED virtual void setEndEffectorPositionAttractor(const Eigen::Vector3d &position) = 0;
-
-  //! Clear end-effector position attractor.
-  //!
-  //! The RMP driving the origin of the end effector frame towards a particular position will be
-  //! deactivated.
-  //!
-  //! The "end-effector" is defined as the first task-space target (i.e., the first frame name
-  //! returned from `targetFrameNames()`). A fatal error will be logged if there are no target
-  //! frames (i.e., `numTargetFrames()` == 0).
-  //!
-  //! DEPRECATED: This function is deprecated and will be removed in a future release.
-  //!             Use `clearPositionTarget()` instead.
-  CUMO_DEPRECATED virtual void clearEndEffectorPositionAttractor() = 0;
-
-  //! Set an end-effector orientation attractor.
-  //!
-  //! The orientation of the end effector frame will be driven towards the specified orientation.
-  //!
-  //! The "end-effector" is defined as the first task-space target (i.e., the first frame name
-  //! returned from `targetFrameNames()`). A fatal error will be logged if there are no target
-  //! frames (i.e., `numTargetFrames()` == 0).
-  //!
-  //! DEPRECATED: This function is deprecated and will be removed in a future release.
-  //!             Use `setOrientationTarget()` instead.
-  CUMO_DEPRECATED virtual void setEndEffectorOrientationAttractor(const Rotation3 &orientation) = 0;
-
-  //! Clear end-effector orientation attractor.
-  //!
-  //! The RMPs driving the orientation of the end effector frame towards a particular orientation
-  //! will be deactivated.
-  //!
-  //! The "end-effector" is defined as the first task-space target (i.e., the first frame name
-  //! returned from `targetFrameNames()`). A fatal error will be logged if there are no target
-  //! frames (i.e., `numTargetFrames()` == 0).
-  //!
-  //! DEPRECATED: This function is deprecated and will be removed in a future release.
-  //!             Use `clearOrientationTarget()` instead.
-  CUMO_DEPRECATED virtual void clearEndEffectorOrientationAttractor() = 0;
-
   //! Set an attractor in generalized coordinates (configuration space).
   //!
   //! The c-space coordinates will be biased towards the specified configuration.
   //!
-  //! NOTE:  Unlike the end effector attractors, there is always an active c-space attractor (either
-  //!        set using `setCSpaceAttractor()` or using the default value loaded from the robot
-  //!        description).
+  //! NOTE: Unlike task-space targets, there is always an active c-space attractor (either set
+  //!       using `setCSpaceAttractor()` or using the default value loaded from the robot
+  //!       description).
+  //!
+  //! A fatal error will be logged if:
+  //!   1. `cspace_position` does not have the same number of c-space coordinates as the
+  //!      `RobotDescription` used to construct `RmpFlow`.
   virtual void setCSpaceAttractor(const Eigen::VectorXd &cspace_position) = 0;
 
-  //! Compute configuration-space acceleration from motion policy, given input state. This takes
-  //! into account the current c-space and/or task-space targets, as well as any
+  //! Compute configuration-space acceleration from motion policy, given input state.
+  //!
+  //! This takes into account the current c-space and/or task-space targets, as well as any
   //! currently-enabled obstacles.
+  //!
+  //! A fatal error will be logged if:
+  //!   1. `cspace_position` does not have the same number of c-space coordinates as the
+  //!      `RobotDescription` used to construct `RmpFlow`,
+  //!   2. `cspace_velocity` does not have the same number of elements as `cspace_position`, *OR*
+  //!   3. `cspace_accel` does not have the same number of elements as `cspace_position`.
   virtual void evalAccel(const Eigen::VectorXd &cspace_position,
                          const Eigen::VectorXd &cspace_velocity,
                          Eigen::Ref<Eigen::VectorXd> cspace_accel) const = 0;
 
-  //! Compute configuration-space force and metric from motion policy, given input state. This takes
-  //! into account the current c-space and/or task-space targets, as well as any
+  //! Compute configuration-space force and metric from motion policy, given input state.
+  //!
+  //! This takes into account the current c-space and/or task-space targets, as well as any
   //! currently-enabled obstacles.
+  //!
+  //! A fatal error will be logged if:
+  //!   1. `cspace_position` does not have the same number of c-space coordinates as the
+  //!      `RobotDescription` used to construct `RmpFlow`,
+  //!   2. `cspace_velocity` does not have the same number of elements as `cspace_position`,
+  //!   3. `cspace_force` does not have the same number of elements as `cspace_position`, *OR*
+  //!   4. `cspace_metric` does not have one row and one column per element of `cspace_position`.
   virtual void evalForceAndMetric(const Eigen::VectorXd &cspace_position,
                                   const Eigen::VectorXd &cspace_velocity,
                                   Eigen::Ref<Eigen::VectorXd> cspace_force,
@@ -406,6 +362,9 @@ class CUMO_EXPORT RmpFlow {
 };
 
 //! Create an instance of the RmpFlow interface from an RMPflow configuration.
+//!
+//! A fatal error will be logged if a parameter required by RMPflow is missing from `config` or
+//! cannot be parsed.
 CUMO_EXPORT std::unique_ptr<RmpFlow> CreateRmpFlow(const RmpFlowConfig &config);
 
 }  // namespace cumotion

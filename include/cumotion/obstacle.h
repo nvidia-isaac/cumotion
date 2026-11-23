@@ -68,12 +68,16 @@ class CUMO_EXPORT Obstacle {
 
     //! An axis-aligned uniform grid of signed distances.
     //!
-    //! Origin: Center of the grid.
+    //! Origin: Minimal corner of the grid. The grid extends from the origin into the positive
+    //!         octant, so the maximal corner of the region covered by the grid lies at
+    //!         `voxel_size * [num_voxels_x, num_voxels_y, num_voxels_z]`. Note that the origin
+    //!         rests on a voxel corner rather than a voxel center; see `Obstacle::Grid`.
     //!
     //! Attributes:
     //! - GRID: Defines the dimensions and resolution of the SDF.
-    //!         A grid precision of `Grid::Precision::DOUBLE` is unsupported and will result in a
-    //!         fatal error if specified.
+    //!         A `Grid::device_precision` of `Grid::Precision::DOUBLE` is unsupported and will
+    //!         result in a fatal error if specified. All values of `Grid::Precision` are
+    //!         supported for `Grid::host_precision`.
     SDF
   };
 
@@ -110,9 +114,9 @@ class CUMO_EXPORT Obstacle {
   //! Used to specify the defining attributes for a grid of voxels that covers an axis-aligned
   //! rectangular region of the workspace.
   //!
-  //! `Grid` fully describes how the grid values passed to `World::setGridValuesFromHost()` and
-  //! `World::setGridValuesFromDevice()` will be interpreted.  An `Attribute::GRID` specifies a grid
-  //! of voxels that each contain a scalar value.  Each voxel has a fixed workspace position
+  //! `Grid` fully describes how the grid values passed to `World::setSdfGridValuesFromHost()` and
+  //! `World::setSdfGridValuesFromDevice()` will be interpreted.  An `Attribute::GRID` specifies a
+  //! grid of voxels that each contain a scalar value.  Each voxel has a fixed workspace position
   //! associated with its value that is implicitly defined by the parameters in `Grid`.
   struct CUMO_EXPORT Grid {
     //! Floating-point precision of grid data.
@@ -205,6 +209,15 @@ class CUMO_EXPORT Obstacle {
   //! Example usage:
   //!     my_sphere.setAttribute(Obstacle::Attribute::RADIUS, 3.0);
   //!     my_cuboid.setAttribute(Obstacle::Attribute::SIDE_LENGTHS, Eigen::Vector3d(2.0, 3.0, 1.0));
+  //!
+  //! A fatal error will be logged if:
+  //!   1. `attribute` is not supported for `type()`,
+  //!   2. `value` does not hold the data type documented for `attribute`,
+  //!   3. `attribute` is `Attribute::GRID` and one or more of `Grid::num_voxels_x`,
+  //!      `Grid::num_voxels_y`, and `Grid::num_voxels_z` are not positive,
+  //!   4. `attribute` is `Attribute::GRID` and `Grid::voxel_size` is not positive, *OR*
+  //!   5. `attribute` is `Attribute::GRID` and `Grid::device_precision` is
+  //!      `Grid::Precision::DOUBLE`.
   virtual void setAttribute(Attribute attribute, const AttributeValue &value) = 0;
 
   //! Return the `Obstacle::Type` of this obstacle.

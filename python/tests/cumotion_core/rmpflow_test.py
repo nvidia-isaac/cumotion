@@ -22,204 +22,13 @@ import os
 # Third Party
 import numpy as np
 import pytest
+import yaml
 
 # cuMotion
 import cumotion
 
 # Local directory
 from ._test_helper import CUMOTION_ROOT_DIR, warnings_disabled
-
-
-@pytest.fixture
-def configure_franka_rmpflow_test_deprecated():
-    """Test fixture to configure robot description and RMPFlow objects.
-
-    This test function creates `rmpflow_config` using deprecated constructors that embed a single
-    task-space target frame in `rmpflow_config`. Subsequent tests can then use the deprecated
-    task-space interface for setting a single target.
-
-    This test function (and all tests calling it) should be removed once the deprecated interface
-    is removed. This test function intentionally repeats much of `configure_franka_rmpflow_test()`
-    to facilitate easy removal.
-    """
-    def _configure_franka_rmpflow_test_deprecated():
-        # Set directory for RMPflow configuration and robot description YAML files.
-        config_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared')
-
-        # Set absolute path to RMPflow configuration for Franka.
-        rmpflow_config_path = os.path.join(
-            config_path, 'franka_rmpflow_config_without_point_cloud.yaml')
-
-        # Set absolute path to the XRDF for Franka.
-        xrdf_path = os.path.join(config_path, "franka.xrdf")
-
-        # Set absolute path to URDF file for Franka.
-        urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka',
-                                 'franka.urdf')
-
-        # Set end effector frame for Franka.
-        end_effector_frame_name = 'right_gripper'
-
-        # Load robot description.
-        robot_description = cumotion.load_robot_from_file(xrdf_path, urdf_path)
-
-        # Create world for obstacles.
-        world = cumotion.create_world()
-        world_view = world.add_world_view()
-
-        # Create RMPflow configuration.
-        rmpflow_config = cumotion.create_rmpflow_config_from_file(rmpflow_config_path,
-                                                                  robot_description,
-                                                                  end_effector_frame_name,
-                                                                  world_view)
-
-        # Create RMPflow policy.
-        rmpflow = cumotion.create_rmpflow(rmpflow_config)
-
-        # Return robot_description and rmpflow
-        return (robot_description, world, world_view, rmpflow)
-
-    return _configure_franka_rmpflow_test_deprecated
-
-
-def test_franka_rmpflow_deprecated(configure_franka_rmpflow_test_deprecated):
-    """Test the Franka RMPFlow interface.
-
-    This test function uses the deprecated task-space interface for setting a single target.
-
-    This test should be removed once the deprecated interface is removed. This test function
-    intentionally repeats much of `test_franka_rmpflow()` to facilitate easy removal.
-    """
-    # Init robot_description and rmpflow from test fixture
-    robot_description, world, world_view, rmpflow = configure_franka_rmpflow_test_deprecated()
-
-    # Expect that c-space values of all zeros exceed c-space limits (due to "panda_joint4").
-    zero = np.zeros(7)
-    with warnings_disabled:
-        assert robot_description.kinematics().within_cspace_limits(zero, True) is False
-
-    # Test that valid joint positions are within bounds.
-    valid_position = np.zeros(7)
-    valid_position[3] = -1.5
-    assert robot_description.kinematics().within_cspace_limits(valid_position, True)
-
-    # Add spherical obstacle in front of robot arm.
-    sphere_obstacle = cumotion.create_obstacle(cumotion.Obstacle.Type.SPHERE)
-    sphere_obstacle_radius = 0.05
-    sphere_obstacle.set_attribute(cumotion.Obstacle.Attribute.RADIUS, sphere_obstacle_radius)
-    sphere_obstacle_pose = cumotion.Pose3.from_translation(np.array([0.3, 0.0, 0.6]))
-    world.add_obstacle(sphere_obstacle, sphere_obstacle_pose)
-
-    # Add box obstacle in front of robot arm.
-    box_obstacle = cumotion.create_obstacle(cumotion.Obstacle.Type.CUBOID)
-    box_obstacle_length = 0.1
-    box_obstacle.set_attribute(cumotion.Obstacle.Attribute.SIDE_LENGTHS,
-                               box_obstacle_length * np.ones(3))
-    box_obstacle_pose = cumotion.Pose3.from_translation(np.array([0.4, 0.0, 0.2]))
-    world.add_obstacle(box_obstacle, box_obstacle_pose)
-
-    # Update world view after adding obstacles.
-    world_view.update()
-
-    # Set default configuration
-    default_cspace_config = np.array([0.00, -1.3, 0.00, -2.87, 0.00, 2.00, 0.75])
-
-    # Set end effector position target.
-    end_effector_position_target = np.array([0.8, 0.0, 0.35])
-    rmpflow.set_end_effector_position_attractor(end_effector_position_target)
-    rmpflow.set_cspace_attractor(default_cspace_config)
-
-    # Set joint positions and joint velocities
-    joint_position = default_cspace_config
-    joint_velocity = np.zeros(robot_description.num_cspace_coords())
-
-    # Initialize joint acceleration vector
-    joint_accel = np.zeros(robot_description.num_cspace_coords())
-
-    # Evaluate acceleration from joint state
-    rmpflow.eval_accel(joint_position, joint_velocity, joint_accel)
-
-    # Test acceleration values
-    joint_accel_expected = np.array([-0.149459,
-                                     -24.1595,
-                                     -0.167684,
-                                     -40.4155,
-                                     0.0096364,
-                                     -16.815,
-                                     0.0494])
-
-    for idx, (expected, actual) in enumerate(zip(joint_accel_expected, joint_accel)):
-        assert expected == pytest.approx(actual, abs=1e-3), 'joint_accel[{}]'.format(idx)
-
-    # Evaluate force and metric from joint state
-    joint_force, joint_metric = rmpflow.eval_force_and_metric(joint_position, joint_velocity)
-
-    # Test force values
-    joint_force_expected = np.array([-61991.6877,
-                                     -7534653.33,
-                                     -69744.7161,
-                                     -13006465.844,
-                                     4135.46402,
-                                     -5397935.177,
-                                     20835.0061])
-
-    for expected, actual in zip(joint_force_expected, joint_force):
-        assert expected == pytest.approx(actual, abs=1e-3)
-
-    # Test metric values
-    joint_metric_expected = np.array([[775.650655,
-                                       -14.3174561,
-                                       686.355989,
-                                       336.982731,
-                                       105.714143,
-                                       125.344953,
-                                       -155.738298],
-                                      [-14.3174561,
-                                       3073.90049,
-                                       -19.2232271,
-                                       -907.944895,
-                                       3.64276457,
-                                       63.5595243,
-                                       -11.1856694],
-                                      [686.355989,
-                                       -19.2232271,
-                                       754.118668,
-                                       384.611192,
-                                       41.9560397,
-                                       142.726214,
-                                       -175.208925],
-                                      [336.982731,
-                                       -907.944895,
-                                       384.611192,
-                                       10517.9771,
-                                       -27.0197790,
-                                       3770.55119,
-                                       -110.482394],
-                                      [105.714143,
-                                       3.64276457,
-                                       41.9560397,
-                                       -27.0197790,
-                                       136.706724,
-                                       -9.66406428,
-                                       11.4533163],
-                                      [125.344953,
-                                       63.5595243,
-                                       142.726214,
-                                       3770.55119,
-                                       -9.66406428,
-                                       1591.13314,
-                                       -42.3265189],
-                                      [-155.738298,
-                                       -11.1856694,
-                                       -175.208925,
-                                       -110.482394,
-                                       11.4533163,
-                                       -42.3265189,
-                                       105.208768]])
-
-    for expected_vector, actual_vector in zip(joint_metric_expected, joint_metric):
-        for expected, actual in zip(expected_vector, actual_vector):
-            assert expected == pytest.approx(actual, abs=1e-3)
 
 
 @pytest.fixture
@@ -318,11 +127,11 @@ def test_franka_rmpflow(configure_franka_rmpflow_test):
 
     # Test acceleration values.
     cspace_accel_expected = np.array([-0.149459,
-                                      -24.1595,
+                                      -24.22777,
                                       -0.167684,
-                                      -40.4155,
+                                      -40.3788,
                                       0.0096364,
-                                      -16.815,
+                                      -16.8079,
                                       0.0494])
 
     for idx, (expected, actual) in enumerate(zip(cspace_accel_expected, cspace_accel)):
@@ -332,67 +141,67 @@ def test_franka_rmpflow(configure_franka_rmpflow_test):
     cspace_force, cspace_metric = rmpflow.eval_force_and_metric(cspace_position, cspace_velocity)
 
     # Test force values.
-    cspace_force_expected = np.array([-61991.6877,
-                                      -7534653.33,
-                                      -69744.7161,
-                                      -13006465.844,
-                                      4135.46402,
-                                      -5397935.177,
-                                      20835.0061])
+    cspace_force_expected = np.array([-61992.3972,
+                                      -7534638.4889,
+                                      -69745.5143,
+                                      -13006502.376,
+                                      4135.511,
+                                      -5397947.9038,
+                                      20835.2446])
 
     for expected, actual in zip(cspace_force_expected, cspace_force):
         assert expected == pytest.approx(actual, abs=1e-3)
 
     # Test metric values.
-    cspace_metric_expected = np.array([[775.650655,
-                                        -14.3174561,
-                                        686.355989,
-                                        336.982731,
-                                        105.714143,
-                                        125.344953,
-                                        -155.738298],
-                                       [-14.3174561,
-                                        3073.90049,
-                                        -19.2232271,
-                                        -907.944895,
-                                        3.64276457,
-                                        63.5595243,
-                                        -11.1856694],
-                                       [686.355989,
-                                        -19.2232271,
-                                        754.118668,
-                                        384.611192,
-                                        41.9560397,
-                                        142.726214,
-                                        -175.208925],
-                                       [336.982731,
-                                        -907.944895,
-                                        384.611192,
-                                        10517.9771,
-                                        -27.0197790,
-                                        3770.55119,
-                                        -110.482394],
-                                       [105.714143,
-                                        3.64276457,
-                                        41.9560397,
-                                        -27.0197790,
-                                        136.706724,
-                                        -9.66406428,
-                                        11.4533163],
-                                       [125.344953,
-                                        63.5595243,
-                                        142.726214,
-                                        3770.55119,
-                                        -9.66406428,
-                                        1591.13314,
-                                        -42.3265189],
-                                       [-155.738298,
-                                        -11.1856694,
-                                        -175.208925,
-                                        -110.482394,
-                                        11.4533163,
-                                        -42.3265189,
-                                        105.208768]])
+    cspace_metric_expected = np.array([[792.72954074,
+                                        -15.74551121,
+                                        704.7645975,
+                                        339.52047539,
+                                        105.18664579,
+                                        126.15884042,
+                                        -161.38733742],
+                                       [-15.74551121,
+                                        3237.08883909,
+                                        -20.87428034,
+                                        -1261.31699487,
+                                        3.8195338,
+                                        -44.59886505,
+                                        -10.645875],
+                                       [704.7645975,
+                                        -20.87428034,
+                                        776.30003264,
+                                        387.57909383,
+                                        39.61201339,
+                                        143.76427375,
+                                        -181.56109254],
+                                       [339.52047539,
+                                        -1261.31699487,
+                                        387.57909383,
+                                        11304.60179998,
+                                        -27.35418726,
+                                        4019.64865898,
+                                        -111.43922314],
+                                       [105.18664579,
+                                        3.8195338,
+                                        39.61201339,
+                                        -27.35418726,
+                                        138.07045058,
+                                        -9.82603732,
+                                        11.82765213],
+                                       [126.15884042,
+                                        -44.59886505,
+                                        143.76427375,
+                                        4019.64865898,
+                                        -9.82603732,
+                                        1673.22680204,
+                                        -42.63080524],
+                                       [-161.38733742,
+                                        -10.645875,
+                                        -181.56109254,
+                                        -111.43922314,
+                                        11.82765213,
+                                        -42.63080524,
+                                        107.10692904]])
 
     for expected_vector, actual_vector in zip(cspace_metric_expected, cspace_metric):
         for expected, actual in zip(expected_vector, actual_vector):
@@ -530,6 +339,86 @@ def test_invalid_target_setting_and_clearing(franka_rmpflow_setup):
         rmpflow.clear_orientation_target(tool_frame)
 
 
+def load_franka_rmpflow_config_yaml():
+    """Load the RMPflow configuration for Franka as a dictionary."""
+    rmpflow_config_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared',
+                                       'franka_rmpflow_config_without_point_cloud.yaml')
+    with open(rmpflow_config_path, 'r') as file:
+        return yaml.safe_load(file)
+
+
+def test_invalid_rmpflow_config(franka_rmpflow_setup):
+    """Test error handling for creating an `RmpFlowConfig` from invalid input."""
+    robot_description, _, world_view, _ = franka_rmpflow_setup
+
+    # Expect a fatal error when the RMPflow configuration file does not exist.
+    with pytest.raises(RuntimeError):
+        cumotion.create_rmpflow_config_from_file(
+            os.path.join(CUMOTION_ROOT_DIR, 'missing_rmpflow_config.yaml'),
+            robot_description,
+            world_view)
+
+    # Expect a fatal error when the RMPflow configuration is not valid YAML.
+    with pytest.raises(RuntimeError):
+        cumotion.create_rmpflow_config_from_memory('rmp_params: [', robot_description, world_view)
+
+    # Expect a fatal error when an RMP parameter value cannot be parsed.
+    with pytest.raises(RuntimeError):
+        cumotion.create_rmpflow_config_from_memory('rmp_params: {damping_rmp: {inertia: x}}',
+                                                   robot_description,
+                                                   world_view)
+
+
+def test_invalid_rmpflow_params(franka_rmpflow_setup):
+    """Test error handling for RMPflow parameters that are missing or cannot be parsed."""
+    robot_description, _, world_view, _ = franka_rmpflow_setup
+
+    # Expect fatal errors when creating `RmpFlow` or `TargetRmpConfig` without required parameters.
+    empty_config = cumotion.create_rmpflow_config_from_memory('rmp_params: {}',
+                                                              robot_description,
+                                                              world_view)
+    with pytest.raises(RuntimeError):
+        cumotion.create_rmpflow(empty_config)
+    with pytest.raises(RuntimeError):
+        cumotion.RmpFlow.TargetRmpConfig(empty_config)
+
+    # Expect a fatal error when creating `TargetRmpConfig` from target RMP parameters that cannot be
+    # parsed.
+    scalar_target_config = cumotion.create_rmpflow_config_from_memory(
+        'rmp_params: {target_rmp: 3}', robot_description, world_view)
+    with pytest.raises(RuntimeError):
+        cumotion.RmpFlow.TargetRmpConfig(scalar_target_config)
+
+    # Expect a fatal error when creating `RmpFlow` with joint limit buffers that cannot be parsed.
+    config_yaml = load_franka_rmpflow_config_yaml()
+    config_yaml['joint_limit_buffers'] = 'wide'
+    unparsable_buffers_config = cumotion.create_rmpflow_config_from_memory(
+        yaml.dump(config_yaml), robot_description, world_view)
+    with pytest.raises(RuntimeError):
+        cumotion.create_rmpflow(unparsable_buffers_config)
+
+
+def test_invalid_default_target_rmp_params(franka_rmpflow_setup):
+    """Test error handling for `add_target_frame()` without default target RMP parameters."""
+    robot_description, _, world_view, _ = franka_rmpflow_setup
+    tool_frame = robot_description.tool_frame_names()[0]
+
+    # Create `RmpFlow` from a configuration without target RMP parameters.
+    config_yaml = load_franka_rmpflow_config_yaml()
+    del config_yaml['rmp_params']['target_rmp']
+    missing_target_config = cumotion.create_rmpflow_config_from_memory(
+        yaml.dump(config_yaml), robot_description, world_view)
+    rmpflow = cumotion.create_rmpflow(missing_target_config)
+
+    # Expect a fatal error when adding a target that relies on the missing default parameters.
+    with pytest.raises(RuntimeError):
+        rmpflow.add_target_frame(tool_frame)
+
+    # Expect success when adding a target with an explicit `TargetRmpConfig`.
+    rmpflow.add_target_frame(tool_frame, cumotion.RmpFlow.TargetRmpConfig())
+    assert rmpflow.num_target_frames() == 1
+
+
 def test_no_task_space_target(franka_rmpflow_setup):
     """Test RMPflow evaluation with no task-space target."""
     robot_description, _, _, rmpflow = franka_rmpflow_setup
@@ -554,6 +443,37 @@ def test_no_task_space_target(franka_rmpflow_setup):
     cspace_acceleration = np.zeros(7)
     rmpflow.eval_accel(cspace_position, cspace_velocity, cspace_acceleration)
     assert np.linalg.norm(cspace_acceleration) == pytest.approx(0.65281677, abs=1e-5)
+
+
+def test_get_all_params():
+    """Test that `get_all_params()` fills its lists with all parameter names and values."""
+    config_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'nvidia', 'shared')
+    rmpflow_config_path = os.path.join(
+        config_path, 'franka_rmpflow_config_without_point_cloud.yaml')
+    xrdf_path = os.path.join(config_path, 'franka.xrdf')
+    urdf_path = os.path.join(CUMOTION_ROOT_DIR, 'content', 'third_party', 'franka',
+                             'franka.urdf')
+    robot_description = cumotion.load_robot_from_file(xrdf_path, urdf_path)
+    world = cumotion.create_world()
+    world_view = world.add_world_view()
+    rmpflow_config = cumotion.create_rmpflow_config_from_file(
+        rmpflow_config_path, robot_description, world_view)
+
+    # Expect the lists to be overwritten with a value for each parameter name, matching
+    # `get_param()`.
+    names = ['not_a_param']
+    values = [0.0]
+    rmpflow_config.get_all_params(names, values)
+    assert 'not_a_param' not in names
+    assert len(names) > 0
+    assert len(values) == len(names)
+    for name, value in zip(names, values):
+        assert rmpflow_config.get_param(name) == value
+
+    # Expect the returned lists to be accepted by `set_all_params()`.
+    values[0] += 1.0
+    rmpflow_config.set_all_params(names, values)
+    assert rmpflow_config.get_param(names[0]) == values[0]
 
 
 def test_multiple_task_space_targets():

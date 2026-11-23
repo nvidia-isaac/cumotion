@@ -1,0 +1,66 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+first_scene:
+  cuboids:
+    wall_1:
+      properties:
+        dimensions: [2.0, 0.1, 1.0]
+      pose:
+        position: [1.0, 0.0, 0.5]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+    table:
+      properties:
+        dimensions: [1.0, 1.0, 0.1]
+      pose:
+        position: [0.0, 1.0, 0.75]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+  spheres:
+    ball:
+      properties:
+        radius: 0.2
+      pose:
+        position: [0.5, 0.5, 1.0]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+
+second_scene:
+  cuboids:
+    wall_2:
+      properties:
+        dimensions: [0.1, 2.0, 1.5]
+      pose:
+        position: [2.0, 1.0, 0.75]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+    shelf:
+      properties:
+        dimensions: [1.5, 0.3, 2.0]
+      pose:
+        position: [1.0, 2.0, 1.0]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+  capsules:
+    pole:
+      properties:
+        radius: 0.05
+        height: 2.0
+      pose:
+        position: [0.0, 0.0, 1.0]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}
+  spheres:
+    obstacle_sphere:
+      properties:
+        radius: 0.3
+      pose:
+        position: [1.5, 1.5, 0.5]
+        orientation: {w: 1.0, xyz: [0.0, 0.0, 0.0]}

@@ -96,13 +96,14 @@ class CUMO_EXPORT FatalException : public std::exception {
 //! this facility even if a custom `Logger` is provided.
 //!
 //! Until `SetLogLevel()` is called, the default log level is `WARNING`.  The lowest supported
-//! `log_level` is `FATAL`, since it is not possible to supress fatal errors.
+//! `log_level` is `FATAL`, since it is not possible to suppress fatal errors.
 CUMO_EXPORT void SetLogLevel(LogLevel log_level);
 
 //! @brief Install a custom logger, derived from the above `Logger` class.
 //!
 //! If `logger` is a null pointer, then the default logger is reenabled.  The default logger
-//! directs all output to stdout and throws a `FatalException` in the event of a fatal error.
+//! directs all output except fatal error messages to stdout.  In the event of a fatal error, it
+//! throws a `FatalException` that carries the error message.
 CUMO_EXPORT void SetLogger(std::shared_ptr<Logger> logger = nullptr);
 
 //! Set color/style used by the default logger for messages of a given `log_level`.  The `style`

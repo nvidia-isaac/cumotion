@@ -24,9 +24,9 @@ namespace cumotion {
 
 //! Load a `TaskSpacePathSpec` from file with absolute path `task_space_path_spec_file`.
 //!
-//! The `task_space_spec_file` is expected to correspond to a YAML file specifying a task space
-//! path. This path specification must include:
-//!   [1] an initial task space pose, and
+//! The `task_space_path_spec_file` is expected to correspond to a YAML file specifying a
+//! task-space path. This path specification must include:
+//!   [1] an initial task-space pose, and
 //!   [2] a series of path segments emanating from this initial pose.
 //!
 //! The initial pose uses the key "initial pose" and is expected to have the following format:
@@ -170,6 +170,9 @@ namespace cumotion {
 //!               position: [#, #, #]
 //!               orientation: {w: #, xyz: [#, #, #]}
 //!
+//! If `task_space_path_spec_file` cannot be read or is not valid YAML, `nullptr` will be returned
+//! and an error will be logged.
+//!
 //! If "initial pose" or "path specs" are unable to be parsed, `nullptr` will be returned. If any
 //! "path specs" fail to be parsed, they will be discarded and a warning will be logged, but any
 //! other valid "path specs" will continue to be added to the returned `TaskSpacePathSpec`.
@@ -180,6 +183,9 @@ CUMO_EXPORT std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromFile(
 //!
 //! See `LoadTaskSpacePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
+//!
+//! If `task_space_path_spec_yaml` is not valid YAML, `nullptr` will be returned and an error will
+//! be logged.
 CUMO_EXPORT std::unique_ptr<TaskSpacePathSpec> LoadTaskSpacePathSpecFromMemory(
     const std::string &task_space_path_spec_yaml);
 
@@ -191,7 +197,7 @@ CUMO_EXPORT std::string ExportTaskSpacePathSpecToMemory(
 
 //! Load a `CSpacePathSpec` from file with absolute path `cspace_path_spec_file`.
 //!
-//! The `cspace_spec_file` is expected to correspond to a YAML file specifying a c-space path.
+//! The `cspace_path_spec_file` is expected to correspond to a YAML file specifying a c-space path.
 //! This path specification must include:
 //!   [1] an initial c-space position, and
 //!   [2] a series of c-space waypoints following this initial c-space position.
@@ -216,6 +222,9 @@ CUMO_EXPORT std::string ExportTaskSpacePathSpecToMemory(
 //! c-space coordinates as the "initial c-space position", or it will be discarded and a warning
 //! will be logged.
 //!
+//! If `cspace_path_spec_file` cannot be read or is not valid YAML, `nullptr` will be returned and
+//! an error will be logged.
+//!
 //! If "initial c-space position" or "waypoints" are unable to be parsed, `nullptr` will be
 //! returned. If any "waypoints" fail to be parsed, they will be discarded and a warning will be
 //! logged, but any other valid "waypoints" will continue to be added to the returned
@@ -227,6 +236,9 @@ CUMO_EXPORT std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromFile(
 //!
 //! See `LoadCSpacePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
+//!
+//! If `cspace_path_spec_yaml` is not valid YAML, `nullptr` will be returned and an error will be
+//! logged.
 CUMO_EXPORT std::unique_ptr<CSpacePathSpec> LoadCSpacePathSpecFromMemory(
     const std::string &cspace_path_spec_yaml);
 
@@ -238,7 +250,7 @@ CUMO_EXPORT std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspac
 //! Load a `CompositePathSpec` from file with absolute path `composite_path_spec_file`.
 //!
 //! The `composite_path_spec_file` is expected to correspond to a YAML file specifying a path
-//! composed of task space and/or c-space segments. This path specification must include:
+//! composed of task-space and/or c-space segments. This path specification must include:
 //!   [1] an initial c-space position, and
 //!   [2] a series of task-space and/or c-space path specifications following this initial
 //!       c-space position.
@@ -249,11 +261,11 @@ CUMO_EXPORT std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspac
 //!   initial c-space position: [#, #, ... , #]
 //!
 //! where each "#" represents a floating point value. The number of elements in this vector sets the
-//! expected number of c-space coordinates for the `CSpacePathSpec`.
+//! expected number of c-space coordinates for the `CompositePathSpec`.
 //!
 //! The series of path specifications uses the key "path specs" and each spec is required to be
-//! labelled as either "c-space" or "task-space". In addition to including the full
-//! specification for the task space or c-space path (see `LoadTaskSpacePathSpecFromFile()` and
+//! labeled as either "c-space" or "task-space". In addition to including the full
+//! specification for the task-space or c-space path (see `LoadTaskSpacePathSpecFromFile()` and
 //! `LoadCSpacePathSpecFromFile()` for details), each path specification must specify a
 //! "transition mode" which must be "skip", "free", or "linear_task_space". These modes correspond
 //! to the `CompositePathSpec::TransitionMode` defined in `composite_path_spec.h`.
@@ -283,9 +295,12 @@ CUMO_EXPORT std::string ExportCSpacePathSpecToMemory(const CSpacePathSpec &cspac
 //!         - ...
 //!   - ...
 //!
-//! where any combination of task space and c-space path specifications may be included. The order
+//! where any combination of task-space and c-space path specifications may be included. The order
 //! of the path specifications in the YAML file dictates the order in which they are added to the
 //! `CompositePathSpec`.
+//!
+//! If `composite_path_spec_file` cannot be read or is not valid YAML, `nullptr` will be returned
+//! and an error will be logged.
 //!
 //! If "initial c-space position" or "path specs" are unable to be parsed, `nullptr` will be
 //! returned. If any "path specs" fail to be parsed, they will be discarded and a warning will be
@@ -298,6 +313,9 @@ CUMO_EXPORT std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromFile(
 //!
 //! See `LoadCompositePathSpecFromFile()` documentation for detailed description of required YAML
 //! format.
+//!
+//! If `composite_path_spec_yaml` is not valid YAML, `nullptr` will be returned and an error will be
+//! logged.
 CUMO_EXPORT std::unique_ptr<CompositePathSpec> LoadCompositePathSpecFromMemory(
     const std::string &composite_path_spec_yaml);
 

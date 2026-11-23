@@ -41,7 +41,7 @@ class CUMO_EXPORT RobotSegmenter {
   virtual ~RobotSegmenter() {}
 
   //! For the given `camera_pose_in_robot_frame`, `cspace_position` of the robot, and
-  //! `input_depth_image`, compute a filtered `output_depth_image` and/or `output_depth_mask`.
+  //! `input_depth_image`, compute a filtered `output_depth_image` and/or `output_mask`.
   //!
   //! Both `output_depth_image` and `output_mask` are optional, and passing in `nullptr` for either
   //! will skip the corresponding computation.  A warning will be logged if `nullptr` is passed in

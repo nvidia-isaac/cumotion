@@ -17,7 +17,7 @@
 
 namespace cumotion {
 
-//! Represent a path through configuration space (i.e., c-space or "joint space").
+//! Represent a path through configuration space (i.e., c-space).
 //!
 //! This path is parameterized by independent variable `s` and is generally expected to be
 //! continuous, but not necessarily smooth.
@@ -28,7 +28,7 @@ class CUMO_EXPORT CSpacePath {
   //! Return the number of configuration space coordinates for the path.
   virtual int numCSpaceCoords() const = 0;
 
-  //! Indicates continuous range of independent values, `s`, for which the path is defined.
+  //! Indicates the continuous range of independent values, `s`, for which the path is defined.
   struct CUMO_EXPORT Domain {
     //! Minimum value of `s` defining domain.
     double lower;

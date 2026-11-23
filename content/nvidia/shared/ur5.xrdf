@@ -1,0 +1,138 @@
+# SPDX-FileCopyrightText: Copyright (c) 2020-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+format: xrdf
+format_version: 2.0
+
+default_joint_positions:
+  shoulder_pan_joint: -1.57
+  shoulder_lift_joint: -1.57
+  elbow_joint: -1.57
+  wrist_1_joint: -1.57
+  wrist_2_joint: 1.57
+  wrist_3_joint: 0.0
+
+cspace:
+  joint_names:
+    - "shoulder_pan_joint"
+    - "shoulder_lift_joint"
+    - "elbow_joint"
+    - "wrist_1_joint"
+    - "wrist_2_joint"
+    - "wrist_3_joint"
+  acceleration_limits: [12.0, 12.0, 12.0, 12.0, 12.0, 12.0]
+  jerk_limits: [500.0, 500.0, 500.0, 500.0, 500.0, 500.0]
+
+tool_frames: ["tool0"]
+
+world_collision:
+  geometry: "ur5_collision_spheres"
+
+self_collision:
+  geometry: "ur5_self_collision_spheres"
+  ignore:
+    shoulder_link: [ "upper_arm_link" ]
+    upper_arm_link: [ "forearm_link" ]
+    forearm_link: [ "wrist_1_link" ]
+    wrist_1_link: [ "wrist_2_link" ]
+
+geometry:
+  ur5_collision_spheres:
+    spheres:
+      upper_arm_link:
+        - center: [ 0.0, -0.04, 0.0 ]
+          radius: 0.065
+        - center: [ 0.0, 0.012, 0.0095 ]
+          radius: 0.0725
+        - center: [ 0.0, 0.0, 0.06 ]
+          radius: 0.06
+        - center: [ 0.0, 0.0, 0.12 ]
+          radius: 0.055
+        - center: [ 0.0, 0.0, 0.17 ]
+          radius: 0.055
+        - center: [ 0.0, 0.0, 0.22 ]
+          radius: 0.055
+        - center: [ 0.0, 0.0, 0.27 ]
+          radius: 0.055
+        - center: [ 0.0, 0.0, 0.32 ]
+          radius: 0.055
+        - center: [ 0.0, 0.0, 0.382 ]
+          radius: 0.065
+        - center: [ 0.0, -0.042, 0.42 ]
+          radius: 0.0685
+        - center: [ 0.0, 0.02, 0.42 ]
+          radius: 0.0685
+      forearm_link:
+        - center: [ 0.0, 0.04, 0.005 ]
+          radius: 0.063
+        - center: [ 0.0, 0.0, 0.01 ]
+          radius: 0.06
+        - center: [ 0.0, 0.0, 0.05 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.08 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.11 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.14 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.18 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.21 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.25 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.29 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.33 ]
+          radius: 0.042
+        - center: [ 0.0, 0.0, 0.37 ]
+          radius: 0.042
+        - center: [ 0.0, -0.0245, 0.39 ]
+          radius: 0.045
+        - center: [ 0.0, 0.0275, 0.39 ]
+          radius: 0.045
+      wrist_1_link:
+        - center: [ 0.0, 0.09, 0.05 ]
+          radius: 0.05
+        - center: [ 0.0, 0.09, -0.008 ]
+          radius: 0.057
+      wrist_2_link:
+        - center: [ 0.0, 0.05, 0.095 ]
+          radius: 0.045
+        - center: [ 0.0, 0.01, 0.09 ]
+          radius: 0.045
+        - center: [ 0.015, -0.03, 0.08 ]
+          radius: 0.03
+        - center: [ -0.015, -0.03, 0.08 ]
+          radius: 0.03
+        - center: [ 0.0, -0.03, 0.065 ]
+          radius: 0.03
+        - center: [ 0.015, -0.03, 0.1 ]
+          radius: 0.03
+        - center: [ -0.015, -0.03, 0.1 ]
+          radius: 0.03
+        - center: [ 0.0, -0.03, 0.11 ]
+          radius: 0.03
+  ur5_self_only_collision_spheres:
+    spheres:
+      shoulder_link:
+        - center: [ 0.0, 0.0, -0.04 ]
+          radius: 0.08
+        - center: [ 0.0, 0.005, 0.02 ]
+          radius: 0.07
+        - center: [ 0.0, 0.065, 0.0 ]
+          radius: 0.07
+  ur5_self_collision_spheres:
+    clone: ["ur5_collision_spheres", "ur5_self_only_collision_spheres"]

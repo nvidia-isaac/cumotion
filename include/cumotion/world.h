@@ -13,7 +13,6 @@
 
 #include <memory>
 #include <optional>
-#include <vector>
 
 #include "cumotion/cumotion_export.h"
 #include "cumotion/obstacle.h"
@@ -43,19 +42,33 @@ class CUMO_EXPORT World {
   //! If a `pose` is not provided for the `obstacle`, `Pose3::Identity()` will be used.
   //!
   //! Obstacles are automatically enabled when added.
+  //!
+  //! A fatal error will be logged if `obstacle` has type `Obstacle::Type::SDF` and its
+  //! `Obstacle::Attribute::GRID` attribute has not been set.
   virtual ObstacleHandle addObstacle(const Obstacle &obstacle,
                                      std::optional<Pose3> pose = std::nullopt) = 0;
 
-  //! Permanently remove obstacle, invalidating its handle.
+  //! Permanently remove `obstacle` from the world.
+  //!
+  //! After removal, `obstacle` is invalid for subsequent calls to this `World`. Existing world
+  //! views will not reflect the removal until updated.
+  //!
+  //! A fatal error will be logged if `obstacle` has already been removed.
   virtual void removeObstacle(const ObstacleHandle &obstacle) = 0;
 
   //! Enable an obstacle for the purpose of collision checks and distance evaluations.
+  //!
+  //! A fatal error will be logged if `obstacle` has been removed or is already enabled.
   virtual void enableObstacle(const ObstacleHandle &obstacle) = 0;
 
   //! Disable an obstacle for the purpose of collision checks and distance evaluations.
+  //!
+  //! A fatal error will be logged if `obstacle` has been removed or is already disabled.
   virtual void disableObstacle(const ObstacleHandle &obstacle) = 0;
 
   //! Set the pose of the given obstacle.
+  //!
+  //! A fatal error will be logged if `obstacle` has been removed.
   virtual void setPose(const ObstacleHandle &obstacle, const Pose3 &pose) = 0;
 
   //! Set the grid values for an obstacle of type SDF using a host-resident `values` buffer.
@@ -68,10 +81,15 @@ class CUMO_EXPORT World {
   //! voxels with adjacent X coordinates should be separated by `num_voxels_y * num_voxels_z`
   //! elements.
   //!
-  //! `precision` specifies the floating-point type of `values`.  `Obstacle::Grid::Precision::HALF`
-  //! corresponds to the `__half` data type defined in the `cuda_fp16.h` header.
+  //! `grid_precision` specifies the floating-point type of `values`.
+  //! `Obstacle::Grid::Precision::HALF` corresponds to the `__half` data type defined in the
+  //! `cuda_fp16.h` header.
   //!
-  //! If the type of `obstacle` is not `Obstacle::Type::SDF`, a fatal error will be logged.
+  //! A fatal error will be logged if:
+  //!   1. `obstacle` has been removed,
+  //!   2. the type of `obstacle` is not `Obstacle::Type::SDF`, *OR*
+  //!   3. `grid_precision` is lower than either `Obstacle::Grid::host_precision` or
+  //!      `Obstacle::Grid::device_precision` for `obstacle`.
   virtual void setSdfGridValuesFromHost(const ObstacleHandle &obstacle,
                                         const void *values,
                                         Obstacle::Grid::Precision grid_precision) = 0;
@@ -86,10 +104,15 @@ class CUMO_EXPORT World {
   //! voxels with adjacent X coordinates should be separated by `num_voxels_y * num_voxels_z`
   //! elements.
   //!
-  //! `precision` specifies the floating-point type of `values`.  `Obstacle::Grid::Precision::HALF`
-  //! corresponds to the `__half` data type defined in the `cuda_fp16.h` header.
+  //! `grid_precision` specifies the floating-point type of `values`.
+  //! `Obstacle::Grid::Precision::HALF` corresponds to the `__half` data type defined in the
+  //! `cuda_fp16.h` header.
   //!
-  //! If the type of `obstacle` is not `Obstacle::Type::SDF`, a fatal error will be logged.
+  //! A fatal error will be logged if:
+  //!   1. `obstacle` has been removed,
+  //!   2. the type of `obstacle` is not `Obstacle::Type::SDF`, *OR*
+  //!   3. `grid_precision` is lower than either `Obstacle::Grid::host_precision` or
+  //!      `Obstacle::Grid::device_precision` for `obstacle`.
   virtual void setSdfGridValuesFromDevice(const ObstacleHandle &obstacle,
                                           const void *values,
                                           Obstacle::Grid::Precision grid_precision) = 0;
@@ -98,11 +121,10 @@ class CUMO_EXPORT World {
   //!
   //! Accumulation of numerical error from type-casting is handled independently of the tolerances
   //! in `SdfInspectionTolerances`.  It is expected that any SDF computed from an analytically
-  //! correct distance function will pass `InspectCudaSdfAndSync()` with the default tolerances of
-  //! `0.0f`.
+  //! correct distance function will pass `inspectSdf()` with the default tolerances of `0.0f`.
   //!
   //! Inspection tolerances are specified in single-precision (`float`) because only single- and
-  //! half- precision data for device-resident SDFs are supported.
+  //! half-precision data for device-resident SDFs are supported.
   struct CUMO_EXPORT SdfInspectionTolerances {
     //! Numerical tolerance on checking whether an SDF voxel value is equal to its neighbor.
     //!
@@ -114,6 +136,8 @@ class CUMO_EXPORT World {
     //! A voxel is said to be equal to its neighbor if:
     //! `abs(voxel_value - neighbor_value) <= voxel_matches_neighbor_tolerance +
     //!                                       numerical_tolerance`.
+    //!
+    //! This tolerance must be non-negative.
     float voxel_matches_neighbor_tolerance = 0.0f;
 
     //! Numerical tolerance on checking whether an SDF voxel value is too far from a neighboring
@@ -125,8 +149,11 @@ class CUMO_EXPORT World {
     //! cast to the `SDF` data-type specified by `Obstacle::Grid::device_precision`.
     //!
     //! A voxel is said to be too far from its neighbor if:
-    //! `abs(voxel_value - neighbor_value) > voxel_too_far_from_neighbor_tolerance +
-    //!                                      numerical_tolerance`.
+    //! `abs(voxel_value - neighbor_value) > voxel_size + voxel_too_far_from_neighbor_tolerance +
+    //!                                      numerical_tolerance`,
+    //! where `voxel_size` is specified by `Obstacle::Grid::voxel_size`.
+    //!
+    //! This tolerance must be non-negative.
     float voxel_too_far_from_neighbor_tolerance = 0.0f;
   };
 
@@ -150,7 +177,7 @@ class CUMO_EXPORT World {
     //! There is no geometrically consistent way this can happen in a valid distance field.
     int num_voxels_too_far_from_neighbors = 0;
 
-    //! Returns the sum of all error conditions in `SdfInspectionResults`.
+    //! Return the sum of all error conditions in `SdfInspectionResults`.
     [[nodiscard]] int numErrors() const {
       return num_voxels_matching_all_neighbors + num_voxels_too_far_from_neighbors;
     }
@@ -165,9 +192,10 @@ class CUMO_EXPORT World {
   //! known systematic error in the generation of SDF data within known bounds.
   //!
   //! A fatal error will be logged if:
-  //!  - `obstacle` does not have type `SDF`.
-  //!  - `obstacle` has not been populated with data.
-  //!  - `obstacle` has been removed from the world.
+  //!   1. `obstacle` has been removed from the world,
+  //!   2. `obstacle` does not have type `Obstacle::Type::SDF`,
+  //!   3. `obstacle` has not been populated with data, *OR*
+  //!   4. either tolerance in `inspection_tolerances` is negative.
   [[nodiscard]] virtual SdfInspectionResults inspectSdf(
       const ObstacleHandle &obstacle,
       std::optional<SdfInspectionTolerances> inspection_tolerances = std::nullopt) const = 0;
