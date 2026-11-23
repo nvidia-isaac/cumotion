@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3835c3f0" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=decb6a4a" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -263,6 +263,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/path_planning_tutorial.html">Path Planning Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
 </ul>
 </details></li>
@@ -327,10 +328,219 @@
                   
   <section id="release-notes">
 <h1>Release Notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h1>
+<section id="release-2-0-0-november-23-2026">
+<h2>Release 2.0.0 - November 23, 2026<a class="headerlink" href="#release-2-0-0-november-23-2026" title="Link to this heading">#</a></h2>
+<section id="what-s-new">
+<span id="release-2-0-0-whats-new"></span><h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h3>
+<ul>
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a> now represents each trajectory as a uniform cubic
+B-spline instead of a dense sequence of knot points. Costs and constraints are evaluated with
+the spline’s analytical derivatives at densely sampled points, and the number of spline spans
+is configured with the new <code class="docutils literal notranslate"><span class="pre">trajopt/num_spans</span></code> parameter. The activation distances of the
+c-space velocity, acceleration, and jerk limit penalties are now specified relative to each
+limit, using the new <code class="docutils literal notranslate"><span class="pre">relative_activation_distance</span></code> parameters of those penalties.</p>
+<p>The trajectory returned by
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion19TrajectoryOptimizer7Results10trajectoryEv" title="cumotion::TrajectoryOptimizer::Results::trajectory"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Results::trajectory()</span></code></a> is now
+self-consistent: the velocity, acceleration, and jerk reported by
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion10Trajectory4evalEdPN5Eigen8VectorXdEPN5Eigen8VectorXdEPN5Eigen8VectorXdEPN5Eigen8VectorXdE" title="cumotion::Trajectory::eval"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">Trajectory::eval()</span></code></a> are the time derivatives of its
+position, whereas previously each derivative was interpolated independently. Position,
+velocity, and acceleration are continuous, and jerk is piecewise constant. Each returned
+trajectory is uniformly time-scaled to the shortest duration for which its c-space velocity,
+acceleration, and jerk stay within their limits over the entire trajectory.</p>
+<p>If the initial optimization finds no valid trajectory, the retiming iterations now continue to
+optimize every candidate, so the solve can still succeed. As a result, solves that ultimately
+fail run every retiming iteration and may take longer.</p>
+</li>
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a> is now faster and produces shorter trajectories.
+Compared to cuMotion 1.1 on the MotionBenchMaker benchmark for the Franka Panda (1,600 planning
+problems per platform, split evenly between task-space and c-space targets), average planning
+time dropped from 96 ms to 41 ms (2.4x faster) on a GeForce RTX 5090 and from 297 ms to 234 ms
+(1.3x faster) on Jetson AGX Thor. Average trajectory duration is 15% shorter on both platforms
+(1.57 s vs. 1.85 s), and the success rate increased from 99.4% to 99.9%. Averages are computed
+over successful plans.</p></li>
+<li><p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> has been added to the library. This class improves upon
+and replaces <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlannerE" title="cumotion::MotionPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlanner</span></code></a> for path planning tasks. It is fully
+GPU-accelerated and is typically between 10 and 100 times faster, depending on the problem and
+robot.</p>
+<p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> drops support for task-space targets. The recommended flow
+for task-space targets is to use <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolverE" title="cumotion::CollisionFreeIkSolver"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">CollisionFreeIkSolver</span></code></a> to generate a set
+of collision-free c-space positions that achieve the task-space constraints, and to pass all
+solutions to the <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a>, which will plan to at least one c-space
+target.</p>
+<p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> is fully integrated into
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a> as the initial phase for problems without task-space
+path constraints, quickly finding collision-free paths that seed the trajectory optimization.
+This results in a significant improvement to outlier optimization times.</p>
+</li>
+<li><p>The new <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion23RobotDescriptionBuilderE" title="cumotion::RobotDescriptionBuilder"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">RobotDescriptionBuilder</span></code></a> API lets applications construct a
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion16RobotDescriptionE" title="cumotion::RobotDescription"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">RobotDescription</span></code></a> directly in C++ or Python. It accepts programmatically
+specified kinematics and collision geometry, eliminating intermediate URDF and XRDF files and
+simplifying integration with custom robot-model formats.</p></li>
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a> now provides improved convergence for
+task-space path constraints. For typical problems, the maximum positional deviation is now
+under 4 mm. The <code class="docutils literal notranslate"><span class="pre">trajopt/task_space_path_constraint_position_tolerance</span></code> and
+<code class="docutils literal notranslate"><span class="pre">trajopt/task_space_path_constraint_orientation_tolerance</span></code> parameters are now publicly exposed
+through <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a>, allowing applications to configure
+position and orientation constraint tolerances.</p></li>
+<li><p>The following parameters have been added to <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/num_spans</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_velocity_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_acceleration_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_jerk_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_velocity_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_acceleration_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_jerk_limit_penalty/relative_activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/task_space_path_constraint_position_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/task_space_path_constraint_orientation_tolerance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/random_seed</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/max_num_segments_per_forest</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/num_validation_checks_per_extension</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/step_size</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/num_spheres_per_validation_iteration</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/min_extension_length</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/num_shortcut_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/max_iterations</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">path_planner/post_initial_solve_maximum_iterations</span></code></p></li>
+</ul>
+<p>See <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::TrajectoryOptimizerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig::setParam()</span></code></a> for detailed documentation of
+the trajectory optimizer parameters. The <code class="docutils literal notranslate"><span class="pre">path_planner/</span></code> parameters tune the integrated
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> and correspond to the parameters documented by
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion17PathPlannerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::PathPlannerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::PathPlannerConfig::setParam()</span></code></a>, with the <code class="docutils literal notranslate"><span class="pre">path_planner/</span></code> prefix added.
+See that function’s documentation for detailed descriptions, default values, constraints, and
+tuning recommendations.</p>
+</li>
+<li><p>The default <code class="docutils literal notranslate"><span class="pre">trajopt/</span></code> parameters of <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a> have
+been retuned for the B-spline representation, including the L-BFGS cost weights, iteration counts,
+and timestep scaling factors. See <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::TrajectoryOptimizerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig::setParam()</span></code></a>
+for the current default values.</p></li>
+<li><p>Added support for Jetson Orin with JetPack 7.2.1 (CUDA 13.2), in addition to JetPack 6.2.1
+(CUDA 12.6). The packages for Jetson Thor (JetPack 7.2), x86_64 Linux (Ubuntu 24.04), and
+Microsoft Windows are now built with CUDA 13.2, and DGX Spark (DGX OS 7.2) has its own CUDA 13.0
+package. See <a class="reference internal" href="getting_started.html"><span class="doc">Getting Started</span></a> for the full support matrix.</p></li>
+<li><p>Updated urdfdom to 5.1.0 and urdfdom_headers to 2.1.0, and replaced TinyXML with
+TinyXML-2 11.0.0.</p></li>
+</ul>
+</section>
+<section id="breaking-changes">
+<h3>Breaking Changes<a class="headerlink" href="#breaking-changes" title="Link to this heading">#</a></h3>
+<ul>
+<li><p>The x86_64 packages now require an NVIDIA GPU of the Ampere generation or later. Turing GPUs
+(e.g., GeForce RTX 2080) are no longer supported. The x86_64 Ubuntu 22.04 (CUDA 12.6) package
+has been discontinued, and the Linux packages now require GCC 13 or later (GCC 11.4 or later on
+Jetson Orin with JetPack 6). See <a class="reference internal" href="getting_started.html"><span class="doc">Getting Started</span></a> for the full support matrix.</p></li>
+<li><p>Trajectory optimizer YAML configuration files now require <code class="docutils literal notranslate"><span class="pre">format_version:</span> <span class="pre">2.0</span></code> together with
+<code class="docutils literal notranslate"><span class="pre">format:</span> <span class="pre">cumotion_trajopt</span></code>. All other <code class="docutils literal notranslate"><span class="pre">format_version</span></code> values, including legacy <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, are
+unsupported and fail to load. See <a class="reference internal" href="#release-2-0-0-whats-new"><span class="std std-ref">What’s New</span></a> and
+<a class="reference internal" href="#release-2-0-0-deprecation-notice"><span class="std std-ref">Deprecation Notice</span></a> for the parameters added and deprecated between format
+versions, and the list of removed items below for the parameters that are no longer accepted.</p>
+<p>The cuMotion library version 2.0 config parser follows the behavior documented by
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::TrajectoryOptimizerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig::setParam()</span></code></a> for deprecated parameters, even though
+they are not part of the <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a> 2.0 format version.
+These parameters are accepted with a warning and then applied, mapped to their replacements, or
+safely ignored, as described in <a class="reference internal" href="#release-2-0-0-deprecation-notice"><span class="std std-ref">Deprecation Notice</span></a>. This parsing behavior
+is tied to the cuMotion library version (rather than the
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a> 2.0 format version) and may be removed in a
+future release. Removed parameters, such as <code class="docutils literal notranslate"><span class="pre">trajopt/num_knots_per_trajectory</span></code>, are not
+accepted: a configuration file that contains one fails to load.</p>
+</li>
+<li><p>The default L-BFGS cost weights of <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19TrajectoryOptimizerE" title="cumotion::TrajectoryOptimizer"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizer</span></code></a>
+(<code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/</span></code>) have changed by up to several orders of magnitude for the B-spline
+representation. For example, <code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/world_collision_penalty/weight</span></code> changed
+from <code class="docutils literal notranslate"><span class="pre">1e6</span></code> to <code class="docutils literal notranslate"><span class="pre">8.5e2</span></code>, and <code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_velocity_limit_penalty/weight</span></code>
+changed from <code class="docutils literal notranslate"><span class="pre">1e3</span></code> to <code class="docutils literal notranslate"><span class="pre">1e5</span></code>. Custom values tuned for cuMotion 1.x are unlikely to transfer
+and should be re-tuned, starting from the new defaults. In addition, the absolute
+<code class="docutils literal notranslate"><span class="pre">activation_distance</span></code> parameters of the c-space velocity, acceleration, and jerk limit
+penalties are now ignored, as described in <a class="reference internal" href="#release-2-0-0-deprecation-notice"><span class="std std-ref">Deprecation Notice</span></a>.</p></li>
+</ul>
+<p>The following items have been removed in this release:</p>
+<ul class="simple">
+<li><p>The single-target interface in RMPflow (<cite>RmpFlow::setEndEffectorPositionAttractor()</cite>, etc.)
+has been removed in favor of the new multi-target interface
+(<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow14addTargetFrameERKNSt6stringENSt8optionalI15TargetRmpConfigEE" title="cumotion::RmpFlow::addTargetFrame"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::addTargetFrame()</span></code></a>,
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow17setPositionTargetERKNSt6stringERKN5Eigen8Vector3dE" title="cumotion::RmpFlow::setPositionTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setPositionTarget()</span></code></a>, etc.).</p></li>
+<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion14WorldInspector11distancesToERKN5Eigen8Vector3dERNSt6vectorIdEEPNSt6vectorIN5Eigen8Vector3dEEE" title="cumotion::WorldInspector::distancesTo"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">WorldInspector::distancesTo()</span></code></a> now <em>requires</em>
+<code class="docutils literal notranslate"><span class="pre">distances</span></code> to be input by reference. The overload supporting pointer input has been removed.</p></li>
+<li><p>The deprecated “goalset” interface in <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolverE" title="cumotion::CollisionFreeIkSolver"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">CollisionFreeIkSolver</span></code></a>
+(<cite>CollisionFreeIkSolver::solveGoalset()</cite>, <cite>TranslationConstraintGoalset</cite>,
+<cite>OrientationConstraintGoalset</cite>, and <cite>TaskSpaceTargetGoalset</cite>) has been removed in favor of
+<a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveArray()</span></code></a>
+with
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26TranslationConstraintArrayE" title="cumotion::CollisionFreeIkSolver::TranslationConstraintArray"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TranslationConstraintArray</span></code></a>,
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver26OrientationConstraintArrayE" title="cumotion::CollisionFreeIkSolver::OrientationConstraintArray"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">OrientationConstraintArray</span></code></a>,
+and <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolver20TaskSpaceTargetArrayE" title="cumotion::CollisionFreeIkSolver::TaskSpaceTargetArray"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TaskSpaceTargetArray</span></code></a>.</p></li>
+<li><p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a> parameter
+<code class="docutils literal notranslate"><span class="pre">trajopt/num_knots_per_trajectory</span></code> has been removed, since trajectories are no longer
+represented by a dense sequence of knot points. It is not mapped to any other parameter; use
+<code class="docutils literal notranslate"><span class="pre">trajopt/num_spans</span></code> to configure the trajectory discretization instead. Setting it with
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfig8setParamERKNSt6stringE10ParamValue" title="cumotion::TrajectoryOptimizerConfig::setParam"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">cumotion::TrajectoryOptimizerConfig::setParam()</span></code></a> logs a non-fatal error and returns
+<code class="docutils literal notranslate"><span class="pre">false</span></code>, and <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion39CreateTrajectoryOptimizerConfigFromFileERKNSt10filesystem4pathERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle" title="cumotion::CreateTrajectoryOptimizerConfigFromFile"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CreateTrajectoryOptimizerConfigFromFile()</span></code></a> logs a non-fatal
+error and returns <code class="docutils literal notranslate"><span class="pre">nullptr</span></code> for any configuration file that contains it.</p></li>
+</ul>
+</section>
+<section id="deprecation-notice">
+<span id="release-2-0-0-deprecation-notice"></span><h3>Deprecation Notice<a class="headerlink" href="#deprecation-notice" title="Link to this heading">#</a></h3>
+<p>The following items are deprecated and will be removed in the next major release:</p>
+<ul>
+<li><p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlannerE" title="cumotion::MotionPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlanner</span></code></a> and <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19MotionPlannerConfigE" title="cumotion::MotionPlannerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">MotionPlannerConfig</span></code></a> classes,
+along with the free functions that create them
+(<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion33CreateMotionPlannerConfigFromFileERKNSt10filesystem4pathERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle" title="cumotion::CreateMotionPlannerConfigFromFile"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CreateMotionPlannerConfigFromFile()</span></code></a>,
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion32CreateDefaultMotionPlannerConfigERK16RobotDescriptionRKNSt6stringERK15WorldViewHandle" title="cumotion::CreateDefaultMotionPlannerConfig"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CreateDefaultMotionPlannerConfig()</span></code></a>, and
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion19CreateMotionPlannerERK19MotionPlannerConfig" title="cumotion::CreateMotionPlanner"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CreateMotionPlanner()</span></code></a>) have been deprecated in favor of
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> and <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion17PathPlannerConfigE" title="cumotion::PathPlannerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlannerConfig</span></code></a>. The
+<code class="docutils literal notranslate"><span class="pre">Create*()</span></code> functions log a deprecation warning to the console on every call, and their C++
+declarations are marked deprecated so that client code also gets a compile-time warning.</p>
+<p>The <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlannerE" title="cumotion::PathPlanner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">PathPlanner</span></code></a> drops support for task-space targets, so
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner23planToTranslationTargetERKN5Eigen8VectorXdERKN5Eigen8Vector3dEb" title="cumotion::MotionPlanner::planToTranslationTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">MotionPlanner::planToTranslationTarget()</span></code></a>
+and <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion13MotionPlanner16planToPoseTargetERKN5Eigen8VectorXdERK5Pose3b" title="cumotion::MotionPlanner::planToPoseTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">MotionPlanner::planToPoseTarget()</span></code></a> have
+no direct replacement. The recommended flow for task-space targets is to use
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion21CollisionFreeIkSolverE" title="cumotion::CollisionFreeIkSolver"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">CollisionFreeIkSolver</span></code></a> to generate a set of collision-free c-space
+positions that achieve the task-space constraints, and to pass all solutions to
+<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion11PathPlanner19planToCSpaceTargetsERKN5Eigen8VectorXdERKNSt6vectorIN5Eigen8VectorXdEEEib" title="cumotion::PathPlanner::planToCSpaceTargets"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">PathPlanner::planToCSpaceTargets()</span></code></a>.</p>
+</li>
+<li><p>The following <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion25TrajectoryOptimizerConfigE" title="cumotion::TrajectoryOptimizerConfig"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">TrajectoryOptimizerConfig</span></code></a> parameters are deprecated. They
+remain accepted with a warning and use these fallback behaviors:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">enable_self_collision</span></code> and <code class="docutils literal notranslate"><span class="pre">enable_world_collision</span></code> still take effect.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/num_geometric_planning_attempts</span></code> is safely ignored because it no longer has any
+effect.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/geometric_planning/max_iterations</span></code> is mapped to
+<code class="docutils literal notranslate"><span class="pre">path_planner/max_iterations</span></code> by dividing the provided value by <code class="docutils literal notranslate"><span class="pre">10</span></code>. If both parameters
+are specified in a configuration file, <code class="docutils literal notranslate"><span class="pre">path_planner/max_iterations</span></code> takes precedence.
+Prefer setting <code class="docutils literal notranslate"><span class="pre">path_planner/max_iterations</span></code> directly.</p></li>
+<li><p>The absolute <code class="docutils literal notranslate"><span class="pre">activation_distance</span></code> parameters of the c-space velocity, acceleration, and
+jerk limit penalties are safely ignored because they no longer have any effect. Use the
+<code class="docutils literal notranslate"><span class="pre">relative_activation_distance</span></code> parameters of the same penalties instead:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_velocity_limit_penalty/activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_acceleration_limit_penalty/activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/pbo/cost/cspace_jerk_limit_penalty/activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_velocity_limit_penalty/activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_acceleration_limit_penalty/activation_distance</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">trajopt/lbfgs/cost/cspace_jerk_limit_penalty/activation_distance</span></code></p></li>
+</ul>
+</li>
+</ul>
+<p>All deprecated parameters will be removed in a future release.</p>
+</li>
+</ul>
+</section>
+<section id="known-issues">
+<h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>A CPU memory leak is exposed when adding and removing obstacles to a world. Each cycle adding and removing an obstacle
+will grow memory usage, with impacts most noticeable for SDF obstacles. Updating values of an existing SDF does not
+contribute to this memory leak.</p></li>
+<li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
+from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
+visualization when run on NVIDIA Jetson or NVIDIA DGX Spark.</p></li>
+</ul>
+</section>
+</section>
 <section id="release-1-1-0-april-10-2026">
 <h2>Release 1.1.0 - April 10, 2026<a class="headerlink" href="#release-1-1-0-april-10-2026" title="Link to this heading">#</a></h2>
-<section id="what-s-new">
-<h3>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h3>
+<section id="id1">
+<h3>What’s New<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Added support for NVIDIA DGX Spark.</p></li>
 <li><p>Added support for Microsoft Windows.</p></li>
@@ -357,11 +567,11 @@ process as other threads making simultaneous use of CUDA. Platforms with full Un
 (i.e., x86_64 and Jetson Thor) are unaffected by this change.</p></li>
 </ul>
 </section>
-<section id="deprecation-notice">
-<h3>Deprecation Notice<a class="headerlink" href="#deprecation-notice" title="Link to this heading">#</a></h3>
+<section id="id2">
+<h3>Deprecation Notice<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
 <p>The following items are deprecated and will be removed in the next release:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver12solveGoalsetERK22TaskSpaceTargetGoalsetRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveGoalset"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveGoalset()</span></code></a>
+<li><p><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveGoalset()</span></code>
 and related target constructors have been deprecated in favor of
 <a class="reference internal" href="api/cpp_api.html#_CPPv4NK8cumotion21CollisionFreeIkSolver10solveArrayERK20TaskSpaceTargetArrayRKNSt6vectorIN5Eigen8VectorXdEEE" title="cumotion::CollisionFreeIkSolver::solveArray"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">CollisionFreeIkSolver::solveArray()</span></code></a> and
 related target constructors. The newly added
@@ -370,7 +580,7 @@ with a single target per problem) and goalset mode (i.e., a single problem with 
 batch mode support (i.e., multiple problems, each with multiple targets) will be added in a future
 release.</p></li>
 <li><p>The single-target interface in RMPflow
-(<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow31setEndEffectorPositionAttractorERKN5Eigen8Vector3dE" title="cumotion::RmpFlow::setEndEffectorPositionAttractor"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setEndEffectorPositionAttractor()</span></code></a>,
+(<code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setEndEffectorPositionAttractor()</span></code>,
 etc.) has been deprecated in favor of the new multi-target interface
 (<a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow14addTargetFrameERKNSt6stringENSt8optionalI15TargetRmpConfigEE" title="cumotion::RmpFlow::addTargetFrame"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::addTargetFrame()</span></code></a>,
 <a class="reference internal" href="api/cpp_api.html#_CPPv4N8cumotion7RmpFlow17setPositionTargetERKNSt6stringERKN5Eigen8Vector3dE" title="cumotion::RmpFlow::setPositionTarget"><code class="xref cpp cpp-func docutils literal notranslate"><span class="pre">RmpFlow::setPositionTarget()</span></code></a>, etc.).</p></li>
@@ -381,8 +591,8 @@ been deprecated and will now be ignored (with warning). The size of CUDA-acceler
 longer directly bounded and <code class="docutils literal notranslate"><span class="pre">cuda_tree_params/max_num_nodes</span></code> will be ignored.</p></li>
 </ul>
 </section>
-<section id="known-issues">
-<h3>Known Issues<a class="headerlink" href="#known-issues" title="Link to this heading">#</a></h3>
+<section id="id3">
+<h3>Known Issues<a class="headerlink" href="#id3" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>A CPU memory leak is exposed when adding and removing obstacles to a world. Each cycle adding and removing an obstacle
 will grow memory usage, with impacts most noticeable for SDF obstacles. Updating values of an existing SDF does not
@@ -395,8 +605,8 @@ visualization when run on NVIDIA Jetson or NVIDIA DGX Spark.</p></li>
 </section>
 <section id="release-1-0-0-december-19-2025">
 <h2>Release 1.0.0 - December 19, 2025<a class="headerlink" href="#release-1-0-0-december-19-2025" title="Link to this heading">#</a></h2>
-<section id="id1">
-<h3>What’s New<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<section id="id5">
+<h3>What’s New<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Improved performance of both collision-free IK and trajectory optimization.</p></li>
 <li><p>Added experimental support for segmenting (masking) out the contribution of a robot from a depth image.
@@ -405,8 +615,8 @@ This functionality is currently only exposed in C++ and only supports depth imag
 <li><p>Eliminated all internal use of the default CUDA stream.</p></li>
 </ul>
 </section>
-<section id="id2">
-<h3>Known Issues<a class="headerlink" href="#id2" title="Link to this heading">#</a></h3>
+<section id="id6">
+<h3>Known Issues<a class="headerlink" href="#id6" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>On Jetson Orin, cuMotion should not be run in the same process as other threads making simultaneous use of
 CUDA.  This restriction is related to the manner in which cuMotion uses CUDA Unified Memory and will be
@@ -419,14 +629,14 @@ visualization when run on NVIDIA Jetson.</p></li>
 </section>
 <section id="developer-preview-1-november-26-2025">
 <h2>Developer Preview 1 - November 26, 2025<a class="headerlink" href="#developer-preview-1-november-26-2025" title="Link to this heading">#</a></h2>
-<section id="id4">
-<h3>What’s New<a class="headerlink" href="#id4" title="Link to this heading">#</a></h3>
+<section id="id8">
+<h3>What’s New<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Initial public release</p></li>
 </ul>
 </section>
-<section id="id5">
-<h3>Known Issues<a class="headerlink" href="#id5" title="Link to this heading">#</a></h3>
+<section id="id9">
+<h3>Known Issues<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>Open3D is used for visualization in some of the Python examples.  Because Open3D is not currently available
 from <a class="reference external" href="https://pypi.org/project/open3d/">PyPI</a> for the <code class="docutils literal notranslate"><span class="pre">aarch64</span></code> architecture, these examples will lack
@@ -476,20 +686,27 @@ visualization when run on NVIDIA Jetson.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-1-0-april-10-2026">Release 1.1.0 - April 10, 2026</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-2-0-0-november-23-2026">Release 2.0.0 - November 23, 2026</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-s-new">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#breaking-changes">Breaking Changes</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deprecation-notice">Deprecation Notice</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#known-issues">Known Issues</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-0-0-december-19-2025">Release 1.0.0 - December 19, 2025</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-1-0-april-10-2026">Release 1.1.0 - April 10, 2026</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">What’s New</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Known Issues</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Deprecation Notice</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Known Issues</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#release-1-0-0-december-19-2025">Release 1.0.0 - December 19, 2025</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">Known Issues</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#developer-preview-1-november-26-2025">Developer Preview 1 - November 26, 2025</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">What’s New</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">Known Issues</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">What’s New</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">Known Issues</a></li>
 </ul>
 </li>
 </ul>

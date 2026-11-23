@@ -36,7 +36,7 @@
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=3835c3f0" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=decb6a4a" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -263,6 +263,7 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/path_planning_tutorial.html">Path Planning Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
 </ul>
 </details></li>
@@ -319,10 +320,10 @@ space (joint space) and/or task space</p></li>
 </ul>
 <p>Robots with any number of degrees of freedom are supported.</p>
 <p>cuMotion is implemented in C++ and provides a complete set of Python bindings.  Although developed as a
-standalone library, cuMotion will also soon serve as the motion generation backend for
+standalone library, cuMotion also serves as the motion generation backend for
 <a class="reference external" href="https://nvidia-isaac-ros.github.io/repositories_and_packages/isaac_ros_cumotion/index.html">Isaac ROS cuMotion</a>
 and the manipulation
-<a class="reference external" href="https://nvidia-isaac-ros.github.io/reference_workflows/isaac_for_manipulation/index.html">reference workflows</a>
+<a class="reference external" href="https://nvidia-isaac-ros.github.io/manipulation/index.html">reference workflows</a>
 in <a class="reference external" href="https://nvidia-isaac-ros.github.io/index.html">Isaac ROS</a>.</p>
 <p>cuMotion is descended from two libraries:</p>
 <ol class="arabic simple">
@@ -350,6 +351,7 @@ in cuRobo, including those for collision-aware IK and trajectory optimization.</
 <li class="toctree-l2"><a class="reference internal" href="tutorials/kinematics_tutorial.html">Kinematics Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/world_tutorial.html">World Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/inverse_kinematics_tutorial.html">Inverse Kinematics Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/path_planning_tutorial.html">Path Planning Tutorial</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials/trajectory_optimization_tutorial.html">Trajectory Optimization Tutorial</a></li>
 </ul>
 </li>
@@ -371,6 +373,7 @@ in cuRobo, including those for collision-aware IK and trajectory optimization.</
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#path-specification">Path Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#path-generation-collision-unaware">Path Generation (Collision-Unaware)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#trajectory-generation-collision-unaware">Trajectory Generation (Collision-Unaware)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#path-planning">Path Planning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#graph-based-path-planning">Graph-Based Path Planning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#rmpflow">RMPflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/cpp_api.html#collision-sphere-generation">Collision Sphere Generation</a></li>
@@ -391,12 +394,14 @@ in cuRobo, including those for collision-aware IK and trajectory optimization.</
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#path-specification">Path Specification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#path-generation-collision-unaware">Path Generation (Collision-Unaware)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#trajectory-generation-collision-unaware">Trajectory Generation (Collision-Unaware)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/python_api.html#path-planning">Path Planning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#graph-based-path-planning">Graph-Based Path Planning</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#rmpflow">RMPflow</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/python_api.html#collision-sphere-generation">Collision Sphere Generation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="release_notes.html">Release Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release_notes.html#release-2-0-0-november-23-2026">Release 2.0.0 - November 23, 2026</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes.html#release-1-1-0-april-10-2026">Release 1.1.0 - April 10, 2026</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes.html#release-1-0-0-december-19-2025">Release 1.0.0 - December 19, 2025</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release_notes.html#developer-preview-1-november-26-2025">Developer Preview 1 - November 26, 2025</a></li>
